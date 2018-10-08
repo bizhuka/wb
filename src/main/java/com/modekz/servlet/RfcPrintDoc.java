@@ -112,13 +112,13 @@ public class RfcPrintDoc extends ServletBase {
         }
 
         // Pass data for template
-        WBPrintDoc printDoc = new WBPrintDoc(N_class, docs, reqs);
+        WBPrintDoc printDoc = new WBPrintDoc(waybillId, N_class, docs, reqs);
 
         try (Session session = ODataServiceFactory.getRfcSession().openSession()) {
             session.execute(printDoc);
 
             // Specify the filename
-            sendFile(response, printDoc.data, printDoc.contentType, "Путевой_лист_№_" + waybillId + ".docx");
+            sendFile(response, printDoc.data, printDoc.contentType, printDoc.filename);
         }
     }
 }

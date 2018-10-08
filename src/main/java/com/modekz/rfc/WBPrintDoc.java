@@ -13,12 +13,20 @@ public class WBPrintDoc {
     public String objid;
 
     @Import
+    @Parameter("IV_WAYBILL_ID")
+    public String waybillId;
+
+    @Import
     @Parameter("IV_CLASS")
     public String N_class;
 
     @Export
     @Parameter("EV_CONTENT_TYPE")
     public String contentType;
+
+    @Export
+    @Parameter("EV_FILENAME")
+    public String filename;
 
     @Table
     @Parameter("IT_DOC")
@@ -36,7 +44,8 @@ public class WBPrintDoc {
         this.objid = objid;
     }
 
-    public WBPrintDoc(String N_class, List<PrintDoc> docs, List<PrintReq> reqs) {
+    public WBPrintDoc(long waybillId, String N_class, List<PrintDoc> docs, List<PrintReq> reqs) {
+        this.waybillId = String.valueOf(waybillId);
         this.N_class = N_class;
         this.docs = docs;
         this.reqs = reqs;

@@ -56,7 +56,7 @@ public class ServletBase extends HttpServlet {
 
 
         // Show in place or as file
-        if (fileName != null)
+        if (fileName != null && !fileName.equals(""))
             response.setHeader("Content-Disposition", "attachment; filename=\"" +
                     URLEncoder.encode(fileName, "UTF-8") + "\"");
 
