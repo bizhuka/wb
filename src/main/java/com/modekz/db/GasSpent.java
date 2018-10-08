@@ -1,0 +1,77 @@
+package com.modekz.db;
+
+import org.eclipse.persistence.annotations.PrimaryKey;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+
+@Entity
+@PrimaryKey(columns = {@Column(name = "WAYBILL_ID"), @Column(name = "POS")})
+public class GasSpent {
+    @Column
+    public long Waybill_Id;
+
+    @Column
+    // Relative position is crucial
+    public int Pos;
+
+    @Column(length = 18, nullable = false)
+    public String GasMatnr;
+
+    @Column
+    public double GasBefore;
+
+    @Column
+    public double GasGive;
+
+    @Column
+    public double GasGiven;
+
+    public long getWaybill_Id() {
+        return Waybill_Id;
+    }
+
+    public void setWaybill_Id(long waybill_Id) {
+        Waybill_Id = waybill_Id;
+    }
+
+    public int getPos() {
+        return Pos;
+    }
+
+    public void setPos(int pos) {
+        this.Pos = pos;
+    }
+
+    public String getGasMatnr() {
+        return GasMatnr;
+    }
+
+    public void setGasMatnr(String GasMatnr) {
+        this.GasMatnr = GasMatnr;
+    }
+
+    public double getGasBefore() {
+        return GasBefore;
+    }
+
+    public void setGasBefore(double GasBefore) {
+        this.GasBefore = GasBefore;
+    }
+
+    public double getGasGive() {
+        return GasGive;
+    }
+
+    public void setGasGive(double GasGive) {
+        this.GasGive = GasGive;
+    }
+
+    public double getGasGiven() {
+        return GasGiven;
+    }
+
+    public void setGasGiven(double GasGiven) {
+        this.GasGiven = GasGiven;
+    }
+}

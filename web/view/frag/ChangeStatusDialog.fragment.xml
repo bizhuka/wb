@@ -1,0 +1,57 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Dialog title="{gui>/title}" afterClose="onChangeStatusAfterClose" type="Message">
+
+        <content>
+
+            <Label text="Дата по факту"/>
+
+            <HBox visible="{= ${gui>/origin}==='WB'}">
+
+                <DatePicker
+                        change="onDateChanged"
+                        enabled="{gui>/dateEdit}"
+                        value="{ path: 'gui>/fromDate', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true}}"/>
+                <DatePicker
+                        change="onDateChanged"
+                        enabled="{gui>/dateEdit}"
+                        value="{ path: 'gui>/toDate', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true}}"/>
+            </HBox>
+
+            <HBox visible="{= ${gui>/origin}==='REQ'}">
+                <DateTimePicker
+                        change="onDateChanged"
+                        value="{ path: 'gui>/fromDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
+                <DateTimePicker
+                        change="onDateChanged"
+                        value="{ path: 'gui>/toDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
+            </HBox>
+
+            <VBox visible="{= ${gui>/origin}==='REQ'}">
+                <Label text="Моточасы"/>
+                <Input value="{gui>/motoHour}" type="Number" valueLiveUpdate="true" liveChange="checkOkEnabled"/>
+            </VBox>
+
+            <VBox>
+                <Label text="{gui>/reasonLabel}"/>
+                <ComboBox id="id_reason_combo" items="{gui>/reasons}"
+                          selectedKey="{gui>/reason}"
+                          selectionChange="checkOkEnabled">
+                    <core:Item key="{gui>key}" text="{gui>text}"/>
+                </ComboBox>
+            </VBox>
+
+            <TextArea value="{gui>/text}" width="100%" placeholder="Описание (обязательно)" liveChange="onTextChange"/>
+        </content>
+
+        <beginButton>
+            <Button text="{gui>/ok_text}" press="onChangeStatusConfirm"/>
+            <!--enabled="{= ${gui>/text}!==''}"-->
+        </beginButton>
+
+        <endButton>
+            <Button text="Отмена" press="onChangeStatusClose"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

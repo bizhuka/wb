@@ -1,0 +1,358 @@
+<mvc:View
+        controllerName="com.modekzWaybill.controller.WaybillDetail"
+        xmlns:core="sap.ui.core"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:f="sap.ui.layout.form"
+        xmlns:semantic="sap.m.semantic"
+        xmlns="sap.m">
+
+    <semantic:DetailPage title="Путевой лист" showNavButton="true" navButtonPress="onNavBack">
+        <ObjectHeader id="id_detail_header"
+                      title="{wb>Id} - ({wb>Werks})"
+                      number="{wb>Description}"
+                      numberUnit="{ parts:[ { path: 'wb>Status' }, { path: 'wb>Id' } ], formatter: '.getStatusText' }"
+                      icon="sap-icon://bar-code">
+            <attributes>
+                <ObjectAttribute title="Плановые даты"
+                                 text="{ path: 'wb>FromDate', formatter: '.toLocaleDate' } - { path: 'wb>ToDate', formatter: '.toLocaleDate' }"/>
+            </attributes>
+
+            <statuses>
+                <ObjectStatus
+                        title="Причина смещения сроков"
+                        text="{ path: 'wb>DelayReason', formatter: '.getDelayReasonText'}"
+                        visible="{= ${wb>DelayReason}!==0}"
+                        state="Warning"/>
+            </statuses>
+        </ObjectHeader>
+
+        <semantic:customHeaderContent>
+            <Button press="on_wb_print" icon="sap-icon://print" text="Печать"/>
+        </semantic:customHeaderContent>
+
+        <semantic:customFooterContent>
+            <Button press="on_set_status" visible="false" id="id_bt_confirm" icon="sap-icon://accept"
+                    text="Согласовать"/>
+            <Button press="on_set_status" visible="false" id="id_bt_cancel" icon="sap-icon://decline" text="Отклонить"/>
+            <Button press="on_set_status" visible="false" id="id_bt_dep_date" icon="sap-icon://journey-arrive"
+                    text="Выезд из гаража"/>
+            <Button press="on_set_status" visible="false" id="id_bt_arr_date" icon="sap-icon://journey-depart"
+                    text="Заезд в гараж"/>
+            <Button press="on_set_status" visible="false" id="id_bt_close" icon="sap-icon://complete" text="Закрыть"/>
+
+        </semantic:customFooterContent>
+
+
+        <IconTabBar id="id_all_tabs" select="on_tab_select" expanded="true">
+            <items>
+                <IconTabFilter id="id_eo_tab" key="id_eo_tab"
+                               icon="sap-icon://bus-public-transport" tooltip="Единица оборудования">
+                    <OverflowToolbar design="Transparent">
+                        <Title text="Единица оборудования"/>
+                        <ToolbarSpacer/>
+                    </OverflowToolbar>
+
+                    <f:Form editable="false">
+                        <f:layout>
+                            <f:ResponsiveGridLayout singleContainerFullSize="false"/>
+                        </f:layout>
+                        <f:formContainers>
+                            <f:FormContainer>
+                                <f:formElements>
+                                    <f:FormElement label="Номер ЕО">
+                                        <f:fields>
+                                            <Text text="{ path: 'wb>Equnr', formatter: '.alphaOut' }"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="Название">
+                                        <f:fields>
+                                            <Text text="{wb>Eqktx}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="Вид тех. объекта">
+                                        <f:fields>
+                                            <Text text="{wb>Eqart}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="Вид топлива">
+                                        <f:fields>
+                                            <Text text="{wb>Typbz}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="Номер класса">
+                                        <f:fields>
+                                            <Text text="{wb>N_class}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="IMEI">
+                                        <f:fields>
+                                            <Text text="{wb>Imei}"
+                                                  tooltip="ТИ { path: 'wb>Point', formatter: '.alphaOut' }&#xA;Тип ТИ {wb>Mptyp}&#xA;Wialon ID {wb>WialonId}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+                        </f:formContainers>
+                    </f:Form>
+                </IconTabFilter>
+
+                <IconTabFilter id="id_reqs_container" icon="sap-icon://multiselect-all" tooltip="Задание (Заявки)">
+                    <OverflowToolbar design="Transparent">
+                        <Title id="id_reqs_title" text="Задание (Заявки)"/>
+                        <ToolbarSpacer/>
+                    </OverflowToolbar>
+
+                    <!--<core:Fragment fragmentName="com.modekzWaybill.view.frag.ReqsTable" type="XML"/>-->
+                </IconTabFilter>
+
+                <IconTabFilter id="id_dr_tab" key="id_dr_tab"
+                               icon="sap-icon://employee-pane" tooltip="Водитель">
+                    <OverflowToolbar design="Transparent">
+                        <Title text="Водитель"/>
+                        <ToolbarSpacer/>
+                    </OverflowToolbar>
+
+                    <f:Form editable="false">
+                        <f:layout>
+                            <f:ResponsiveGridLayout singleContainerFullSize="false"/>
+                        </f:layout>
+                        <f:formContainers>
+                            <f:FormContainer>
+                                <f:formElements>
+                                    <f:FormElement label="Табельный номер">
+                                        <f:fields>
+                                            <Input id="id_driver_input"
+                                                   type="Number"
+                                                   value="{ path: 'wb>Pernr', formatter: '.alphaOut' }"
+                                                   showSuggestion="true"
+                                                   showValueHelp="true"
+                                                   valueHelpRequest="handle_dr_f4"
+                                                   suggestionItems="{wb>/VDrivers}"
+                                                   suggestionItemSelected="handle_dr_f4Selected"
+                                                   startSuggestion="3">
+                                                <suggestionItems>
+                                                    <core:Item text="{wb>Pernr} - {wb>Fio}"/>
+                                                </suggestionItems>
+                                            </Input>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="Фио">
+                                        <f:fields>
+                                            <Text text="{wb>Fio}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="Подразделение">
+                                        <f:fields>
+                                            <Text text="{wb>Podr}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="Должность">
+                                        <f:fields>
+                                            <Text text="{wb>Post}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="С периода">
+                                        <f:fields>
+                                            <Text text="{ path: 'wb>Datbeg', formatter: '.toLocaleDate' }"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+                        </f:formContainers>
+                    </f:Form>
+                </IconTabFilter>
+
+
+                <IconTabFilter id="id_close_tab" key="id_close_tab" icon="sap-icon://complete" tooltip="Закрытие">
+
+                    <OverflowToolbar design="Transparent">
+                        <Title text="Закрытие и передача в SAP"/>
+                        <ToolbarSpacer/>
+                        <OverflowToolbarButton icon="sap-icon://mileage" id="wln_show_fuel" press="onWlnMessagePress"
+                                               tooltip="Топливо (Сообщения wialon)"
+                                               enabled="{= ${wb>Status}>=${status>/ARRIVED}}"/>
+                        <OverflowToolbarButton icon="sap-icon://map-2" id="wln_show_map" press="onWlnMessagePress"
+                                               tooltip="Карта (Сообщения wialon)"
+                                               enabled="{= ${wb>Status}>=${status>/ARRIVED}}"/>
+                        <OverflowToolbarButton icon="sap-icon://synchronize" id="wln_load_spent"
+                                               press="onWlnMessagePress"
+                                               tooltip="Получить показания датчиков wialon"
+                                               enabled="{= ${wb>Status}===${status>/ARRIVED}}"/>
+                    </OverflowToolbar>
+
+                    <f:Form editable="true">
+                        <f:layout>
+                            <f:ResponsiveGridLayout
+                                    singleContainerFullSize="false"/>
+                        </f:layout>
+                        <f:formContainers>
+                            <f:FormContainer title="Движение ГСМ">
+                                <f:formElements>
+                                    <f:FormElement label="Израсходавано ГСМ всего">
+                                        <f:fields>
+                                            <Input type="Number" value="{wb>GasSpent}"
+                                                   enabled="{= ${wb>Status}===${status>/ARRIVED}}"
+                                                   liveChange="onFuelChanged"
+                                                   valueLiveUpdate="true"
+                                                   id="id_wb_gas_spent"/>
+                                        </f:fields>
+                                    </f:FormElement>
+
+                                    <f:FormElement>
+                                        <f:fields>
+                                            <Table items="{fuel>/data}">
+                                                <!--<headerToolbar>-->
+                                                <!--<OverflowToolbar >-->
+                                                <!--<Button/>-->
+                                                <!--</OverflowToolbar>-->
+                                                <!--</headerToolbar>-->
+                                                <columns>
+                                                    <Column width="9rem">
+                                                        <header>
+                                                            <Label text="Вид топлива"/>
+                                                        </header>
+                                                    </Column>
+                                                    <Column>
+                                                        <header>
+                                                            <Label text="Остаток выезд" tooltip="Остаток выезд"/>
+                                                        </header>
+                                                    </Column>
+                                                    <Column>
+                                                        <header>
+                                                            <Label text="Выдать"/>
+                                                        </header>
+                                                    </Column>
+                                                    <Column>
+                                                        <header>
+                                                            <Label text="По факту"/>
+                                                        </header>
+                                                    </Column>
+                                                    <Column>
+                                                        <header>
+                                                            <Label text="Потрачено"/>
+                                                        </header>
+                                                    </Column>
+                                                    <Column>
+                                                        <header>
+                                                            <Label text="Остаток заезд" tooltip="Остаток заезд"/>
+                                                        </header>
+                                                    </Column>
+                                                </columns>
+                                                <ColumnListItem>
+                                                    <cells>
+                                                        <ComboBox items="{path:'wb>/GasTypes', templateShareable:false}"
+                                                                  selectedKey="{fuel>GasMatnr}"
+                                                                  enabled="{= ${wb>Status}===${status>/AGREED}||${wb>Status}===${status>/ARRIVED}}"
+                                                                  selectionChange="onFuelTypeChange">
+                                                            <core:Item key="{wb>Matnr}" text="{wb>Maktx}"/>
+                                                        </ComboBox>
+
+                                                        <Input type="Number" value="{fuel>GasBefore}"
+                                                               enabled="{= ${wb>Status}===${status>/AGREED}&amp;&amp;${fuel>GasMatnr}.length>0}"
+                                                               liveChange="onFuelChanged"
+                                                               valueLiveUpdate="true"/>
+                                                        <Input type="Number" value="{fuel>GasGive}"
+                                                               enabled="{= ${wb>Status}===${status>/AGREED}&amp;&amp;${fuel>GasMatnr}.length>0}"
+                                                               liveChange="onFuelChanged"
+                                                               valueLiveUpdate="true"/>
+                                                        <Input type="Number" value="{fuel>GasGiven}"
+                                                               enabled="{= ${wb>Status}===${status>/ARRIVED}&amp;&amp;${fuel>GasMatnr}.length>0}"
+                                                               liveChange="onFuelChanged"
+                                                               valueLiveUpdate="true"/>
+                                                        <Input type="Number" value="{fuel>GasSpent}" enabled="false"/>
+                                                        <Input type="Number" value="{fuel>GasAfter}" enabled="false"/>
+                                                    </cells>
+                                                </ColumnListItem>
+                                            </Table>
+                                        </f:fields>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+
+                            <f:FormContainer title="Датчики">
+                                <f:formElements>
+                                    <f:FormElement label="Пробег Δ">
+                                        <f:fields>
+                                            <Input type="Number" value="{wb>OdoDiff}"
+                                                   enabled="{= ${wb>Status}===${status>/ARRIVED}}"
+                                                   valueLiveUpdate="true"
+                                                   id="id_wb_odo_diff"/>
+                                        </f:fields>
+                                    </f:FormElement>
+
+                                    <f:FormElement label="Моточасы Δ">
+                                        <f:fields>
+                                            <Input type="Number" value="{wb>MotoHour}"
+                                                   enabled="{= ${wb>Status}===${status>/ARRIVED}}"
+                                                   valueLiveUpdate="true"
+                                                   id="id_wb_moto_hour"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+                        </f:formContainers>
+                    </f:Form>
+                </IconTabFilter>
+
+                <IconTabFilter icon="sap-icon://calendar" tooltip="Даты">
+                    <OverflowToolbar design="Transparent">
+                        <Title text="Даты"/>
+                        <ToolbarSpacer/>
+                        <!--<Button press="on_save_dates" icon="sap-icon://accept" text="Сохранить даты"/>-->
+                    </OverflowToolbar>
+
+                    <f:Form editable="false">
+                        <f:layout>
+                            <f:ResponsiveGridLayout singleContainerFullSize="false"/>
+                        </f:layout>
+                        <f:formContainers>
+                            <f:FormContainer>
+                                <f:formElements>
+                                    <f:FormElement label="Создан">
+                                        <f:fields>
+                                            <DateTimePicker change="on_save_dates"
+                                                    value="{ path: 'wb>CreateDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="Соглосован"
+                                                   visible="{= ${wb>Status}!==${status>/REJECTED}}">
+                                        <f:fields>
+                                            <DateTimePicker change="on_save_dates"
+                                                    value="{ path: 'wb>ConfirmDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="Отклонен"
+                                                   visible="{= ${wb>Status}===${status>/REJECTED}}">
+                                        <f:fields>
+                                            <DateTimePicker change="on_save_dates"
+                                                    value="{ path: 'wb>ConfirmDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="Выезд из гаража">
+                                        <f:fields>
+                                            <DateTimePicker change="on_save_dates"
+                                                    value="{ path: 'wb>GarageDepDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="Заезда в гараж">
+                                        <f:fields>
+                                            <DateTimePicker change="on_save_dates"
+                                                    value="{ path: 'wb>GarageArrDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                    <f:FormElement label="Закрыт">
+                                        <f:fields>
+                                            <DateTimePicker change="on_save_dates"
+                                                    value="{ path: 'wb>CloseDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+                        </f:formContainers>
+                    </f:Form>
+                </IconTabFilter>
+            </items>
+        </IconTabBar>
+
+    </semantic:DetailPage>
+</mvc:View>

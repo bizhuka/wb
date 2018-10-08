@@ -1,0 +1,109 @@
+<mvc:View controllerName="com.modekzWaybill.controller.ToroRequest"
+          xmlns="sap.m"
+          xmlns:flex="sap.f"
+          xmlns:mvc="sap.ui.core.mvc"
+          xmlns:core="sap.ui.core"
+          xmlns:semantic="sap.m.semantic"
+          xmlns:f="sap.ui.layout.form"
+          xmlns:t="sap.ui.table">
+
+    <!--PS like UI SplitApp-->
+    <flex:FlexibleColumnLayout layout="TwoColumnsMidExpanded" stateChange="onReqStateChange">
+        <!--masterPages-->
+        <flex:beginColumnPages>
+            <!--reqHeader (left)  part of the screen-->
+            <semantic:MasterPage id="id_reqs_container" title="Заявки TORO" showNavButton="true" navButtonPress="onNavBack">
+
+                <!--Search option-->
+                <!--<semantic:subHeader>-->
+                    <!--<Bar>-->
+                        <!--<contentMiddle>-->
+                            <!--<SearchField search="onSearchOption"/>-->
+                        <!--</contentMiddle>-->
+                    <!--</Bar>-->
+                <!--</semantic:subHeader>-->
+
+                <semantic:customHeaderContent>
+                    <OverflowToolbarButton icon="sap-icon://activity-2" press="onNavToFinished"
+                                           tooltip="Обработанные заявки"/>
+                    <OverflowToolbarButton icon="sap-icon://synchronize" press="onReqUpdate"
+                                           tooltip="Обновить заявки"/>
+                </semantic:customHeaderContent>
+
+
+                <!--List of all options-->
+                <semantic:content>
+                    <!--<core:Fragment fragmentName="com.modekzWaybill.view.frag.ReqsTable" type="XML"/>-->
+                </semantic:content>
+            </semantic:MasterPage>
+        </flex:beginColumnPages>
+
+        <!--Detailed view (Right part) detailPages-->
+        <flex:midColumnPages>
+            <!--Hide footer-->
+            <semantic:DetailPage title="Перечень ТС" showFooter="true">
+
+                <semantic:customHeaderContent>
+                    <OverflowToolbarButton icon="sap-icon://synchronize" press="onEoUpdate"
+                                           tooltip="Обновить единицы оборудования"/>
+                </semantic:customHeaderContent>
+
+                <semantic:content>
+                    <!--Hide at start-->
+                    <ObjectHeader id="id_detail_header"
+                                  title="Выделно заявок"
+                                  number="0"
+                                  numberUnit=""
+                                  visible="true">
+                        <!--icon="{ path: '', formatter: '.' }"-->
+                        <!--<statuses>-->
+                        <!--<ObjectStatus text=""/>-->
+                        <!--</statuses>-->
+
+                        <!--<attributes>-->
+                        <!--</attributes>-->
+                    </ObjectHeader>
+
+
+                </semantic:content>
+                <HBox>
+                    <DatePicker id="dpFrom" change="onDatePickChange"/>
+                    <DatePicker id="dpTo" change="onDatePickChange"/>
+                </HBox>
+                <Table id="id_eo_schedule"
+                       mode="SingleSelect"
+                       items="{ path: 'wb>/Equipments'}"
+                       updateStarted="onUpdateStartedSchedule">
+                    <columns>
+                        <Column width="5em">
+                            <Label text="Гос номер"/>
+                        </Column>
+                        <Column>
+                            <Label text="Название объекта"/>
+                        </Column>
+                    </columns>
+
+                    <ColumnListItem>
+                        <cells>
+                            <Label text="{wb>License_num}"
+                                   tooltip="Единица оборудования { path: 'wb>Equnr', formatter: '.alphaOut' }&#xA;Класс {wb>N_class}"/>
+                        </cells>
+
+                        <cells>
+                            <Label text="{wb>Eqktx}" tooltip="{wb>Eqktx}"/>
+                        </cells>
+                    </ColumnListItem>
+                </Table>
+
+
+                <!--Saving to DB-->
+                <semantic:customFooterContent>
+                    <!--enabled="{= ${reqHeader>/is_changed} &amp;&amp; !${reqHeader>/DATA/READ_ONLY}}"-->
+                    <Button icon="sap-icon://create-form" press="onCreateWaybill"
+                            text="Создать путевой лист"/>
+                </semantic:customFooterContent>
+
+            </semantic:DetailPage>
+        </flex:midColumnPages>
+    </flex:FlexibleColumnLayout>
+</mvc:View>

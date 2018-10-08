@@ -1,0 +1,16 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:u="sap.ui.unified">
+
+    <u:Menu itemSelect="onSortGroupClick">
+        <u:MenuItem id="id_group_"
+                    text="Без группировки"/>
+        <u:MenuItem id="id_group_KtschTxt"
+                    text="Класс"/>
+        <u:MenuItem id="id_group_Pltxt"
+                    text="Наименование технического места"/>
+        <u:MenuItem id="id_group_Priokx"
+                    text="Приоритет"/>
+    </u:Menu>
+</core:FragmentDefinition>

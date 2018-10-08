@@ -1,0 +1,97 @@
+    <core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Dialog contentWidth="85%" showHeader="false" afterClose="onDriverAfterClose">
+
+        <customHeader design="Header">
+            <Bar>
+                <contentMiddle>
+                    <Title text="Водители"/>
+                </contentMiddle>
+
+                <contentRight>
+                    <Button icon="sap-icon://synchronize" tooltip="Обновить список водителей" press="onSyncDrivers"/>
+                </contentRight>
+            </Bar>
+        </customHeader>
+
+        <subHeader>
+            <Bar>
+                <contentMiddle>
+                    <SearchField id="id_driver_search" width="100%" search="onSearch"/>
+                </contentMiddle>
+            </Bar>
+        </subHeader>
+
+        <content>
+            <Table id="id_driver_table"
+                   growing="true" growingScrollToLoad="true"
+                   mode="SingleSelectMaster" modeAnimationOn="false"
+                   noDataText="Нет данных" items="{wb>/VDrivers}"
+                   selectionChange="onSelectionChange">
+
+                <columns>
+                    <Column>
+                        <header>
+                            <Text text="Табельный номер"/>
+                        </header>
+                    </Column>
+
+                    <Column>
+                        <header>
+                            <Text text="ФИО"/>
+                        </header>
+                    </Column>
+
+                    <Column>
+                        <header>
+                            <Text text="ИИН"/>
+                        </header>
+                    </Column>
+
+                    <Column>
+                        <header>
+                            <Text text="Должность / Подразделение"/>
+                        </header>
+                    </Column>
+
+
+                    <Column minScreenWidth="Tablet"
+                            demandPopin="true">
+                        <header>
+                            <Text text="Индивидуальная карта"/>
+                        </header>
+                    </Column>
+
+                    <Column>
+                        <header>
+                            <Text text="Годен на дату"/>
+                        </header>
+                    </Column>
+                </columns>
+
+                <ColumnListItem>
+                    <cells>
+                        <ObjectIdentifier
+                                title="{wb>Pernr}"
+                                text="{wb>Bukrs}"/>
+
+                        <Text text="{wb>Fio}"/>
+
+                        <Text text="{wb>Stcd3}"/>
+
+                        <ObjectIdentifier title="{wb>Post}" text="{wb>Podr}"/>
+
+                        <Text text="{wb>Barcode}"/>
+
+                        <Text text="{ path: 'wb>ValidDate', formatter: '.owner.toLocaleDate' }"/>
+                    </cells>
+                </ColumnListItem>
+            </Table>
+        </content>
+
+        <beginButton>
+            <Button text="Отмена" press="onDriverCloseDialog"/>
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>
