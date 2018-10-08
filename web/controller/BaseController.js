@@ -35,7 +35,7 @@ sap.ui.define([
         },
 
         // Create new with And
-        andFilter: function (mainFilter, addFilter) {
+        makeAndFilter: function (mainFilter, addFilter) {
             if (addFilter)
                 return new Filter({
                     filters: [mainFilter, addFilter],
@@ -69,7 +69,7 @@ sap.ui.define([
             var werksFilter = new Filter({filters: filters, and: false});
 
             // Return filter
-            params.ok.call(this, this.andFilter(werksFilter, params.and));
+            params.ok.call(this, this.makeAndFilter(werksFilter, params.and));
         },
 
 
@@ -106,7 +106,7 @@ sap.ui.define([
             var bukrsFilter = new Filter({filters: filters, and: false});
 
             // Return filter
-            params.ok.call(this, this.andFilter(bukrsFilter, params.and));
+            params.ok.call(this, this.makeAndFilter(bukrsFilter, params.and));
         },
 
         getRouter: function () {

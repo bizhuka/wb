@@ -15,7 +15,7 @@ sap.ui.define([
                 this.owner = owner;
             },
 
-            driverOpenDialog(params) {
+            driverOpenDialog: function (params) {
                 var _this = this;
                 _this.params = params;
 
@@ -77,7 +77,7 @@ sap.ui.define([
                     this.driverDialog.close();
             },
 
-            onDriverAfterClose:function(oEvent){
+            onDriverAfterClose: function (oEvent) {
                 this.driverDialog.destroy();
                 this.driverDialog = null;
             },
@@ -104,7 +104,7 @@ sap.ui.define([
                 // Do not read user permissions
                 if (bukrs) {
                     callback.call(_this.owner,
-                        _this.owner.andFilter(new Filter("Bukrs", FilterOperator.EQ, bukrs), andFilter));
+                        _this.owner.makeAndFilter(new Filter("Bukrs", FilterOperator.EQ, bukrs), andFilter));
                     return;
                 }
 

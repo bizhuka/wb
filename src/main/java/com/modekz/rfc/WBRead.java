@@ -42,6 +42,9 @@ public class WBRead {
     @Parameter("GAS_TYPE")
     public List<GasType> gasTypeList;
 
+    @Table
+    @Parameter("LGORT")
+    public List<Lgort> lgortList;
 
     public WBRead(String method, String where) {
         this.method = method;

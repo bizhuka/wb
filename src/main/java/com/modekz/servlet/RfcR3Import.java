@@ -315,6 +315,24 @@ public class RfcR3Import extends ServletBase {
         };
     }
 
+    @SuppressWarnings("unused")
+    public R3Clause getR3ClauseLGORT(Login login, EntityManager em) {
+        return new R3Clause(
+                "SELECT l FROM Lgort l",
+                Lgort.class,
+                new String[]{"Werks", "Lgort"},
+                null,
+                null) {
+
+            @Override
+            String getKey(Object object) {
+                Lgort lgort = (Lgort) object;
+
+                return lgort.Werks + lgort.Lgort;
+            }
+        };
+    }
+
     private String getWerksR3Clause(String werksList) {
         String[] arrWerks = werksList.split(";");
         StringBuilder result = new StringBuilder(" IN (");

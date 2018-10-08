@@ -58,6 +58,9 @@ public class MeasureDoc {
 
         @Parameter("MENGE")
         public BigDecimal menge;
+
+        @Parameter("LGORT")
+        public String lgort;
     }
 
     @BapiStructure

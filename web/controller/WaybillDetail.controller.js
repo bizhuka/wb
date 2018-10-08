@@ -9,8 +9,9 @@ sap.ui.define([
     'com/modekzWaybill/controller/LibDriver',
     'com/modekzWaybill/controller/LibReqs',
     'com/modekzWaybill/controller/LibMessage',
-    'com/modekzWaybill/controller/LibChangeStatus'
-], function (BaseController, JSONModel, UIComponent, Filter, FilterOperator, MessageBox, MessageToast, LibDriver, LibReqs, LibMessage, LibChangeStatus) {
+    'com/modekzWaybill/controller/LibChangeStatus',
+    'com/modekzWaybill/controller/LibLgort'
+], function (BaseController, JSONModel, UIComponent, Filter, FilterOperator, MessageBox, MessageToast, LibDriver, LibReqs, LibMessage, LibChangeStatus, LibLgort) {
     "use strict";
 
     var waybillId, bindingObject;
@@ -101,7 +102,8 @@ sap.ui.define([
                     GasGive: 0,
                     GasGiven: 0,
                     GasSpent: 0,
-                    GasAfter: 0
+                    GasAfter: 0,
+                    GasLgort: ""
                 });
             var fuelModel = new JSONModel(fuel);
             _this.setModel(fuelModel, "fuel");
@@ -368,7 +370,7 @@ sap.ui.define([
             });
         },
 
-        handle_dr_f4: function (oEvent) {
+        handle_dr_f4: function () {
             var _this = this;
             this.libDriver.driverOpenDialog({
                 bindPath: "wb>/VDrivers",
@@ -379,6 +381,30 @@ sap.ui.define([
 
                 confirmMethod: function (oEvent) {
                     _this.handle_dr_f4Selected(oEvent)
+                }
+            });
+        },
+
+        handle_lgort_f4: function (oEvent) {
+            var _this = this;
+            var libLgort = new LibLgort(_this);
+            var input = oEvent.getSource();
+            var context = input.getBindingContext("fuel");
+
+            libLgort.lgortOpenDialog({
+                lgort: input.getValue(),
+                werks: bindingObject.Werks,
+
+                confirmLgort: function (evt) {
+                    // input.setValue();
+                    var obj = context.getObject();
+                    obj.GasLgort = evt.getParameter("listItem").getBindingContext("wb").getObject().Lgort;
+                    _this.getModel("fuel").setProperty(context.getPath(), obj);
+
+                    // Save to DB
+                    _this.onFuelChanged({
+                        skipMessage: true
+                    });
                 }
             });
         },
@@ -522,7 +548,8 @@ sap.ui.define([
                         if (fuelRows[i].GasMatnr)
                             spents.push({
                                 matnr: fuelRows[i].GasMatnr,
-                                menge: fuelRows[i].GasSpent
+                                menge: fuelRows[i].GasSpent,
+                                lgort: fuelRows[i].GasLgort
                             });
 
                     button.setEnabled(false);
@@ -639,12 +666,19 @@ sap.ui.define([
                 if (!row.GasMatnr || oEvent.skipSave)
                     continue;
 
+                // Check Lgort
+                if (!data[i].GasLgort && !oEvent.skipMessage) {
+                    MessageToast.show("Не указан склад. Позиция №" + (i + 1));
+                    return false;
+                }
+
                 // Only this fields
                 var updFields = {
                     GasMatnr: row.GasMatnr,
                     GasBefore: row.GasBefore,
                     GasGive: row.GasGive,
-                    GasGiven: row.GasGiven
+                    GasGiven: row.GasGiven,
+                    GasLgort: row.GasLgort
                 };
 
                 oWbModel.update(_this.getGasSpentPath(i), updFields, {

@@ -27,6 +27,9 @@ public class GasSpent {
     @Column
     public double GasGiven;
 
+    @Column(length = 4)
+    public String GasLgort;
+
     public long getWaybill_Id() {
         return Waybill_Id;
     }
@@ -73,5 +76,13 @@ public class GasSpent {
 
     public void setGasGiven(double GasGiven) {
         this.GasGiven = GasGiven;
+    }
+
+    public String getGasLgort() {
+        return GasLgort;
+    }
+
+    public void setGasLgort(String gasLgort) {
+        GasLgort = gasLgort;
     }
 }

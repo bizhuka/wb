@@ -124,9 +124,11 @@
                                             <Input id="id_driver_input"
                                                    type="Number"
                                                    value="{ path: 'wb>Pernr', formatter: '.alphaOut' }"
-                                                   showSuggestion="true"
+
                                                    showValueHelp="true"
                                                    valueHelpRequest="handle_dr_f4"
+
+                                                   showSuggestion="true"
                                                    suggestionItems="{wb>/VDrivers}"
                                                    suggestionItemSelected="handle_dr_f4Selected"
                                                    startSuggestion="3">
@@ -214,7 +216,7 @@
                                                     </Column>
                                                     <Column>
                                                         <header>
-                                                            <Label text="Остаток выезд" tooltip="Остаток выезд"/>
+                                                            <Label text="Остаток выезд" tooltip="Остаток в баке при выезде"/>
                                                         </header>
                                                     </Column>
                                                     <Column>
@@ -222,19 +224,24 @@
                                                             <Label text="Выдать"/>
                                                         </header>
                                                     </Column>
-                                                    <Column>
+                                                    <Column width="5rem">
                                                         <header>
-                                                            <Label text="По факту"/>
+                                                            <Label text="Со склада"/>
                                                         </header>
                                                     </Column>
                                                     <Column>
                                                         <header>
-                                                            <Label text="Потрачено"/>
+                                                            <Label text="По факту" tooltip="По факту выдано топлива"/>
                                                         </header>
                                                     </Column>
                                                     <Column>
                                                         <header>
-                                                            <Label text="Остаток заезд" tooltip="Остаток заезд"/>
+                                                            <Label text="Потрачено" tooltip="Потрачено"/>
+                                                        </header>
+                                                    </Column>
+                                                    <Column>
+                                                        <header>
+                                                            <Label text="Остаток заезд" tooltip="Остаток в баке при заезде"/>
                                                         </header>
                                                     </Column>
                                                 </columns>
@@ -255,6 +262,15 @@
                                                                enabled="{= ${wb>Status}===${status>/AGREED}&amp;&amp;${fuel>GasMatnr}.length>0}"
                                                                liveChange="onFuelChanged"
                                                                valueLiveUpdate="true"/>
+
+                                                        <Input type="Text" value="{fuel>GasLgort}"
+                                                               enabled="{= (${wb>Status}===${status>/AGREED} || ${wb>Status}===${status>/ARRIVED})&amp;&amp;${fuel>GasMatnr}.length>0}"
+                                                               liveChange="onFuelChanged"
+                                                               valueLiveUpdate="true"
+
+                                                               showValueHelp="true"
+                                                               valueHelpRequest="handle_lgort_f4"/>
+
                                                         <Input type="Number" value="{fuel>GasGiven}"
                                                                enabled="{= ${wb>Status}===${status>/ARRIVED}&amp;&amp;${fuel>GasMatnr}.length>0}"
                                                                liveChange="onFuelChanged"
