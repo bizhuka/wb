@@ -54,7 +54,6 @@ public class ServletBase extends HttpServlet {
         response.setContentType(contentType);
         response.setContentLength(data.length);
 
-
         // Show in place or as file
         if (fileName != null && !fileName.equals(""))
             response.setHeader("Content-Disposition", "attachment; filename=\"" +
