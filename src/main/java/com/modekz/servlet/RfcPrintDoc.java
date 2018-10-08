@@ -117,7 +117,7 @@ public class RfcPrintDoc extends ServletBase {
         try (Session session = ODataServiceFactory.getRfcSession().openSession()) {
             session.execute(printDoc);
 
-            sendFile(response, printDoc.data, printDoc.contentType, "Путевой_лист_№" + waybillId + ".docx");
+            sendFile(response, printDoc.data, printDoc.contentType, "Путевой_лист_№_" + waybillId + ".docx");
         }
     }
 }
