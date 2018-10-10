@@ -27,6 +27,7 @@
                                   items="{path: '/'}">
                             <core:Item key="{key}" text="{text}"/>
                         </ComboBox>
+                        <CheckBox id="id_by_too_checkbox" text="Подрядным способом" select="handleSelection"/>
                         <SearchField id="id_wb_search_field" placeholder="Поиск путевого листа" search="handleSelection"
                                      showRefreshButton="false" width="17.5rem"/>
                         <!--text="{i18n>home.sort}"-->
@@ -75,7 +76,8 @@
                                     { path: 'wb>Sch_Cnt' },
                                     { path: 'wb>Hist_Cnt' },
                                     { path: 'wb>Gas_Cnt' },
-                                    { path: 'wb>DelayReason' }
+                                    { path: 'wb>DelayReason' },
+                                    { path: 'wb>TooName' }
                                 ], formatter: '.rowHighlight' }">
                     <cells>
                         <ObjectIdentifier title="{wb>Id} - ({wb>Werks})" tooltip="{ parts:[
@@ -84,7 +86,8 @@
                                     { path: 'wb>Sch_Cnt' },
                                     { path: 'wb>Hist_Cnt' },
                                     { path: 'wb>Gas_Cnt' },
-                                    { path: 'wb>DelayReason' }
+                                    { path: 'wb>DelayReason' },
+                                    { path: 'wb>TooName' }
                                 ], formatter: '.errorDesc' }"/>
                         <ObjectIdentifier title="{wb>Fio}" text="{wb>Eqktx}"
                                           tooltip="Единица оборудования { path: 'wb>Equnr', formatter: '.alphaOut' }"/>

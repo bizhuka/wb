@@ -3,12 +3,13 @@ sap.ui.define([
     'sap/m/MessageToast',
     'sap/m/Label',
     'sap/m/MessageBox',
+    'sap/ui/core/MessageType',
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator',
     'sap/ui/core/UIComponent',
     'com/modekzWaybill/controller/LibReqs',
     'com/modekzWaybill/controller/LibChangeStatus'
-], function (BaseController, MessageToast, Label, MessageBox, Filter, FilterOperator, UIComponent, LibReqs, LibChangeStatus) {
+], function (BaseController, MessageToast, Label, MessageBox, MessageType, Filter, FilterOperator, UIComponent, LibReqs, LibChangeStatus) {
     "use strict";
 
     var C_FIX_COLUMN = 2;
@@ -267,7 +268,14 @@ sap.ui.define([
 
             // template: this.byId ?
             var oTemplate = new sap.m.ColumnListItem({
-                cells: arrCells
+                cells: arrCells,
+                highlight: {
+                    parts: [{path: 'wb>TooName'}],
+
+                    formatter: function (tooName) {
+                        return tooName !== '-' ? MessageType.Information : MessageType.None;
+                    }
+                }
             });
 
             this.tbSchedule.bindItems({
@@ -360,6 +368,26 @@ sap.ui.define([
             this.onUpdateStartedSchedule();
         },
 
+        onEquipSelected: function () {
+            var createButton = this.byId('id_wb_create_button');
+            var eoItem = this.tbSchedule.getSelectedItem();
+            if (!eoItem) {
+                createButton.setVisible(false);
+                return;
+            }
+            createButton.setVisible(true);
+
+            // Change appearance
+            eoItem = eoItem.getBindingContext("wb").getObject();
+            if (eoItem.TooName !== '-') {
+                createButton.setIcon(sap.ui.core.IconPool.getIconURI("sap-icon://request"));
+                createButton.setText("Создать заявку подрядчика");
+            } else {
+                createButton.setIcon(sap.ui.core.IconPool.getIconURI("sap-icon://create-form"));
+                createButton.setText("Создать путевой лист");
+            }
+        },
+
         checkEoFilter: function () {
             if (!eoFilterInfo.classFilter || eoFilterInfo.classFilter.aFilters.length <= 1)
                 return true;
@@ -449,7 +477,7 @@ sap.ui.define([
             var createWbDialog = new LibChangeStatus(_this);
             createWbDialog.openDialog({
                 origin: 'WB',
-                title: 'Создать путевой лист',
+                title: _this.byId('id_wb_create_button').getText(),
                 ok_text: 'Создать',
                 text: '',
                 fromDate: oWaybill.FromDate,
@@ -483,7 +511,7 @@ sap.ui.define([
                 success: function () {
                     oWbModel.create('/Waybills', oWaybill, {
                         success: function (ret) {
-                            MessageToast.show("Создан путевой лист №" + ret.Id);
+                            MessageToast.show("Создан запись №" + ret.Id);
                             oWbModel.refresh();
 
                             // Update TORO header request

@@ -2,50 +2,30 @@
         controllerName="com.modekzWaybill.controller.ImportR3"
         xmlns:l="sap.ui.layout"
         xmlns:mvc="sap.ui.core.mvc"
-        xmlns="sap.m"
-        xmlns:f="sap.ui.layout.form"
-        xmlns:u="sap.ui.unified">
+        xmlns="sap.m">
     <l:VerticalLayout
             class="sapUiContentPadding"
             width="100%">
         <l:content>
             <Link
-                    text="Завод - БЕ"
+                    text="Завод - БЕ (Sap)"
                     press="importWerks"/>
 
             <Link
-                    text="Вид топлива"
+                    text="Вид топлива (Sap)"
                     press="importGasType"/>
 
             <Link
-                    text="Загрузить объекты Wialon"
+                    text="Датчики (Wialon)"
                     press="loadWlnVehicle"/>
 
-            <f:Form editable="false">
-                <f:layout>
-                    <f:ResponsiveGridLayout
-                            singleContainerFullSize="false"/>
-                </f:layout>
+            <Link
+                    text="Мед карты водителей (Текстовый файл)"
+                    press="uploadDriverMedCards"/>
 
-                <f:formContainers>
-                    <f:FormContainer title="Карта водителей">
-                        <f:formElements>
-                            <f:FormElement label="XML файл">
-                                <f:fields>
-                                    <VBox>
-                                        <u:FileUploader id="id_driver_uploader"
-                                                        uploadUrl="./driverIdUpload"
-                                                        tooltip="Загрузка Id карт по ИИН"
-                                                        uploadComplete="onUploadDriverComplete"/>
-                                        <Button text="Импорт"
-                                                press="onUploadDriverPress"/>
-                                    </VBox>
-                                </f:fields>
-                            </f:FormElement>
-                        </f:formElements>
-                    </f:FormContainer>
-                </f:formContainers>
-            </f:Form>
+            <Link
+                    text="ТС подрядчика (Текстовый файл)"
+                    press="uploadEquipment"/>
         </l:content>
     </l:VerticalLayout>
 </mvc:View>

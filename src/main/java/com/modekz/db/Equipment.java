@@ -2,6 +2,7 @@ package com.modekz.db;
 
 import org.hibersap.annotations.Parameter;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -113,6 +114,9 @@ public class Equipment {
     @Column(columnDefinition = "NVARCHAR(20)")
     @Parameter("EQUI_TYPBZ")
     public String Typbz;
+
+    @Column(columnDefinition = "NVARCHAR(50)")
+    public String TooName = "-";
 
     public String getBaujj() {
         return Baujj;
@@ -320,5 +324,13 @@ public class Equipment {
 
     public void setWialonId(String wialonId) {
         WialonId = wialonId;
+    }
+
+    public String getTooName() {
+        return TooName;
+    }
+
+    public void setTooName(String tooName) {
+        TooName = tooName;
     }
 }

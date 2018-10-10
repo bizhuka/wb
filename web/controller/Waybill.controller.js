@@ -41,13 +41,15 @@ sap.ui.define([
 
             var textFilter = wbSearchField.getValue();
             var comboFilter = wbStatusCombo.getSelectedKey();
+            var byToo = this.byId('id_by_too_checkbox').getSelected();
 
             // Called twice
-            if (prevFilt && prevFilt.text === textFilter && prevFilt.combo === comboFilter)
+            if (prevFilt && prevFilt.text === textFilter && prevFilt.combo === comboFilter && prevFilt.byToo === byToo)
                 return;
             prevFilt = {
                 text: textFilter,
-                combo: comboFilter
+                combo: comboFilter,
+                byToo: byToo
             };
 
             if (textFilter && textFilter.length > 0) {
@@ -57,6 +59,7 @@ sap.ui.define([
                     new Filter("Driver", FilterOperator.Contains, textFilter),
                     new Filter("Equnr", FilterOperator.Contains, textFilter),
                     new Filter("Eqktx", FilterOperator.Contains, textFilter),
+                    new Filter("TooName", FilterOperator.Contains, textFilter),
                     new Filter("License_num", FilterOperator.Contains, textFilter)
                 ];
                 if (!isNaN(textFilter))
@@ -71,6 +74,9 @@ sap.ui.define([
 
             if (comboFilter.length !== 0)
                 oFilter.push(new Filter("Status", FilterOperator.EQ, comboFilter));
+
+            if(byToo)
+                oFilter.push(new Filter("TooName", FilterOperator.NE, '-'));
 
             var andFilter = oFilter.length > 0 ? new Filter({filters: oFilter, and: true}) : null;
 
@@ -113,7 +119,7 @@ sap.ui.define([
             this.onUpdateStartedTable();
         },
 
-        getWaybillInfo: function (status, reqCnt, schCnt, histCnt, gasCnt, delayReason) {
+        getWaybillInfo: function (status, reqCnt, schCnt, histCnt, gasCnt, delayReason, tooName) {
             var result = {
                 status: parseInt(status),
                 reqCnt: parseInt(reqCnt),
@@ -121,6 +127,7 @@ sap.ui.define([
                 histCnt: parseInt(histCnt),
                 gasCnt: parseInt(gasCnt),
                 delayReason: parseInt(delayReason),
+                tooName: tooName,
                 errors: [],
                 info: []
             };
@@ -154,12 +161,14 @@ sap.ui.define([
 
             if (result.delayReason > 0)
                 result.info.push("Причина смещения сроков " + this.getDelayReasonText(result.delayReason));
+            if (result.tooName !== '-')
+                result.info.push("Подрядчик " + result.tooName);
 
             return result;
         },
 
-        errorDesc: function (status, reqCnt, schCnt, histCnt, gasCnt, delayReason) {
-            var wbInfo = this.getWaybillInfo(status, reqCnt, schCnt, histCnt, gasCnt, delayReason);
+        errorDesc: function (status, reqCnt, schCnt, histCnt, gasCnt, delayReason, tooName) {
+            var wbInfo = this.getWaybillInfo(status, reqCnt, schCnt, histCnt, gasCnt, delayReason, tooName);
 
             // Join together
             var message = wbInfo.errors.concat(wbInfo.info);
@@ -167,8 +176,8 @@ sap.ui.define([
             return message.length === 0 ? "" : message.join("\n");
         },
 
-        rowHighlight: function (status, reqCnt, schCnt, histCnt, gasCnt, delayReason) {
-            var wbInfo = this.getWaybillInfo(status, reqCnt, schCnt, histCnt, gasCnt, delayReason);
+        rowHighlight: function (status, reqCnt, schCnt, histCnt, gasCnt, delayReason, tooName) {
+            var wbInfo = this.getWaybillInfo(status, reqCnt, schCnt, histCnt, gasCnt, delayReason, tooName);
 
             if (wbInfo.errors.length > 0)
                 return MessageType.Error;

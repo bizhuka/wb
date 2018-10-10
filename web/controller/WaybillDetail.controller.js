@@ -89,6 +89,12 @@ sap.ui.define([
                 _this.libDriver.filterDrivers("", bindingObject.Bukrs, function (okFilter) {
                     driverInput.getBinding("suggestionItems").filter(okFilter)
                 });
+
+                // Hide or show tabs
+                var visible = bindingObject.TooName === '-';
+                this.byId('id_dr_tab').setVisible(visible);
+                this.byId('id_close_tab').setVisible(visible);
+                this.byId('id_date_tab').setVisible(visible);
             });
 
             // set fuel
@@ -212,7 +218,7 @@ sap.ui.define([
                     }
 
                     // Show available buttons
-                    if (stat)
+                    if (stat && bindingObject.TooName === '-')
                         for (i = 0; i < stat.ids.length; i++)
                             _this.byId(stat.ids[i]).setVisible(true);
 

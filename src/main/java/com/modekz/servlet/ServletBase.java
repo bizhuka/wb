@@ -2,6 +2,11 @@ package com.modekz.servlet;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -62,6 +67,21 @@ public class ServletBase extends HttpServlet {
         OutputStream os = response.getOutputStream();
         os.write(data, 0, data.length);
         os.close();
+    }
+
+    String getUploadedFile(HttpServletRequest request) throws IOException, FileUploadException {
+        ServletFileUpload upload = new ServletFileUpload();
+        FileItemIterator iterator = upload.getItemIterator(request);
+        while (iterator.hasNext()) {
+            FileItemStream item = iterator.next();
+            String name = item.getFieldName();
+            if (!name.endsWith("id_csv_uploader"))
+                continue;
+
+            return IOUtils.toString(item.openStream(), "UTF-8");
+        }
+
+        return null;
     }
 
     String camelCase(String in) {

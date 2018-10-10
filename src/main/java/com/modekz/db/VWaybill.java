@@ -101,6 +101,9 @@ public class VWaybill {
     @Column(length = 1)
     public String Mptyp;
 
+    @Column(columnDefinition = "NVARCHAR(50)")
+    public String TooName = "-";
+
     public long getId() {
         return id;
     }
@@ -325,5 +328,13 @@ public class VWaybill {
 
     public void setDelayReason(int delayReason) {
         this.delayReason = delayReason;
+    }
+
+    public String getTooName() {
+        return TooName;
+    }
+
+    public void setTooName(String tooName) {
+        TooName = tooName;
     }
 }

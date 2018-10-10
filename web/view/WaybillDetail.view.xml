@@ -7,8 +7,7 @@
         xmlns="sap.m">
 
     <semantic:DetailPage title="Путевой лист" showNavButton="true" navButtonPress="onNavBack">
-        <ObjectHeader id="id_detail_header"
-                      title="{wb>Id} - ({wb>Werks})"
+        <ObjectHeader title="{wb>Id} - ({wb>Werks})"
                       number="{wb>Description}"
                       numberUnit="{ parts:[ { path: 'wb>Status' }, { path: 'wb>Id' } ], formatter: '.getStatusText' }"
                       icon="sap-icon://bar-code">
@@ -22,6 +21,12 @@
                         title="Причина смещения сроков"
                         text="{ path: 'wb>DelayReason', formatter: '.getDelayReasonText'}"
                         visible="{= ${wb>DelayReason}!==0}"
+                        state="Warning"/>
+
+                <ObjectStatus
+                        title="Подрядчик"
+                        text="{wb>TooName}"
+                        visible="{= ${wb>TooName}!=='-'}"
                         state="Warning"/>
             </statuses>
         </ObjectHeader>
@@ -310,7 +315,7 @@
                     </f:Form>
                 </IconTabFilter>
 
-                <IconTabFilter icon="sap-icon://calendar" tooltip="Даты">
+                <IconTabFilter id="id_date_tab" icon="sap-icon://calendar" tooltip="Даты">
                     <OverflowToolbar design="Transparent">
                         <Title text="Даты"/>
                         <ToolbarSpacer/>
