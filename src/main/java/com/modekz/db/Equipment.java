@@ -2,10 +2,7 @@ package com.modekz.db;
 
 import org.hibersap.annotations.Parameter;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -117,6 +114,20 @@ public class Equipment {
 
     @Column(columnDefinition = "NVARCHAR(50)")
     public String TooName = "-";
+
+    @Column(columnDefinition = "DATE")
+    public Date NoDriverDate;
+
+    @PrePersist
+    @PreUpdate
+    public void persist() {
+        if (NoDriverDate == null)
+            return;
+
+        // Set current date
+        if (NoDriverDate.getTime() == 1)
+            this.setNoDriverDate(new Date());
+    }
 
     public String getBaujj() {
         return Baujj;
@@ -332,5 +343,13 @@ public class Equipment {
 
     public void setTooName(String tooName) {
         TooName = tooName;
+    }
+
+    public Date getNoDriverDate() {
+        return NoDriverDate;
+    }
+
+    public void setNoDriverDate(Date noDriverDate) {
+        NoDriverDate = noDriverDate;
     }
 }

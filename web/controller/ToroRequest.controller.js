@@ -81,7 +81,38 @@ sap.ui.define([
         },
 
         onReqStateChange: function (oEvent) {
-            this.getModel("ui").setProperty("/showOptColumn", oEvent.getParameter("layout") !== "TwoColumnsMidExpanded");
+            // Show additional columns if have enough space
+            var reqLayout = oEvent ? oEvent.getParameter("layout") : this.getModel("appView").getProperty("/reqLayout");
+            this.getModel("ui").setProperty("/showOptColumn", reqLayout === "TwoColumnsBeginExpanded" || reqLayout === "OneColumn");
+        },
+
+        setReqLayout: function (newLayout) {
+            var appViewModel = this.getModel("appView");
+            var curLayout = appViewModel.getProperty("/reqLayout");
+
+            if (curLayout.indexOf('Expanded') > 0)
+                this.prevReqLayout = curLayout;
+
+            if (newLayout === undefined)
+                newLayout = this.prevReqLayout;
+
+            if (!newLayout)
+                newLayout = "TwoColumnsMidExpanded";
+
+            appViewModel.setProperty("/reqLayout", newLayout);
+            this.onReqStateChange();
+        },
+
+        navOneColumn: function () {
+            this.setReqLayout("OneColumn");
+        },
+
+        navMidColumnFullScreen: function () {
+            this.setReqLayout("MidColumnFullScreen");
+        },
+
+        navBackLayout: function () {
+            this.setReqLayout();
         },
 
         readSchedule: function () {
@@ -202,14 +233,8 @@ sap.ui.define([
         },
 
         onEoUpdate: function () {
-            this.updateDbFrom({
-                link: "/r3/EQUIPMENT?_persist=true",
-
-                title: "Единицы оборудования (ТС)",
-
-                afterUpdate: function () {
-                    this.tbSchedule.getBinding("items").refresh();
-                }
+            this.eoUpdate(function () {
+                this.tbSchedule.getBinding("items").refresh();
             });
         },
 
@@ -270,9 +295,12 @@ sap.ui.define([
             var oTemplate = new sap.m.ColumnListItem({
                 cells: arrCells,
                 highlight: {
-                    parts: [{path: 'wb>TooName'}],
+                    parts: [{path: 'wb>TooName'}, {path: 'wb>NoDriverDate'}],
 
-                    formatter: function (tooName) {
+                    formatter: function (tooName, noDriverDate) {
+                        if (_this.isNoDriver(noDriverDate))
+                            return MessageType.Warning;
+
                         return tooName !== '-' ? MessageType.Information : MessageType.None;
                     }
                 }
@@ -303,6 +331,29 @@ sap.ui.define([
                     _this._onObjectMatched();
                 }
             });
+        },
+
+        eoTooltip: function (equnr, nClass, tooName, noDriverDate) {
+            var result = [];
+            result.push(tooName === '-' ? 'Единица оборудования:' : 'Ид подрядчика:');
+            result.push(this.alphaOut(equnr));
+            result.push('Класс:');
+            result.push(nClass);
+
+            if (this.isNoDriver(noDriverDate))
+                result.push('Водитель отсутсвует на дату: ' + this.toLocaleDate(noDriverDate));
+
+            return result.join("\n");
+        },
+
+        isNoDriver: function (noDriverDate) {
+            if (!this.nowTime) {
+                this.nowTime = new Date();
+                this.nowTime.setHours(0, 0, 0, 0);
+                this.nowTime = this.nowTime.getTime();
+            }
+
+            return noDriverDate && noDriverDate.getTime() === this.nowTime;
         },
 
         onReqListSelectionChange: function (oEvt) {

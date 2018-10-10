@@ -156,7 +156,9 @@ sap.ui.define([
                         new Filter("Pltxt", FilterOperator.Contains, textFilter),
                         new Filter("Ltxa1", FilterOperator.Contains, textFilter),
                         new Filter("Stand", FilterOperator.Contains, textFilter),
-                        new Filter("Priokx", FilterOperator.Contains, textFilter)
+                        new Filter("Priokx", FilterOperator.Contains, textFilter),
+                        new Filter("Ktsch", FilterOperator.Contains, textFilter),
+                        new Filter("KtschTxt", FilterOperator.Contains, textFilter)
                     ];
 
                     if (!isNaN(textFilter))

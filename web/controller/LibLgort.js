@@ -89,17 +89,10 @@ sap.ui.define([
                 }
 
                 // Do not read user permissions
-                // if (werks) {
                 callback.call(_this.owner,
                     _this.owner.makeAndFilter(
                         new Filter("Werks", FilterOperator.EQ, werks),
                         textFilter));
-                // return;
-                // }
-
-                // // Read user permissions
-                // _this.owner.filterItemsByUserWerks({
-                // });
             }
         });
     }

@@ -31,7 +31,7 @@ sap.ui.define([
         },
 
 
-        showFinishedReqs:function(){
+        showFinishedReqs: function () {
             this.doNavTo("finishedReqs");
         },
 
@@ -145,6 +145,98 @@ sap.ui.define([
                 objid: aContexts[0].getObject().Id,
                 contentType: "application/pdf"
             })
+        },
+
+        openAnalytics: function () {
+            window.open('https://erp-service.eu1.sapanalytics.cloud/sap/fpa/ui/tenants/009/app.html#;view_id=story;storyId=78A5EADAC36110C14FED3BA56FF91751', '_blank');
+        },
+
+        showDocumentation: function () {
+            MessageToast.show("Документация в процессе разработки");
+        },
+
+        eoValidation: function () {
+            if (!this.eoDialog)
+                this.eoDialog = this.createFragment("com.modekzWaybill.view.frag.EoDialog");
+
+            this.eoDialog.open();
+        },
+
+        onEoUpdate: function () {
+            this.eoUpdate(function () {
+                this.findById('id_eo_table').getBinding("items").refresh();
+            });
+        },
+
+        onEoCloseDialog: function () {
+            this.eoDialog.close();
+        },
+
+        onEoAfterClose: function () {
+            this.eoDialog.destroy();
+            this.eoDialog = null;
+        },
+
+        eoSearch: function (oEvent) {
+            var _this = this;
+
+            var text = oEvent.getParameter("query");
+            _this.filterEo(text, function (okFilter) {
+                _this.findById('id_eo_table').getBinding("items").filter(okFilter);
+            });
+        },
+
+        filterEo: function (text, callback) {
+            var _this = this;
+
+            var textFilter = null;
+            if (text) {
+                textFilter = new Filter({
+                    filters: [
+                        new Filter("Equnr", FilterOperator.Contains, text),
+                        new Filter("Eqktx", FilterOperator.Contains, text),
+                        new Filter("TooName", FilterOperator.Contains, text),
+                        new Filter("License_num", FilterOperator.Contains, text),
+                        new Filter("N_class", FilterOperator.Contains, text),
+                        new Filter("Eqart", FilterOperator.Contains, text),
+                        new Filter("Typbz", FilterOperator.Contains, text),
+                        new Filter("Imei", FilterOperator.Contains, text),
+                        new Filter("Pltxt", FilterOperator.Contains, text)
+                    ],
+                    and: false
+                });
+            }
+
+            // Read user permissions
+            _this.filterItemsByUserWerks({
+                field: "Swerk",
+
+                and: textFilter,
+
+                ok: function (okFilter) {
+                    callback.call(this, _this.makeAndFilter(okFilter, new Filter("TooName", FilterOperator.NE, '-')));
+                }
+            });
+        },
+
+        setNoDriverDate: function () {
+            var items = this.findById('id_eo_table').getSelectedItems();
+            if (items.length === 0) {
+                MessageToast.show('Выделите записи');
+                return;
+            }
+
+            var oWbModel = this.getModel("wb");
+            var editObj = {
+                NoDriverDate: new Date(1)
+            };
+
+            // Update 1 by one
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i].getBindingContext("wb").getObject();
+                oWbModel.update("/Equipments('" + item.Equnr + "')", editObj);
+            }
+            oWbModel.refresh();
         }
     });
 });

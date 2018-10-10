@@ -4,12 +4,6 @@
     <Dialog afterClose="onLgortAfterClose"
             showHeader="false">
 
-        <!--<StandardListItem-->
-        <!--title="{wb>Lgort}"-->
-        <!--description="{wb>Lgobe}"-->
-        <!--type="Active"-->
-        <!--info="{wb>Werks}"/>-->
-
         <customHeader design="Header">
             <Bar>
                 <contentMiddle>

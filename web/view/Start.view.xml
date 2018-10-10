@@ -1,86 +1,125 @@
 <mvc:View xmlns="sap.m"
           xmlns:mvc="sap.ui.core.mvc"
           xmlns:semantic="sap.m.semantic"
-
+          xmlns:layout="sap.ui.layout"
           controllerName="com.modekzWaybill.controller.Start">
 
     <semantic:FullscreenPage id="start" title="{i18n>title}">
         <semantic:content>
-            <!--<TileContainer tiles="{main>/tiles}">-->
-            <!--	<StandardTile icon="{main>icon}" type="{main>type}" number="{main>number}" numberUnit="{main>numberUnit}" title="{main>title}" info="{main>info}" infoState="{main>infoState}"/>-->
-            <!--</TileContainer>-->
 
-            <!--<GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"-->
-            <!--header="Руводство пользователя"-->
-            <!--subheader="PDF документ">-->
-            <!--<TileContent unit="" footer="Транспортная служба">-->
-            <!--<ImageContent src="sap-icon://hint"/>-->
-            <!--</TileContent>-->
-            <!--</GenericTile>-->
+            <layout:VerticalLayout class="sapUiResponsiveMargin">
 
-            <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                         header="Загрузка справочников"
-                         press="importR3Tables">
+                <Title
+                        titleStyle="H3"
+                        text="Заявки и путевые листы"
+                        class="sapUiTinyMarginBegin"/>
+                <layout:HorizontalLayout allowWrapping="true">
 
-                <TileContent unit="" footer="">
-                    <ImageContent src="sap-icon://synchronize"/>
-                </TileContent>
-            </GenericTile>
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="Заявки TORO"
+                                 subheader="Количество"
+                                 press="showToroRequest">
 
-            <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                         header="Шаблоны путевых листов"
-                         press="showPdfTemplates">
+                        <TileContent unit="Транспортная служба">
+                            <NumericContent scale="" value="4" valueColor="Error"/>
+                        </TileContent>
+                    </GenericTile>
 
-                <TileContent unit="" footer="Бланки">
-                    <ImageContent src="sap-icon://pdf-attachment"/>
-                </TileContent>
-            </GenericTile>
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="Обработанные заявки"
+                                 press="showFinishedReqs">
+
+                        <TileContent unit="" footer="">
+                            <ImageContent src="sap-icon://activity-2"/>
+                        </TileContent>
+                    </GenericTile>
 
 
-            <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                         header="Медосмотр"
-                         press="setDriverValidDate">
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="Путевые листы"
+                                 subheader="Количество"
+                                 press="showWayill">
 
-                <TileContent unit="" footer="">
-                    <ImageContent src="sap-icon://syringe"/>
-                </TileContent>
-            </GenericTile>
+                        <TileContent unit="Диспетчер НГДУ">
+                            <NumericContent scale="" value="2" valueColor="Warning" icon="sap-icon://shipping-status"/>
+                        </TileContent>
+                    </GenericTile>
+                </layout:HorizontalLayout>
+
+                <Title
+                        titleStyle="H3"
+                        text="Контроль и осмотр"
+                        class="sapUiTinyMarginBegin sapUiMediumMarginTop"/>
+                <layout:HorizontalLayout allowWrapping="true">
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="Медосмотр"
+                                 press="setDriverValidDate">
+
+                        <TileContent unit="" footer="">
+                            <ImageContent src="sap-icon://syringe"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="Контроль ТС"
+                                 press="eoValidation">
+
+                        <TileContent unit="" footer="">
+                            <ImageContent src="sap-icon://vehicle-repair"/>
+                        </TileContent>
+                    </GenericTile>
+
+                </layout:HorizontalLayout>
 
 
-            <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                         header="Заявки TORO"
-                         subheader="Количество"
-                         press="showToroRequest">
-
-                <TileContent unit="Транспортная служба">
-                    <NumericContent scale="" value="4" valueColor="Error"/>
-                </TileContent>
-            </GenericTile>
-
-            <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                         header="Обработанные заявки"
-                         press="showFinishedReqs">
-
-                <TileContent unit="" footer="">
-                    <ImageContent src="sap-icon://activity-2"/>
-                </TileContent>
-            </GenericTile>
+                <Title
+                        titleStyle="H3"
+                        text="Прочее"
+                        class="sapUiTinyMarginBegin sapUiMediumMarginTop"/>
+                <layout:HorizontalLayout allowWrapping="true">
 
 
-            <GenericTile class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                         header="Путевые листы"
-                         subheader="Количество"
-                         press="showWayill">
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="Analytics Cloud"
+                                 subheader=""
+                                 press="openAnalytics">
+                        <TileContent unit="" footer="">
+                            <ImageContent src="sap-icon://kpi-corporate-performance"/>
+                        </TileContent>
+                    </GenericTile>
 
-                <TileContent unit="Диспетчер НГДУ">
-                    <NumericContent scale="" value="2" valueColor="Warning" icon="sap-icon://shipping-status"/>
-                </TileContent>
-            </GenericTile>
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="Загрузка справочников"
+                                 press="importR3Tables">
+
+                        <TileContent unit="" footer="">
+                            <ImageContent src="sap-icon://synchronize"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="Шаблоны путевых листов"
+                                 press="showPdfTemplates">
+
+                        <TileContent unit="" footer="Бланки">
+                            <ImageContent src="sap-icon://pdf-attachment"/>
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile class="sapUiTinyMarginBegin tileLayout"
+                                 header="Руводство пользователя"
+                                 subheader="PDF документ"
+                                 press="showDocumentation">
+                        <TileContent unit="" footer="Транспортная служба">
+                            <ImageContent src="sap-icon://hint"/>
+                        </TileContent>
+                    </GenericTile>
+                </layout:HorizontalLayout>
+
+            </layout:VerticalLayout>
+
         </semantic:content>
-
-        <!--<semantic:sendEmailAction>-->
-        <!--	<semantic:SendEmailAction id="shareEmail" press="onShareEmailPress"/>-->
-        <!--</semantic:sendEmailAction>-->
 
     </semantic:FullscreenPage>
 

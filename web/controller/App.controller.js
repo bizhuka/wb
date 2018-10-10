@@ -13,7 +13,7 @@ sap.ui.define([
                 busy: true,
                 delay: 0,
                 appWidthLimited: false,
-                layout: "OneColumn",
+                reqLayout: "TwoColumnsMidExpanded",
                 previousLayout: "",
                 actionButtonsInfo: {
                     midColumn: {

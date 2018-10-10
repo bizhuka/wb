@@ -354,6 +354,19 @@ sap.ui.define([
             });
         },
 
+        eoUpdate: function (callBack) {
+            var _this = this;
+            _this.updateDbFrom({
+                link: "/r3/EQUIPMENT?_persist=true",
+
+                title: "Единицы оборудования (ТС)",
+
+                afterUpdate: function () {
+                    callBack.call(_this);
+                }
+            });
+        },
+
         // Use get :)
         navToPost: function (navParams) {
             var url = navParams.url;

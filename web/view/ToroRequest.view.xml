@@ -8,19 +8,20 @@
           xmlns:t="sap.ui.table">
 
     <!--PS like UI SplitApp-->
-    <flex:FlexibleColumnLayout layout="TwoColumnsMidExpanded" stateChange="onReqStateChange">
+    <flex:FlexibleColumnLayout layout="{appView>/reqLayout}" stateChange="onReqStateChange">
         <!--masterPages-->
         <flex:beginColumnPages>
             <!--reqHeader (left)  part of the screen-->
-            <semantic:MasterPage id="id_reqs_container" title="Заявки TORO" showNavButton="true" navButtonPress="onNavBack">
+            <semantic:MasterPage id="id_reqs_container" title="Заявки TORO" showNavButton="true"
+                                 navButtonPress="onNavBack">
 
                 <!--Search option-->
                 <!--<semantic:subHeader>-->
-                    <!--<Bar>-->
-                        <!--<contentMiddle>-->
-                            <!--<SearchField search="onSearchOption"/>-->
-                        <!--</contentMiddle>-->
-                    <!--</Bar>-->
+                <!--<Bar>-->
+                <!--<contentMiddle>-->
+                <!--<SearchField search="onSearchOption"/>-->
+                <!--</contentMiddle>-->
+                <!--</Bar>-->
                 <!--</semantic:subHeader>-->
 
                 <semantic:customHeaderContent>
@@ -28,6 +29,11 @@
                                            tooltip="Обработанные заявки"/>
                     <OverflowToolbarButton icon="sap-icon://synchronize" press="onReqUpdate"
                                            tooltip="Обновить заявки"/>
+                    <OverflowToolbarButton
+                            icon="sap-icon://exit-full-screen"
+                            press="navBackLayout"
+                            tooltip="Прежний режим окон"
+                            visible="{= ${appView>/reqLayout} === 'OneColumn' }"/>
                 </semantic:customHeaderContent>
 
 
@@ -43,9 +49,28 @@
             <!--Hide footer-->
             <semantic:DetailPage title="Перечень ТС" showFooter="true">
 
+
                 <semantic:customHeaderContent>
                     <OverflowToolbarButton icon="sap-icon://synchronize" press="onEoUpdate"
                                            tooltip="Обновить единицы оборудования"/>
+
+
+                    <OverflowToolbarButton
+                            icon="sap-icon://full-screen"
+                            press="navMidColumnFullScreen"
+                            tooltip="Только ТС"
+                            visible="{= ${appView>/reqLayout} !== 'MidColumnFullScreen' }"/>
+
+                    <OverflowToolbarButton
+                            icon="sap-icon://exit-full-screen"
+                            press="navBackLayout"
+                            tooltip="Прежний режим окон"
+                            visible="{= ${appView>/reqLayout} === 'MidColumnFullScreen' }"/>
+
+                    <OverflowToolbarButton
+                            icon="sap-icon://decline"
+                            press="navOneColumn"
+                            tooltip="Скрыть ТС"/>
                 </semantic:customHeaderContent>
 
                 <semantic:content>
@@ -72,9 +97,10 @@
                 </HBox>
                 <Table id="id_eo_schedule"
                        mode="SingleSelect"
-                       items="{ path: 'wb>/Equipments'}"
+                       items="{wb>/Equipments}"
                        updateStarted="onUpdateStartedSchedule"
                        selectionChange="onEquipSelected">
+                    <!--growing="true" growingScrollToLoad="false"-->
                     <columns>
                         <Column width="5em">
                             <Label text="Гос номер"/>
@@ -87,7 +113,7 @@
                     <ColumnListItem>
                         <cells>
                             <Label text="{wb>License_num}"
-                                   tooltip="Единица оборудования { path: 'wb>Equnr', formatter: '.alphaOut' }&#xA;Класс {wb>N_class}"/>
+                                   tooltip="{ parts:[ { path: 'wb>Equnr' }, { path: 'wb>N_class' }, { path: 'wb>TooName' }, { path: 'wb>NoDriverDate' } ], formatter: '.eoTooltip' }"/>
                         </cells>
 
                         <cells>
