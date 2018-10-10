@@ -214,7 +214,7 @@ sap.ui.define([
                 and: textFilter,
 
                 ok: function (okFilter) {
-                    callback.call(this, _this.makeAndFilter(okFilter, new Filter("TooName", FilterOperator.NE, '-')));
+                    callback.call(this, _this.makeAndFilter(okFilter, new Filter("TooName", FilterOperator.EQ, '-')));
                 }
             });
         },
