@@ -13,7 +13,8 @@
 
                 <contentRight>
                     <Button icon="sap-icon://synchronize" press="onEoUpdate"
-                            tooltip="Обновить единицы оборудования"/>
+                            tooltip="Обновить единицы оборудования"
+                            visible="{= ${userInfo>/WbLoader}===true}"/>
                 </contentRight>
             </Bar>
         </customHeader>
@@ -83,7 +84,7 @@
                     </cells>
 
                     <cells>
-                        <Label text="{ path: 'wb>NoDriverDate', formatter: '.toLocaleDate' }"/>
+                        <Label text="{ path: 'wb>NoDriverDate', formatter: '.toLocaleDateTime' }"/>
                     </cells>
                 </ColumnListItem>
             </Table>

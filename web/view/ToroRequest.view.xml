@@ -26,9 +26,11 @@
 
                 <semantic:customHeaderContent>
                     <OverflowToolbarButton icon="sap-icon://activity-2" press="onNavToFinished"
-                                           tooltip="Обработанные заявки"/>
+                                           tooltip="Обработанные заявки"
+                                           visible="{= ${userInfo>/WBShowFinishedReqs}===true}"/>
                     <OverflowToolbarButton icon="sap-icon://synchronize" press="onReqUpdate"
-                                           tooltip="Обновить заявки"/>
+                                           tooltip="Обновить заявки"
+                                           visible="{= ${userInfo>/WbLoader}===true}"/>
                     <OverflowToolbarButton
                             icon="sap-icon://exit-full-screen"
                             press="navBackLayout"
@@ -52,7 +54,8 @@
 
                 <semantic:customHeaderContent>
                     <OverflowToolbarButton icon="sap-icon://synchronize" press="onEoUpdate"
-                                           tooltip="Обновить единицы оборудования"/>
+                                           tooltip="Обновить единицы оборудования"
+                                           visible="{= ${userInfo>/WbLoader}===true}"/>
 
 
                     <OverflowToolbarButton

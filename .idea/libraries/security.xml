@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="security">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/java-container-security-0.28.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/java-container-security-api-0.28.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/sapjwt.linuxx86_64-1.1.19.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/security-commons-0.28.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

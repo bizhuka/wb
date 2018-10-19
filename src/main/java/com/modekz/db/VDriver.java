@@ -44,7 +44,7 @@ public class VDriver {
     @Column(length = 32)
     public String Barcode;
 
-    @Column(columnDefinition = "DATE")
+    @Column(columnDefinition = "TIMESTAMP")
     public Date ValidDate;
 
     public String getBarcode() {

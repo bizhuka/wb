@@ -10,7 +10,8 @@
                 </contentMiddle>
 
                 <contentRight>
-                    <Button icon="sap-icon://synchronize" tooltip="Обновить список водителей" press="onSyncDrivers"/>
+                    <Button icon="sap-icon://synchronize" tooltip="Обновить список водителей" press="onSyncDrivers"
+                            visible="{= ${userInfo>/WbLoader}===true}"/>
                 </contentRight>
             </Bar>
         </customHeader>
@@ -84,7 +85,7 @@
 
                         <Text text="{wb>Barcode}"/>
 
-                        <Text text="{ path: 'wb>ValidDate', formatter: '.owner.toLocaleDate' }"/>
+                        <Text text="{ path: 'wb>ValidDate', formatter: '.owner.toLocaleDateTime' }"/>
                     </cells>
                 </ColumnListItem>
             </Table>

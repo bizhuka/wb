@@ -15,7 +15,6 @@ sap.ui.define([
 ], function (Controller, LibStatus, History, MessageBox, MessageToast, Filter, FilterOperator, Dialog, TextArea, Label, Button, Device) {
     "use strict";
 
-    var allowedWerks = null;
     var allowedBukrs = null;
     return Controller.extend("com.modekzWaybill.controller.BaseController", {
         status: null,
@@ -45,24 +44,8 @@ sap.ui.define([
         },
 
         filterItemsByUserWerks: function (params) {
-            var _this = this;
+            var allowedWerks = this.getModel("userInfo").getProperty("/werks");
 
-            // Cached werks
-            if (allowedWerks) {
-                _this.doFiltByWerks(params);
-                return;
-            }
-
-            // Slow read
-            _this.getModel("wb").read("/Logins('" + this.getUserId() + "')", {
-                success: function (user) {
-                    allowedWerks = user.WerksList.split(';');
-                    _this.doFiltByWerks(params);
-                }
-            });
-        },
-
-        doFiltByWerks: function (params) {
             var filters = [];
             for (var j = 0; j < allowedWerks.length; j++)
                 filters.push(new Filter(params.field, FilterOperator.EQ, allowedWerks[j]));
@@ -71,7 +54,6 @@ sap.ui.define([
             // Return filter
             params.ok.call(this, this.makeAndFilter(werksFilter, params.and));
         },
-
 
         filterItemsByUserBukrs: function (params) {
             var _this = this;
@@ -263,6 +245,10 @@ sap.ui.define([
         },
 
         onWaybillPress: function (oEvt) {
+            if(!this.getModel("userInfo").getProperty("/WbShowOne")){
+                MessageToast.show("Нет полномочий на просмотр петевого листа");
+                return;
+            }
             var id = isNaN(oEvt) ? oEvt.getSource().getBindingContext("wb").getObject().Waybill_Id : oEvt;
             this.getRouter().navTo("waybillDetail", {waybillId: id});
         },

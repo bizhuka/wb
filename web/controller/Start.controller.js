@@ -151,6 +151,10 @@ sap.ui.define([
             window.open('https://erp-service.eu1.sapanalytics.cloud/sap/fpa/ui/tenants/009/app.html#;view_id=story;storyId=78A5EADAC36110C14FED3BA56FF91751', '_blank');
         },
 
+        showUserInfo: function () {
+            window.open('https://erp-service.accounts.ondemand.com/ui/protected/profilemanagement');
+        },
+
         showDocumentation: function () {
             MessageToast.show("Документация в процессе разработки");
         },

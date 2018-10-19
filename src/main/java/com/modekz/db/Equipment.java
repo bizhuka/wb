@@ -115,7 +115,7 @@ public class Equipment {
     @Column(columnDefinition = "NVARCHAR(50)")
     public String TooName = "-";
 
-    @Column(columnDefinition = "DATE")
+    @Column(columnDefinition = "TIMESTAMP")
     public Date NoDriverDate;
 
     @PrePersist

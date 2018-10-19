@@ -11,7 +11,8 @@
                 </contentMiddle>
 
                 <contentRight>
-                    <Button icon="sap-icon://synchronize" tooltip="Обновить список складов" press="onSyncLgorts"/>
+                    <Button icon="sap-icon://synchronize" tooltip="Обновить список складов" press="onSyncLgorts"
+                            visible="{= ${userInfo>/WbLoader}===true}"/>
                 </contentRight>
             </Bar>
         </customHeader>

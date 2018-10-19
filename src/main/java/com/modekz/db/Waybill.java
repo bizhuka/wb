@@ -104,7 +104,7 @@ public class Waybill {
     }
 
     private void updateSchedule() throws ServletException {
-        if (status != Status.CREATED && status != Status.AGREED &&
+        if (status != Status.CREATED && // status != Status.AGREED &&
                 status != Status.REJECTED &&
                 status != Status.CLOSED)
             return;
@@ -115,7 +115,7 @@ public class Waybill {
             switch (this.status) {
                 // Создание или соглосование
                 case Status.CREATED:
-                case Status.AGREED:
+//                case Status.AGREED:
                     // Modify schedule
                     Date from = this.getFromDate();
                     while (from.before(this.toDate) || from.equals(this.toDate)) {

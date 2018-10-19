@@ -86,13 +86,14 @@
                                 }"
                               tooltip="{wb>Priokx}"
                 />
-                <ObjectIdentifier title="{ path: 'wb>Waybill_Id', formatter: '.waybillOut'}" titleActive="true"
+                <ObjectIdentifier title="{ path: 'wb>Waybill_Id', formatter: '.waybillOut'}"
+                                  titleActive="{= ${userInfo>/WbShowOne}===true}"
                                   titlePress="onWaybillPress"
                                   text="{ parts:[ { path: 'wb>Status' }, { path: 'wb>Waybill_Id' } ], formatter: '.getStatusText' }"
                                   visible="{ui>/showWbColumn}"/>
 
                 <ObjectIdentifier title="{ path: 'wb>StatusReason', formatter: '.getStatusReasonText'}"
-                                  titleActive="true"
+                                  titleActive="{= ${userInfo>/WbCloseReqs}===true}"
                                   titlePress="onStatusReasonPress"
                                   text="{wb>Reason}"/>
 

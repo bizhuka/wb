@@ -42,7 +42,7 @@ public class Driver {
     @Column(length = 32)
     public String Barcode;
 
-    @Column(columnDefinition = "DATE")
+    @Column(columnDefinition = "TIMESTAMP")
     public Date ValidDate;
 
     @PrePersist

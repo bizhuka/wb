@@ -7,7 +7,7 @@ sap.ui.define([
         return BaseObject.extend("com.modekzWaybill.controller.LibStatus", {
             NOT_CREATED: 0,
             CREATED: 10,
-            AGREED: 20,
+            //AGREED: 20,
             REJECTED: 30,
             IN_PROCESS: 40,
             ARRIVED: 50,

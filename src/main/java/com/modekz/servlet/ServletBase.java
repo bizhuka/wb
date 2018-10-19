@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 import java.net.URLEncoder;
 
 public class ServletBase extends HttpServlet {
-    Gson gson;
+    public Gson gson;
 
     void initialize(String pattern) {
         gson = pattern == null ?

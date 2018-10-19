@@ -242,7 +242,7 @@ public class WialonServlet extends ServletBase {
 
                 wlnSpent.OdoDiff += Double.parseDouble(((Element) cols.item(1)).getAttribute("val"));
                 wlnSpent.MotoHour += Double.parseDouble(((Element) cols.item(2)).getAttribute("val"));
-                wlnSpent.GasSpent += Double.parseDouble(((Element) cols.item(3)).getAttribute("val"));
+                wlnSpent.GasSpent += Double.parseDouble(((Element) cols.item(4)).getAttribute("val"));
             }
         } catch (Exception e) {
             e.printStackTrace();

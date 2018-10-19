@@ -3,7 +3,7 @@ package com.modekz.servlet;
 import com.modekz.ODataServiceFactory;
 import com.modekz.db.*;
 import com.modekz.json.DbUpdateInfo;
-import com.modekz.json.Message;
+import com.modekz.json.UserInfo;
 import com.modekz.rfc.WBRead;
 import com.modekz.rfc.WBSetStatus;
 import org.apache.commons.lang.ArrayUtils;
@@ -108,19 +108,16 @@ public class RfcR3Import extends ServletBase {
 
         //String login = request.getParameter("_user");
         R3Clause r3Clause = null;
-        if (request.getParameter("_persist") != null) { // login != null
-            // Find by key
-            Login login = em.find(Login.class, "BIRZHAN"); // TODO
-            if (login == null) {
-                writeJson(response, Message.createError("Пользователь не найден!"));
-                return;
-            }
-
+        if (request.getParameter("_persist") != null)
             try {
-                Method meth = RfcR3Import.class.getMethod("getR3Clause" + method,
-                        Login.class, EntityManager.class);
+                // Get current user
+                UserInfo userInfo = UserInfo.getCurrentUserInfo(this);
 
-                r3Clause = (R3Clause) meth.invoke(this, login, em);
+                // Find method
+                Method meth = RfcR3Import.class.getMethod("getR3Clause" + method,
+                        UserInfo.class, EntityManager.class);
+
+                r3Clause = (R3Clause) meth.invoke(this, userInfo, em);
                 if (r3Clause.where != null) {
                     if (sbWhere.length() > 0)
                         sbWhere.append(" AND ");
@@ -130,7 +127,6 @@ public class RfcR3Import extends ServletBase {
                 e.printStackTrace();
                 throw new ServletException(e.getMessage());
             }
-        }
 
         // Pass method and filter
         WBRead wbRead = new WBRead(method, sbWhere.toString());
@@ -159,7 +155,7 @@ public class RfcR3Import extends ServletBase {
     }
 
     @SuppressWarnings("unused")
-    public R3Clause getR3ClauseWERK(Login login, EntityManager em) {
+    public R3Clause getR3ClauseWERK(UserInfo userInfo, EntityManager em) {
         return new R3Clause(
                 "SELECT w FROM Werk w",
                 Werk.class,
@@ -177,13 +173,13 @@ public class RfcR3Import extends ServletBase {
     }
 
     @SuppressWarnings("unused")
-    public R3Clause getR3ClauseDRIVER(Login login, EntityManager em) throws SQLException {
+    public R3Clause getR3ClauseDRIVER(UserInfo userInfo, EntityManager em) throws SQLException {
         return new R3Clause(
                 "SELECT d FROM Driver d WHERE d.Bukrs",
                 Driver.class,
                 new String[]{"Bukrs", "Pernr", "ValidDate"},
                 "DR~BE",
-                getBukrsR3Clause(em, login.getWerksList())) {
+                getBukrsR3Clause(em, userInfo)) {
 
             PreparedStatement prepStatInsert;
             PreparedStatement prepStatUpdate;
@@ -227,13 +223,13 @@ public class RfcR3Import extends ServletBase {
     }
 
     @SuppressWarnings("unused")
-    public R3Clause getR3ClauseEQUIPMENT(Login login, EntityManager em) {
+    public R3Clause getR3ClauseEQUIPMENT(UserInfo userInfo, EntityManager em) {
         return new R3Clause(
                 "SELECT e FROM Equipment e WHERE e.Swerk",
                 Equipment.class,
-                new String[]{"Equnr"},
+                new String[]{"Equnr", "NoDriverDate"},
                 "ILOA~SWERK",
-                getWerksR3Clause(login.getWerksList())) {
+                getWerksR3Clause(userInfo)) {
 
             @Override
             String getKey(Object object) {
@@ -245,13 +241,13 @@ public class RfcR3Import extends ServletBase {
     }
 
     @SuppressWarnings("unused")
-    public R3Clause getR3ClauseSCHEDULE(Login login, EntityManager em) {
+    public R3Clause getR3ClauseSCHEDULE(UserInfo userInfo, EntityManager em) {
         return new R3Clause(
                 "SELECT s FROM Schedule s WHERE s.Werks",
                 Schedule.class,
                 new String[]{"Werks", "Datum", "Equnr", "Waybill_Id"},
                 "AFIH~IWERK",
-                getWerksR3Clause(login.getWerksList())) {
+                getWerksR3Clause(userInfo)) {
 
             @Override
             String getKey(Object object) {
@@ -263,13 +259,13 @@ public class RfcR3Import extends ServletBase {
     }
 
     @SuppressWarnings("unused")
-    public R3Clause getR3ClauseREQ_HEADER(Login login, EntityManager em) {
+    public R3Clause getR3ClauseREQ_HEADER(UserInfo userInfo, EntityManager em) {
         return new R3Clause(
                 "SELECT r FROM ReqHeader r WHERE r.Iwerk",
                 ReqHeader.class,
                 new String[]{"Objnr", "Waybill_Id"},
                 "AFIH~IWERK",
-                getWerksR3Clause(login.getWerksList())) {
+                getWerksR3Clause(userInfo)) {
 
             @Override
             String getKey(Object object) {
@@ -298,7 +294,7 @@ public class RfcR3Import extends ServletBase {
     }
 
     @SuppressWarnings("unused")
-    public R3Clause getR3ClauseGAS_TYPE(Login login, EntityManager em) {
+    public R3Clause getR3ClauseGAS_TYPE(UserInfo userInfo, EntityManager em) {
         return new R3Clause(
                 "SELECT g FROM GasType g",
                 GasType.class,
@@ -316,7 +312,7 @@ public class RfcR3Import extends ServletBase {
     }
 
     @SuppressWarnings("unused")
-    public R3Clause getR3ClauseLGORT(Login login, EntityManager em) {
+    public R3Clause getR3ClauseLGORT(UserInfo userInfo, EntityManager em) {
         return new R3Clause(
                 "SELECT l FROM Lgort l",
                 Lgort.class,
@@ -333,22 +329,21 @@ public class RfcR3Import extends ServletBase {
         };
     }
 
-    private String getWerksR3Clause(String werksList) {
-        String[] arrWerks = werksList.split(";");
+    private String getWerksR3Clause(UserInfo userInfo) {
         StringBuilder result = new StringBuilder(" IN (");
-        for (int i = 0; i < arrWerks.length; i++) {
+        for (int i = 0; i < userInfo.werks.size(); i++) {
             if (i != 0)
                 result.append(",");
-            result.append("'").append(arrWerks[i]).append("'");
+            result.append("'").append(userInfo.werks.get(i)).append("'");
         }
         result.append(")");
 
         return result.toString();
     }
 
-    private String getBukrsR3Clause(EntityManager em, String werksList) {
+    private String getBukrsR3Clause(EntityManager em, UserInfo userInfo) {
         TypedQuery<Werk> werksQuery = em.createQuery(
-                "SELECT w FROM Werk w WHERE w.Werks" + getWerksR3Clause(werksList), Werk.class);
+                "SELECT w FROM Werk w WHERE w.Werks" + getWerksR3Clause(userInfo), Werk.class);
 
         List<Werk> list = werksQuery.getResultList();
         StringBuilder result = new StringBuilder(" IN (");

@@ -69,7 +69,7 @@
                         </header>
                     </Column>
                 </columns>
-                <ColumnListItem id="columnListItem" press="onLineItemPressed" type="Navigation" vAlign="Middle"
+                <ColumnListItem id="columnListItem" press="onLineItemPressed" type="{= ${userInfo>/WbShowOne}===true?'Navigation':'Inactive'}" vAlign="Middle"
                                 highlight="{ parts:[
                                     { path: 'wb>Status' },
                                     { path: 'wb>Req_Cnt' },

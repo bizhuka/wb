@@ -1,0 +1,27 @@
+{
+  "login": "test",
+  "email": "test@gmail.com",
+  "firstName": "Test",
+  "lastName": "Test",
+  "groups": [
+    "WbDoctor",
+    "WbMechanic",
+    "WbShowNewReqs",
+    "WbCreateNew",
+    "WbGarage",
+    "WbClose",
+    "WbCancel",
+    "WbShowList",
+    "WbShowOne",
+    "WBShowFinishedReqs",
+    "WbCloseReqs",
+    "WbAdmin",
+    "WbLoader",
+    "WbAnalyticsCloud",
+    "WbPdfTemplates"
+  ],
+  "werks": [
+    "1010",
+    "1040"
+  ]
+}

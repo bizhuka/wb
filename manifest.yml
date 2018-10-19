@@ -1,0 +1,26 @@
+---
+applications:
+
+- name: wb-emba2
+  host: wb-emba2
+  memory: 4096M
+  path: out/artifacts/linux/linux.war
+  services:
+    - wb-dev-schema
+    - wb-xsuaa
+  env:
+    SAP_JWT_TRUST_ACL: '[{"clientid" : "*", "identityzone" : "*"}]'
+    WIALON_OPT: '{"host": "", "user": "", "password": ""}'
+    WB_RFC_DEST: '{"client":"","user":"","passwd":"","lang":"","ashost":"","sysnr":"","saprouter":""}'
+
+- name: wb-router
+  host: wb-router
+  memory: 128M
+  path: router
+  services:
+    - wb-xsuaa
+  env:
+    destinations: >
+        [
+          {"name":"wb-emba2", "url":"", "forwardAuthToken": true }
+        ]

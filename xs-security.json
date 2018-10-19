@@ -1,0 +1,26 @@
+{
+  "xsappname": "wb-router",
+  "tenant-mode": "dedicated",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.Test",
+      "description": "Test"
+    }
+  ],
+  "attributes": [
+    {
+      "name": "Werks",
+      "description": "Werks",
+      "valueType": "string"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "RT_Test",
+      "description": "Test",
+      "scope-references": [
+        "$XSAPPNAME.Test"
+      ]
+    }
+  ]
+}

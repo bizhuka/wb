@@ -20,6 +20,7 @@ sap.ui.define([
                 this[id + "_init"].call(this);
 
                 var _this = this;
+                // TODO attachRequestFailed
                 this.wlnModel.attachRequestCompleted(function () {
                     _this[id].call(_this);
                     callback();

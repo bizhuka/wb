@@ -172,6 +172,7 @@ sap.ui.define([
 
                     var items = _this.tbSchedule.getItems();
                     var dFrom = _this.dpFrom.getDateValue();
+                    var showOne = _this.getModel("userInfo").getProperty("/WbShowOne") === true;
 
                     for (var i = 0; i < items.length; i++) {
                         var cells = items[i].getCells();
@@ -194,7 +195,7 @@ sap.ui.define([
                                 link = cells[daysOff];
                                 if (link && daysOff > (C_FIX_COLUMN - 1)) {
                                     link.setText(schedule.Ilart ? schedule.Ilart : schedule.Waybill_Id);
-                                    link.setEnabled(!schedule.Ilart);
+                                    link.setEnabled(!schedule.Ilart && showOne);
                                 }
                             }
                         }
@@ -337,6 +338,8 @@ sap.ui.define([
             var result = [];
             result.push(tooName === '-' ? 'Единица оборудования:' : 'Ид подрядчика:');
             result.push(this.alphaOut(equnr));
+            if (tooName !== '-')
+                result.push(tooName);
             result.push('Класс:');
             result.push(nClass);
 
@@ -347,13 +350,7 @@ sap.ui.define([
         },
 
         isNoDriver: function (noDriverDate) {
-            if (!this.nowTime) {
-                this.nowTime = new Date();
-                this.nowTime.setHours(0, 0, 0, 0);
-                this.nowTime = this.nowTime.getTime();
-            }
-
-            return noDriverDate && noDriverDate.getTime() === this.nowTime;
+            return noDriverDate && this.toSapDate(noDriverDate) === this.toSapDate(new Date());
         },
 
         onReqListSelectionChange: function (oEvt) {
@@ -422,7 +419,7 @@ sap.ui.define([
         onEquipSelected: function () {
             var createButton = this.byId('id_wb_create_button');
             var eoItem = this.tbSchedule.getSelectedItem();
-            if (!eoItem) {
+            if (!eoItem || !this.getModel("userInfo").getProperty("/WbCreateNew")) {
                 createButton.setVisible(false);
                 return;
             }

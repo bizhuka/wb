@@ -181,46 +181,7 @@ sap.ui.define([
                         });
 
                     // Если утвержден
-                    driverInput.setEnabled(bindingObject.Status === _this.status.AGREED);
-
-                    var statPairs = [
-                        {
-                            status: _this.status.CREATED,
-                            ids: ["id_bt_confirm", "id_bt_cancel"]
-                        },
-                        {
-                            status: _this.status.AGREED,
-                            ids: ["id_bt_dep_date", "id_bt_cancel"]
-                        },
-                        {
-                            status: _this.status.REJECTED,
-                            ids: ["id_bt_confirm"]
-                        },
-                        {
-                            status: _this.status.IN_PROCESS,
-                            ids: ["id_bt_arr_date", "id_bt_cancel"]
-                        },
-                        {
-                            status: _this.status.ARRIVED,
-                            ids: ["id_bt_close", "id_bt_cancel"]
-                        }
-                    ];
-
-                    // hide all
-                    var stat = null;
-                    for (var s = 0; s < statPairs.length; s++) {
-                        var statPair = statPairs[s];
-                        if (statPair.status === bindingObject.Status)
-                            stat = statPair;
-
-                        for (var i = 0; i < statPair.ids.length; i++)
-                            _this.byId(statPair.ids[i]).setVisible(false);
-                    }
-
-                    // Show available buttons
-                    if (stat && bindingObject.TooName === '-')
-                        for (i = 0; i < stat.ids.length; i++)
-                            _this.byId(stat.ids[i]).setVisible(true);
+                    driverInput.setEnabled(bindingObject.Status === _this.status.CREATED); // AGREED
 
                     // And if ok
                     if (callback)
@@ -427,7 +388,19 @@ sap.ui.define([
             var oWbModel = _this.getModel("wb");
 
             switch (id) {
-                case "id_bt_confirm":
+                case "id_bt_dep_date": // id_bt_confirm
+                    // case "id_bt_dep_date":
+                    if (!bindingObject.Driver) {
+                        this.showError(null, "Водитель не указан!");
+                        allTabs.setSelectedKey("id_dr_tab");
+                        return;
+                    }
+                    if (parseInt(bindingObject.Gas_Cnt) === 0) {
+                        this.showError(null, "Не указано ГСМ");
+                        allTabs.setSelectedKey("id_close_tab");
+                        return;
+                    }
+
                     if (parseInt(bindingObject.Req_Cnt) === 0) {
                         this.showError(null, "Заявки не найдены!");
                         return;
@@ -436,8 +409,8 @@ sap.ui.define([
                     var changeStat = new LibChangeStatus(_this);
                     changeStat.openDialog({
                         origin: 'WB',
-                        title: 'Соглосование ПЛ',
-                        ok_text: "Утвердить",
+                        title: 'Выезд из гаража', //Соглосование ПЛ
+                        ok_text: "Выезд", // Утвердить
                         text: bindingObject.Description,
                         reason: bindingObject.DelayReason,
                         fromDate: bindingObject.FromDate,
@@ -461,8 +434,12 @@ sap.ui.define([
                         },
 
                         success: function () {
-                            obj.ConfirmDate = new Date(1);
-                            obj.Status = _this.status.AGREED;
+                            // obj.ConfirmDate = new Date(1);
+                            // obj.Status = _this.status.AGREED;
+                            obj.GarageDepDate = new Date(1);
+                            obj.Status = _this.status.IN_PROCESS;
+                            //break;
+
                             _this.setNewStatus(obj);
                         }
                     });
@@ -493,22 +470,6 @@ sap.ui.define([
                         }
                     });
                     return;
-
-                case "id_bt_dep_date":
-                    if (!bindingObject.Driver) {
-                        this.showError(null, "Водитель не указан!");
-                        allTabs.setSelectedKey("id_dr_tab");
-                        return;
-                    }
-                    if (parseInt(bindingObject.Gas_Cnt) === 0) {
-                        this.showError(null, "Не указано ГСМ");
-                        allTabs.setSelectedKey("id_close_tab");
-                        return;
-                    }
-
-                    obj.GarageDepDate = new Date(1);
-                    obj.Status = _this.status.IN_PROCESS;
-                    break;
 
                 case "id_bt_arr_date":
                     obj.GarageArrDate = new Date(1);

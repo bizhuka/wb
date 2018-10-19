@@ -33,7 +33,7 @@ sap.ui.define([
 
         onLineItemPressed: function (oEvent) {
             var oItem = oEvent.getSource().getBindingContext("wb").getObject();
-            this.getRouter().navTo("waybillDetail", {waybillId: oItem.Id});
+            this.onWaybillPress(oItem.Id);
         },
 
         onUpdateStartedTable: function () {
@@ -75,7 +75,7 @@ sap.ui.define([
             if (comboFilter.length !== 0)
                 oFilter.push(new Filter("Status", FilterOperator.EQ, comboFilter));
 
-            if(byToo)
+            if (byToo)
                 oFilter.push(new Filter("TooName", FilterOperator.NE, '-'));
 
             var andFilter = oFilter.length > 0 ? new Filter({filters: oFilter, and: true}) : null;
