@@ -63,10 +63,10 @@ sap.ui.define([
                         ValidDate: new Date(1)
                     }, {
                         success: function () {
-                            MessageToast.show(oDriver.Fio + " (" + oDriver.Bukrs + ")\nмедосмотр пройден")
+                            MessageToast.show(_this.getBundle().getText("okDriverUpdate", [oDriver.Fio, oDriver.Bukrs]));
                         },
                         error: function (err) {
-                            _this.showError(err, "Ошибка при обновлении 'Годен на дату'");
+                            _this.showError(err, _this.getBundle().getText("errUpdate"));
                         }
                     });
                 }
@@ -76,47 +76,7 @@ sap.ui.define([
         showPdfTemplates: function () {
             if (!this._pdfDiaolog) {
                 this._pdfDiaolog = this.createFragment("com.modekzWaybill.view.frag.SelectPdfDialog");
-                this._pdfDiaolog.setModel(new JSONModel({
-                    pdf: [
-                        {
-                            Id: "ZWB_CAR_KZ.PDF",
-                            Title: "Жеңіл көліктің жол парағы",
-                            Info: "kz"
-                        },
-                        {
-                            Id: "ZWB_CAR_RU.PDF",
-                            Title: "Путевой лист легкового автомобиля",
-                            Info: "ru"
-                        },
-                        {
-                            Id: "ZWB_BUS_KZ.PDF",
-                            Title: "Автобустың жол парағы",
-                            Info: "kz"
-                        },
-                        {
-                            Id: "ZWB_BUS_RU.PDF",
-                            Title: "Путевой лист автобуса",
-                            Info: "ru"
-                        },
-                        {
-                            Id: "ZWB_TRUCK_RU.PDF",
-                            Title: "Путевой лист грузового автомобиля",
-                            Info: "ru"
-                        },
-                        {
-                            Id: "ZWB_GENERAL_FULL.PDF",
-                            Title: "АВТОКӨЛІК ЖОЛДАМА ҚАҒАЗЫ",
-                            Desc: "ТАПСЫРЫС БЕРУШІНІҢ ТАЛОНЫ",
-                            Info: "kz"
-                        },
-                        {
-                            Id: "ZWB_GENERAL_PART.PDF",
-                            Title: "АВТОКӨЛІК ЖОЛДАМА ҚАҒАЗЫ",
-                            Desc: "-",
-                            Info: "kz"
-                        }
-                    ]
-                }));
+                this._pdfDiaolog.setModel(new JSONModel('/json/pdfBlanks.json'));
             }
             this._pdfDiaolog.open();
         },
@@ -156,7 +116,7 @@ sap.ui.define([
         },
 
         showDocumentation: function () {
-            MessageToast.show("Документация в процессе разработки");
+            MessageToast.show(this.getBundle().getText("manualNotPrepared"));
         },
 
         eoValidation: function () {
@@ -226,7 +186,7 @@ sap.ui.define([
         setNoDriverDate: function () {
             var items = this.findById('id_eo_table').getSelectedItems();
             if (items.length === 0) {
-                MessageToast.show('Выделите записи');
+                MessageToast.show(this.getBundle().getText("selectRows"));
                 return;
             }
 

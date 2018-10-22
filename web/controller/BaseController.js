@@ -23,10 +23,6 @@ sap.ui.define([
             this.status = new LibStatus(this);
         },
 
-        getUserId: function () {
-            return "BIRZHAN"; //TODO
-        },
-
         showError: function (err, message) {
             MessageBox.error(message);
             if (err)
@@ -103,7 +99,7 @@ sap.ui.define([
             return this.getView().setModel(oModel, sName);
         },
 
-        getResourceBundle: function () {
+        getBundle: function () {
             return this.getOwnerComponent().getModel("i18n").getResourceBundle();
         },
 
@@ -114,7 +110,7 @@ sap.ui.define([
 
             // New array
             this[name] = [];
-            var arr = this.getResourceBundle().getText(name).split(";");
+            var arr = this.getBundle().getText(name).split(";");
 
             for (var i = 0; i < arr.length; i++) {
                 var pair = arr[i].split("-");
@@ -245,8 +241,8 @@ sap.ui.define([
         },
 
         onWaybillPress: function (oEvt) {
-            if(!this.getModel("userInfo").getProperty("/WbShowOne")){
-                MessageToast.show("Нет полномочий на просмотр петевого листа");
+            if (!this.getModel("userInfo").getProperty("/WbShowOne")) {
+                MessageToast.show(this.getBundle().getText("noOneWbRights"));
                 return;
             }
             var id = isNaN(oEvt) ? oEvt.getSource().getBindingContext("wb").getObject().Waybill_Id : oEvt;
@@ -263,7 +259,7 @@ sap.ui.define([
                     _this.showUpdateInfo(result, params);
                 },
                 error: function () {
-                    MessageToast.show("Ошибка при обновлении справочника " + params.title);
+                    MessageToast.show(_this.getBundle().getText("errDict", [params.title]));
 
                     if (params.afterUpdate)
                         params.afterUpdate.call(_this, false);
@@ -272,14 +268,14 @@ sap.ui.define([
         },
 
         showUpdateInfo(json, params) {
-            var _this = this;
-            MessageToast.show(params.title +
-                "\nОбновлено " + json.updated +
-                "\nСоздано " + json.inserted +
-                (json.dbcnt ? "\nОбновлено в R3 " + json.dbcnt : ""));
+            var bundle = this.getBundle();
+            MessageToast.show(
+                bundle.getText("okDict", [params.title, json.updated, json.inserted]) +
+                (json.dbcnt ? bundle.getText("okDictR3", [json.dbcnt]) : "") +
+                (json.deleted ? bundle.getText("okDictDel", [json.dbcnt]) : ""));
 
             if (params.afterUpdate)
-                params.afterUpdate.call(_this, true);
+                params.afterUpdate.call(this, true);
         },
 
         addDays: function (date, cnt) {
@@ -315,18 +311,17 @@ sap.ui.define([
                             continue;
 
                         item.Waybill_Id = parseInt(item.Waybill_Id);
-                        var message = "На дату " + _this.toLocaleDate(item.Datum) + ", ТС=" + _this.alphaOut(item.Equnr);
 
-                        // Ремонт
+                        // Planned work
                         if (item.Waybill_Id === -1 && item.Ilart) {
-                            callBack.call(_this, message +
-                                " запланирован ремонт " + item.Ilart);
+                            callBack.call(_this, _this.getBundle().getText("occupiedByRepair",
+                                [_this.toLocaleDate(item.Datum), _this.alphaOut(item.Equnr), item.Ilart]));
                             return;
                         }
 
                         if (item.Waybill_Id !== parseInt(oWaybill.Id)) {
-                            callBack.call(_this, message +
-                                " занят ПЛ " + item.Waybill_Id);
+                            callBack.call(_this, _this.getBundle().getText("occupiedByWb",
+                                [_this.toLocaleDate(item.Datum), _this.alphaOut(item.Equnr), item.Waybill_Id]));
                             return;
                         }
                     }
@@ -335,7 +330,7 @@ sap.ui.define([
                 },
 
                 error: function () {
-                    callBack.call(_this, "Ошибка чтение журнала");
+                    callBack.call(_this, _this.getBundle().getText("errReadDict"));
                 }
             });
         },
@@ -345,7 +340,7 @@ sap.ui.define([
             _this.updateDbFrom({
                 link: "/r3/EQUIPMENT?_persist=true",
 
-                title: "Единицы оборудования (ТС)",
+                title: _this.getBundle().getText("eoList"),
 
                 afterUpdate: function () {
                     callBack.call(_this);

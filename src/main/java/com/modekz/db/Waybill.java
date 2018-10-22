@@ -3,6 +3,7 @@ package com.modekz.db;
 import com.modekz.ODataServiceFactory;
 import com.modekz.db.flag.DelayReason;
 import com.modekz.db.flag.Status;
+import com.modekz.json.UserInfo;
 
 import javax.persistence.*;
 import javax.servlet.ServletException;
@@ -68,9 +69,23 @@ public class Waybill {
     @Basic
     public int delayReason = DelayReason.NO_DELAY;
 
+    // Who last changed
+    @Column(columnDefinition = "NVARCHAR(40)")
+    public String changeUser;
+    @Column(columnDefinition = "TIMESTAMP")
+    public Date changeDate;
+
     @PrePersist
     @PreUpdate
     public void persist() {
+        // Current user info
+        try {
+            changeDate = new Date();
+            changeUser = UserInfo.getCurrentUserInfo(null).email;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         try {
             // Set current time if time == 1
             for (Field field : ownFields) {
@@ -104,7 +119,7 @@ public class Waybill {
     }
 
     private void updateSchedule() throws ServletException {
-        if (status != Status.CREATED && // status != Status.AGREED &&
+        if (status != Status.CREATED && status != Status.IN_PROCESS && //AGREED &&
                 status != Status.REJECTED &&
                 status != Status.CLOSED)
             return;
@@ -113,9 +128,9 @@ public class Waybill {
         em.getTransaction().begin();
         try {
             switch (this.status) {
-                // Создание или соглосование
+                // Create and confirm
                 case Status.CREATED:
-//                case Status.AGREED:
+                case Status.IN_PROCESS: //AGREED:
                     // Modify schedule
                     Date from = this.getFromDate();
                     while (from.before(this.toDate) || from.equals(this.toDate)) {
@@ -128,7 +143,7 @@ public class Waybill {
                     }
                     break;
 
-                // Отмена
+                // Cancel WB
                 case Status.REJECTED:
                     Connection connection = ODataServiceFactory.getConnection(em);
                     PreparedStatement prepDelete = connection.prepareStatement("DELETE FROM SCHEDULE WHERE WAYBILL_ID = ?");
@@ -136,7 +151,7 @@ public class Waybill {
                     prepDelete.executeUpdate();
                     break;
 
-                // Закрытие
+                // Close WB
                 case Status.CLOSED:
                     connection = ODataServiceFactory.getConnection(em);
                     prepDelete = connection.prepareStatement("DELETE FROM REQHISTORY WHERE WAYBILL_ID = ?");
@@ -297,5 +312,21 @@ public class Waybill {
 
     public void setDelayReason(int delayReason) {
         this.delayReason = delayReason;
+    }
+
+    public String getChangeUser() {
+        return changeUser;
+    }
+
+    public void setChangeUser(String changeUser) {
+        this.changeUser = changeUser;
+    }
+
+    public Date getChangeDate() {
+        return changeDate;
+    }
+
+    public void setChangeDate(Date changeDate) {
+        this.changeDate = changeDate;
     }
 }

@@ -2,7 +2,7 @@
         xmlns="sap.m"
         xmlns:core="sap.ui.core">
     <SelectDialog
-            title="Выбор шаблона"
+            title="{i18n>chooseTempl}"
             search="pdfSearch"
             confirm="pdfClose"
             cancel="pdfClose"

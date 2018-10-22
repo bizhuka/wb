@@ -1,7 +1,7 @@
 <mvc:View controllerName="com.modekzWaybill.controller.Waybill"
           xmlns:core="sap.ui.core"
           xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m">
-    <Page title="Путевые листы" showNavButton="true" navButtonPress="onNavBack">
+    <Page title="{i18n>waybills}" showNavButton="true" navButtonPress="onNavBack">
         <!--<headerContent>-->
         <!--	<Button icon="sap-icon://my-sales-order" id="btnOrdersId" press="onOrdersButtonPressed" tooltip="{i18n>home.salesOrder}"/>-->
         <!--	<Button icon="sap-icon://cart" id="btnProductListHeader" press="onShoppingCartPressed" text="{TotalQunatity}"-->
@@ -11,7 +11,7 @@
             <Table id="id_waybill_table" selectionMode="MultiToggle" rowSelectionChange="onItemPressed"
                    class="sapUiResponsiveMargin"
                    growing="true" growingScrollToLoad="true"
-                   noDataText="Нет данных" items="{
+                   noDataText="{i18n>noData}" items="{
 					                            path: 'wb>/VWaybills',
 					                            sorter : { path:'CreateDate',
                                                            descending:true
@@ -27,45 +27,45 @@
                                   items="{path: '/'}">
                             <core:Item key="{key}" text="{text}"/>
                         </ComboBox>
-                        <CheckBox id="id_by_too_checkbox" text="Подрядным способом" select="handleSelection"/>
-                        <SearchField id="id_wb_search_field" placeholder="Поиск путевого листа" search="handleSelection"
+                        <CheckBox id="id_by_too_checkbox" text="{i18n>byContract}" select="handleSelection"/>
+                        <SearchField id="id_wb_search_field" placeholder="{i18n>findWB}" search="handleSelection"
                                      showRefreshButton="false" width="17.5rem"/>
                         <!--text="{i18n>home.sort}"-->
                         <OverflowToolbarButton icon="sap-icon://sort" press="onSortPressed"
-                                               tooltip="Сортировать"/>
+                                               tooltip="{i18n>sort}"/>
                         <OverflowToolbarButton icon="sap-icon://refresh" press="onResetPressed"
-                                               tooltip="Очистить всю фильтрацию"/>
+                                               tooltip="{i18n>clearFiltration}"/>
                     </OverflowToolbar>
                 </headerToolbar>
                 <columns>
                     <Column demandPopin="true" hAlign="Left">
                         <header>
-                            <Label text="№ путевого листа"/>
+                            <Label text="№ {i18n>waybill}"/>
                         </header>
                     </Column>
                     <Column demandPopin="true" hAlign="Left">
                         <header>
-                            <Label text="Водитель / ТС"/>
+                            <Label text="{i18n>driver} / {i18n>vehicle}"/>
                         </header>
                     </Column>
                     <Column demandPopin="true" hAlign="Right">
                         <header>
-                            <Label text="Коды"/>
+                            <Label text="{i18n>codes}"/>
                         </header>
                     </Column>
                     <Column demandPopin="true" hAlign="Right" minScreenWidth="Tablet" popinDisplay="WithoutHeader">
                         <header>
-                            <Label text="∑ Заявок / Дней"/>
+                            <Label text="∑ {i18n>request} / {i18n>days}"/>
                         </header>
                     </Column>
                     <Column demandPopin="true" hAlign="Right" minScreenWidth="Tablet" popinDisplay="WithoutHeader">
                         <header>
-                            <Label text="∑ Экс заявок / ГСМ"/>
+                            <Label text="∑ {i18n>exReqs} / {i18n>gas}"/>
                         </header>
                     </Column>
                     <Column demandPopin="true" hAlign="Right" minScreenWidth="Tablet" popinDisplay="WithoutHeader">
                         <header>
-                            <Label text="Статус / Описание"/>
+                            <Label text="{i18n>status} / {i18n>description}"/>
                         </header>
                     </Column>
                 </columns>
@@ -90,7 +90,7 @@
                                     { path: 'wb>TooName' }
                                 ], formatter: '.errorDesc' }"/>
                         <ObjectIdentifier title="{wb>Fio}" text="{wb>Eqktx}"
-                                          tooltip="Единица оборудования { path: 'wb>Equnr', formatter: '.alphaOut' }"/>
+                                          tooltip="{i18n>eo} { path: 'wb>Equnr', formatter: '.alphaOut' }"/>
                         <ObjectIdentifier title="{ path: 'wb>Driver', formatter: '.alphaOut' }"
                                           text="{wb>License_num}"/>
                         <ObjectIdentifier title="{wb>Req_Cnt}" text="{wb>Sch_Cnt}"/>

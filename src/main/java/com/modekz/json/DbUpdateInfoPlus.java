@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DbUpdateInfoPlus extends DbUpdateInfo {
+    public int deleted;
+
     public static final char UPDATED = 'U';
     public static final char INSERTED = 'I';
+    public static final char DELETED = 'D';
 
-    public final List<Item> items;
+    public List<Item> items;
 
     public DbUpdateInfoPlus(String text, int count) {
         String[] lines = text.split("\\r?\\n");
@@ -29,7 +32,7 @@ public class DbUpdateInfoPlus extends DbUpdateInfo {
         public String[] data;
         public char result;
 
-        Item(String[] data) {
+        public Item(String[] data) {
             this.data = data;
         }
     }

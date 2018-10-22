@@ -225,7 +225,7 @@ sap.ui.define([
             _this.updateDbFrom({
                 link: "/r3/REQ_HEADER?_persist=true",
 
-                title: "Заявки",
+                title: _this.getBundle().getText("reqs"),
 
                 afterUpdate: function () {
                     _this.libReqs.reqTable.getBinding("items").refresh();
@@ -324,7 +324,7 @@ sap.ui.define([
                     "AFKO~GSTRP <= '" + this.toSapDate(this.dpTo.getDateValue()) + "' AND " +
                     "AFKO~GLTRP >= '" + this.toSapDate(this.dpFrom.getDateValue()) + "'"),
 
-                title: "Журнал",
+                title: _this.getBundle().getText("journal"),
 
                 timeout: 2500, // 2,5 seconds
 
@@ -336,15 +336,15 @@ sap.ui.define([
 
         eoTooltip: function (equnr, nClass, tooName, noDriverDate) {
             var result = [];
-            result.push(tooName === '-' ? 'Единица оборудования:' : 'Ид подрядчика:');
+            result.push(this.getBundle().getText(tooName === '-' ? 'eo' : 'idToo') + ":");
             result.push(this.alphaOut(equnr));
             if (tooName !== '-')
                 result.push(tooName);
-            result.push('Класс:');
+            result.push(this.getBundle().getText("class") + ":");
             result.push(nClass);
 
             if (this.isNoDriver(noDriverDate))
-                result.push('Водитель отсутсвует на дату: ' + this.toLocaleDate(noDriverDate));
+                result.push(this.getBundle().getText("noDriverToDate", [this.toLocaleDate(noDriverDate)]));
 
             return result.join("\n");
         },
@@ -360,7 +360,7 @@ sap.ui.define([
 
             this.detailHeader.destroyAttributes();
             var cnt = arrContexts ? arrContexts.length : 0;
-            this.detailHeader.setNumber(cnt + "(з.)");
+            this.detailHeader.setNumber(cnt + " " + this.getBundle().getText("request"));
 
             eoFilterInfo.classFilter = null;
             if (cnt !== 0) {
@@ -387,16 +387,14 @@ sap.ui.define([
                 if (toDate === 0) {
                     this.detailHeader.setNumberUnit("");
                     fromDate = toDate = null;
-                } else {
-                    var days = "(" + (this.diffInDays(toDate, fromDate) + 1) + "д.)";
-
+                } else
                     this.detailHeader.setNumberUnit(
-                        "Дата заявки с " + this.toLocaleDate(fromDate) +
-                        " по " + this.toLocaleDate(toDate) + " " + days);
-                }
+                        this.getBundle().getText("reqsPeriod",
+                            [this.toLocaleDate(fromDate),
+                                this.toLocaleDate(toDate),
+                                this.diffInDays(toDate, fromDate) + 1]));
 
                 var oFilters = [];
-
                 for (var key in arrClass)
                     if (arrClass.hasOwnProperty(key)) {
                         // "0" & Ktsch === N_class
@@ -429,10 +427,10 @@ sap.ui.define([
             eoItem = eoItem.getBindingContext("wb").getObject();
             if (eoItem.TooName !== '-') {
                 createButton.setIcon(sap.ui.core.IconPool.getIconURI("sap-icon://request"));
-                createButton.setText("Создать заявку подрядчика");
+                createButton.setText(this.getBundle().getText("createWithToo"));
             } else {
                 createButton.setIcon(sap.ui.core.IconPool.getIconURI("sap-icon://create-form"));
-                createButton.setText("Создать путевой лист");
+                createButton.setText(this.getBundle().getText("createWb"));
             }
         },
 
@@ -450,7 +448,7 @@ sap.ui.define([
                     message = key;
             }
 
-            MessageToast.show("Различные классы оборудования " + message);
+            MessageToast.show(this.getBundle().getText("errDiffClass", [message]));
             return false;
         },
 
@@ -477,7 +475,7 @@ sap.ui.define([
                         if (parseInt(item.Waybill_Id) === -1 || item.Status === _this.status.REJECTED)
                             continue;
 
-                        callBack.call(_this, "Заявка " + item.Objnr + " уже обработана");
+                        callBack.call(_this, _this.getBundle().getText("errReqsProcessed", [item.Objnr]));
                         return;
                     }
 
@@ -486,7 +484,7 @@ sap.ui.define([
                 },
 
                 error: function () {
-                    callBack.call(_this, "Ошибка чтение заявок");
+                    callBack.call(_this, _this.getBundle().getText("errReadReqs"));
                 }
             });
         },
@@ -501,7 +499,7 @@ sap.ui.define([
                 return;
 
             if (!selectedReqs || selectedReqs.length === 0 || !eoItem) {
-                MessageBox.warning("Выделите ТС и заявки.");
+                MessageBox.warning(_this.getBundle().getText("selectItems"));
                 return;
             }
 
@@ -526,7 +524,7 @@ sap.ui.define([
             createWbDialog.openDialog({
                 origin: 'WB',
                 title: _this.byId('id_wb_create_button').getText(),
-                ok_text: 'Создать',
+                ok_text: _this.getBundle().getText("create"),
                 text: '',
                 fromDate: oWaybill.FromDate,
                 toDate: oWaybill.ToDate,
@@ -534,7 +532,7 @@ sap.ui.define([
 
                 check: function (block) {
                     if (toDate.getTime() - fromDate.getTime() > block.toDate.getTime() - block.fromDate.getTime()) {
-                        MessageToast.show("Не достаточное количество дней");
+                        MessageToast.show(_this.getBundle().getText("errNoEnoughDays"));
                         block.afterChecked(false);
                         return;
                     }
@@ -559,7 +557,7 @@ sap.ui.define([
                 success: function () {
                     oWbModel.create('/Waybills', oWaybill, {
                         success: function (ret) {
-                            MessageToast.show("Создан запись №" + ret.Id);
+                            MessageToast.show(_this.getBundle().getText("okCreateItem", [ret.Id]));
                             oWbModel.refresh();
 
                             // Update TORO header request
@@ -573,14 +571,14 @@ sap.ui.define([
                                 };
                                 oWbModel.update("/ReqHeaders('" + item.Objnr + "')", reqHeader, {
                                     error: function (err) {
-                                        _this.showError(err, "Ошибка при обновлении заявки");
+                                        _this.showError(err, _this.getBundle().getText("errUpdateReqs"));
                                     }
                                 })
                             }
                         },
 
                         error: function (err) {
-                            _this.showError(err, "Ошибка при создании путевого листа");
+                            _this.showError(err, _this.getBundle().getText("errCreateWb"));
                         }
                     }); // oData create new waybill
                 } // success text dialog

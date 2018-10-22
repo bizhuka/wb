@@ -8,12 +8,12 @@
         <customHeader design="Header">
             <Bar>
                 <contentMiddle>
-                    <Title text="Перечень ТС"/>
+                    <Title text="{i18n>eoList}"/>
                 </contentMiddle>
 
                 <contentRight>
                     <Button icon="sap-icon://synchronize" press="onEoUpdate"
-                            tooltip="Обновить единицы оборудования"
+                            tooltip="{i18n>eoListUpdate}"
                             visible="{= ${userInfo>/WbLoader}===true}"/>
                 </contentRight>
             </Bar>
@@ -31,36 +31,36 @@
             <Table id="id_eo_table"
                    growing="true" growingScrollToLoad="true"
                    mode="MultiSelect" modeAnimationOn="false"
-                   noDataText="Нет данных" items="{wb>/Equipments}">
+                   noDataText="{i18n>noData}" items="{wb>/Equipments}">
 
                 <columns>
                     <Column width="5em">
-                        <Label text="Гос номер"/>
+                        <Label text="{i18n>plateNum}"/>
                     </Column>
                     <Column>
-                        <Label text="Название объекта"/>
+                        <Label text="{i18n>objNum}"/>
                     </Column>
                     <Column width="7rem">
-                        <Label text="Вид тех. объекта"/>
+                        <Label text="{i18n>objType}"/>
                     </Column>
                     <Column width="9rem">
-                        <Label text="Вид топлива"/>
+                        <Label text="{i18n>gasType}"/>
                     </Column>
                     <Column width="9rem">
                         <Label text="IMEI"/>
                     </Column>
                     <Column>
-                        <Label text="Название технического места"/>
+                        <Label text="{i18n>techSpace}"/>
                     </Column>
                     <Column width="9rem">
-                        <Label text="Нет водителя на дату"/>
+                        <Label text="{i18n>noDriverDate}"/>
                     </Column>
                 </columns>
 
                 <ColumnListItem>
                     <cells>
                         <Label text="{wb>License_num}"
-                               tooltip="Единица оборудования { path: 'wb>Equnr', formatter: '.alphaOut' }&#xA;Класс {wb>N_class}"/>
+                               tooltip="{i18n>eo} { path: 'wb>Equnr', formatter: '.alphaOut' }&#xA;{i18n>class} {wb>N_class}"/>
                     </cells>
 
                     <cells>
@@ -92,9 +92,9 @@
 
 
         <buttons>
-            <Button tooltip="Водитель отсутсвеует" icon="sap-icon://employee-rejections" press="setNoDriverDate"/>
-            <Button tooltip="Авария" enabled="false" icon="sap-icon://collision"/>
-            <Button tooltip="Отмена"  icon="sap-icon://decline" press="onEoCloseDialog"/>
+            <Button tooltip="{i18n>noDriver}" icon="sap-icon://employee-rejections" press="setNoDriverDate"/>
+            <Button tooltip="{i18n>accident}" enabled="false" icon="sap-icon://collision"/>
+            <Button tooltip="{i18n>cancel}"  icon="sap-icon://decline" press="onEoCloseDialog"/>
         </buttons>
     </Dialog>
 </core:FragmentDefinition>

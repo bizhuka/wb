@@ -2,6 +2,7 @@ package com.modekz.servlet;
 
 import com.modekz.ODataServiceFactory;
 import com.modekz.db.Equipment;
+import com.modekz.db.GroupRole;
 import com.modekz.json.DbUpdateInfo;
 import com.modekz.json.DbUpdateInfoPlus;
 
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet(urlPatterns = {"/csv/*"})
 public class CsvUploader extends ServletBase {
@@ -109,5 +112,94 @@ public class CsvUploader extends ServletBase {
             em.close();
         }
     }
+
+    @SuppressWarnings("unused")
+    public void uploadGrpRoles(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        EntityManager em = ODataServiceFactory.getEmf().createEntityManager();
+
+        try {
+            // Result
+            DbUpdateInfoPlus info = new DbUpdateInfoPlus(getUploadedFile(request), 3);
+            em.getTransaction().begin();
+
+            Connection connection = ODataServiceFactory.getConnection(em);
+            PreparedStatement prepStatInsert = connection.prepareStatement("INSERT INTO GroupRole (GrpRole, IndRole) VALUES(?,?);");
+            PreparedStatement prepStatDelete = connection.prepareStatement("DELETE FROM GroupRole WHERE GrpRole = ? AND IndRole = ?");
+
+            // All items
+            List<GroupRole> grpRoles = GroupRole.getAllGroupRoles();
+            List<DbUpdateInfoPlus.Item> allItems = new ArrayList<>(grpRoles.size() + info.items.size());
+
+            // Copy prev items to show user
+            for (GroupRole groupRole : grpRoles) {
+                String[] lines = {"*", groupRole.GrpRole, groupRole.IndRole};
+                allItems.add(new DbUpdateInfoPlus.Item(lines));
+            }
+
+            // All content
+            for (DbUpdateInfoPlus.Item item : info.items) {
+                // + or -
+                String operation = item.data[0].trim();
+                String grpRole = item.data[1].trim();
+                String indRole = item.data[2].trim();
+
+                boolean bFind = false;
+                for (GroupRole groupRole : grpRoles)
+                    if (grpRole.equals(groupRole.GrpRole) && indRole.equals(groupRole.IndRole)) {
+                        bFind = true;
+                        break;
+                    }
+
+                PreparedStatement prepStat = null;
+                if ("+".equals(operation) && !bFind)
+                    prepStat = prepStatInsert;
+
+                if ("-".equals(operation) && bFind)
+                    prepStat = prepStatInsert;
+
+                if (prepStat == null)
+                    continue;
+
+                // Add to log
+                allItems.add(item);
+
+                prepStat.setString(1, grpRole);
+                prepStat.setString(2, indRole);
+                prepStat.addBatch();
+            }
+
+            // Aggregated info
+            int[] insertResults = prepStatInsert.executeBatch();
+            int[] deleteResults = prepStatDelete.executeBatch();
+
+            // Detailed info
+            int insertIndex = 0, deleteIndex = 0;
+            for (DbUpdateInfoPlus.Item item : allItems) {
+                String operation = item.data[0];
+                if ("+".equals(operation)) {
+                    if (insertResults[insertIndex++] > 0) {
+                        item.result = DbUpdateInfoPlus.INSERTED;
+                        info.inserted++;
+                    }
+                } else if ("-".equals(operation)) {
+                    if (deleteResults[deleteIndex++] > 0) {
+                        item.result = DbUpdateInfoPlus.DELETED;
+                        info.deleted++;
+                    }
+                }
+            }
+
+            // And write data back
+            info.items = allItems;
+            writeJson(response, info);
+
+            em.getTransaction().commit();
+        } catch (Exception ex) {
+            throw new ServletException(ex);
+        } finally {
+            em.close();
+        }
+    }
+
 
 }

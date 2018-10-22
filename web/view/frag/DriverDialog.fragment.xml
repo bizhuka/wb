@@ -6,11 +6,11 @@
         <customHeader design="Header">
             <Bar>
                 <contentMiddle>
-                    <Title text="Водители"/>
+                    <Title text="{i18n>drivers}"/>
                 </contentMiddle>
 
                 <contentRight>
-                    <Button icon="sap-icon://synchronize" tooltip="Обновить список водителей" press="onSyncDrivers"
+                    <Button icon="sap-icon://synchronize" tooltip="{i18n>updateDrivers}" press="onSyncDrivers"
                             visible="{= ${userInfo>/WbLoader}===true}"/>
                 </contentRight>
             </Bar>
@@ -28,31 +28,31 @@
             <Table id="id_driver_table"
                    growing="true" growingScrollToLoad="true"
                    mode="SingleSelectMaster" modeAnimationOn="false"
-                   noDataText="Нет данных" items="{wb>/VDrivers}"
+                   noDataText="{i18n>noData}" items="{wb>/VDrivers}"
                    selectionChange="onSelectionChange">
 
                 <columns>
                     <Column>
                         <header>
-                            <Text text="Табельный номер"/>
+                            <Text text="{i18n>pernr}"/>
                         </header>
                     </Column>
 
                     <Column>
                         <header>
-                            <Text text="ФИО"/>
+                            <Text text="{i18n>fio}"/>
                         </header>
                     </Column>
 
                     <Column>
                         <header>
-                            <Text text="ИИН"/>
+                            <Text text="{i18n>iin}"/>
                         </header>
                     </Column>
 
                     <Column>
                         <header>
-                            <Text text="Должность / Подразделение"/>
+                            <Text text="{i18n>position} / {i18n>subdivision}"/>
                         </header>
                     </Column>
 
@@ -60,13 +60,13 @@
                     <Column minScreenWidth="Tablet"
                             demandPopin="true">
                         <header>
-                            <Text text="Индивидуальная карта"/>
+                            <Text text="{i18n>ownCard}"/>
                         </header>
                     </Column>
 
                     <Column>
                         <header>
-                            <Text text="Годен на дату"/>
+                            <Text text="{i18n>validDate}"/>
                         </header>
                     </Column>
                 </columns>
@@ -92,7 +92,7 @@
         </content>
 
         <beginButton>
-            <Button text="Отмена" press="onDriverCloseDialog"/>
+            <Button text="{i18n>cancel}" press="onDriverCloseDialog"/>
         </beginButton>
     </Dialog>
 </core:FragmentDefinition>

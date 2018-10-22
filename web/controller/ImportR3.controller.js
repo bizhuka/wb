@@ -17,7 +17,7 @@ sap.ui.define([
             this.updateDbFrom({
                 link: "/r3/WERK?_persist=true",
 
-                title: "Заводы - БЕ"
+                title: this.getBundle().getText("werksBukrs")
             });
         },
 
@@ -25,7 +25,7 @@ sap.ui.define([
             this.updateDbFrom({
                 link: "/r3/GAS_TYPE?_persist=true",
 
-                title: "Материалы"
+                title: this.getBundle().getText("materials")
             });
         },
 
@@ -33,26 +33,49 @@ sap.ui.define([
             this.updateDbFrom({
                 link: "/wialon/loadWlnVehicle",
 
-                title: "Объектов wialon"
+                title: this.getBundle().getText("wialonObjects")
             });
         },
 
         uploadDriverMedCards: function () {
+            var bundle = this.getBundle();
             this.loadFromFile({
-                title: "Мед карты водителей",
+                title: bundle.getText("medCards"),
                 url: "./csv/uploadDriverMedCards",
                 columns: [
-                    "ИИН работника", "Табельный номер", "Работник", "Мед карта"
+                    bundle.getText("iin"),
+                    bundle.getText("pernr"),
+                    bundle.getText("worker"),
+                    bundle.getText("medCard")
                 ]
             });
         },
 
         uploadEquipment: function () {
+            var bundle = this.getBundle();
             this.loadFromFile({
-                title: "ТС подрядчика",
+                title: bundle.getText("tooCars"),
                 url: "./csv/uploadEquipment",
                 columns: [
-                    "БЕ", "Завод", "Наименование ТС", "Подрядчик", "Гос номер", "Класс"
+                    bundle.getText("bukrs"),
+                    bundle.getText("werks"),
+                    bundle.getText("carName"),
+                    bundle.getText("too"),
+                    bundle.getText("plateNum"),
+                    bundle.getText("class")
+                ]
+            });
+        },
+
+        uploadGroupRoles: function () {
+            var bundle = this.getBundle();
+            this.loadFromFile({
+                title: bundle.getText("grpRoles"),
+                url: "./csv/uploadGrpRoles",
+                columns: [
+                    "+ / -",
+                    bundle.getText("grpRole"),
+                    bundle.getText("indRole")
                 ]
             });
         },
@@ -82,6 +105,8 @@ sap.ui.define([
                                 return MessageType.Success;
                             case 'U':
                                 return MessageType.Information;
+                            case 'D':
+                                return MessageType.Error;
                         }
                         return MessageType.None;
                     }
@@ -101,7 +126,7 @@ sap.ui.define([
                     };
 
                     // First line headers
-                    for (var i = 0; i< response.items.length; i++) {
+                    for (var i = 0; i < response.items.length; i++) {
                         var resItem = response.items[i];
                         var parts = resItem.data;
 
@@ -134,15 +159,15 @@ sap.ui.define([
 
                 subHeader: new sap.m.Bar({
                     contentLeft: [
-                        new sap.m.Label({text: "Разделитель: ';'"}),
-                        new sap.m.Label({text: "Кодировка: 'UTF-8'"})
+                        new sap.m.Label({text: _this.getBundle().getText("delimiter") + ": ';'"}),
+                        new sap.m.Label({text: _this.getBundle().getText("charset") + ": 'UTF-8'"})
                     ],
 
                     contentMiddle: [fileUploader],
 
                     contentRight: [new sap.m.Button({
                         icon: "sap-icon://upload",
-                        text: "Импорт",
+                        text: _this.getBundle().getText("import"),
                         press: function () {
                             fileUploader.upload();
                         }

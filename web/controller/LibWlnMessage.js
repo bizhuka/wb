@@ -14,16 +14,27 @@ sap.ui.define([
 
             wlnModel: null,
 
-            constructor: function (owner, id, wialonId, fromDate, toDate, callback) {
+            constructor: function (owner, objExt) {
                 this.owner = owner;
-                this.wlnModel = new JSONModel("/././wialon/exportMessages?wialonId=" + wialonId + "&from=" + fromDate + "&to=" + toDate);
-                this[id + "_init"].call(this);
+                this.wlnModel = new JSONModel(
+                    "/././wialon/exportMessages?wialonId=" + objExt.wialonId + "&from=" + objExt.fromDate + "&to=" + objExt.toDate);
+                this[objExt.id + "_init"].call(this);
 
                 var _this = this;
-                // TODO attachRequestFailed
+
+                // Ok
                 this.wlnModel.attachRequestCompleted(function () {
-                    _this[id].call(_this);
-                    callback();
+                    _this[objExt.id].call(_this);
+                    objExt.wlnOk();
+
+                    // If have additional functionality
+                    if (objExt.wlnCallback)
+                        objExt.wlnCallback();
+                });
+
+                // Oops
+                this.wlnModel.attachRequestFailed(function () {
+                    objExt.wlnError();
                 });
             },
 

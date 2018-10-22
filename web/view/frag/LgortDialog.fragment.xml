@@ -7,11 +7,11 @@
         <customHeader design="Header">
             <Bar>
                 <contentMiddle>
-                    <Title text="Склады"/>
+                    <Title text="{i18n>lgorts}"/>
                 </contentMiddle>
 
                 <contentRight>
-                    <Button icon="sap-icon://synchronize" tooltip="Обновить список складов" press="onSyncLgorts"
+                    <Button icon="sap-icon://synchronize" tooltip="{i18n>updateLgorts}" press="onSyncLgorts"
                             visible="{= ${userInfo>/WbLoader}===true}"/>
                 </contentRight>
             </Bar>
@@ -29,18 +29,18 @@
             <Table id="id_lgort_table"
                    growing="true" growingScrollToLoad="true"
                    mode="SingleSelectMaster" modeAnimationOn="false"
-                   noDataText="Нет данных" items="{wb>/Lgorts}"
+                   noDataText="{i18n>noData}" items="{wb>/Lgorts}"
                    selectionChange="onSelectionChange">
 
                 <columns>
                     <Column>
-                        <Text text="Завод"/>
+                        <Text text="{i18n>werks}"/>
                     </Column>
                     <Column>
-                        <Text text="Склад"/>
+                        <Text text="{i18n>lgort}"/>
                     </Column>
                     <Column>
-                        <Text text="Описание"/>
+                        <Text text="{i18n>description}"/>
                     </Column>
                 </columns>
 
@@ -55,7 +55,7 @@
         </content>
 
         <beginButton>
-            <Button text="Отмена" press="onLgortCloseDialog"/>
+            <Button text="{i18n>cancel}" press="onLgortCloseDialog"/>
         </beginButton>
     </Dialog>
 </core:FragmentDefinition>

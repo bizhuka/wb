@@ -22,14 +22,14 @@ sap.ui.define([
                         gui.reasons = _owner.getResourceArray(_owner.status.DELAY_TEXTS).filter(function (pair) {
                             return pair.key !== 0;
                         });
-                        gui.reasonLabel = 'Причина смещения сроков';
+                        gui.reasonLabel = _owner.getBundle().getText("delayReason");
                         break;
 
                     case "REQ":
                         gui.reasons = _owner.getResourceArray(_owner.status.REQ_STATUS_TEXTS).filter(function (pair) {
                             return pair.key !== 0;
                         });
-                        gui.reasonLabel = 'Статус выполнения заявки';
+                        gui.reasonLabel = _owner.getBundle().getText("reqsStatus");
                         break;
                 }
                 // No text
@@ -94,12 +94,12 @@ sap.ui.define([
 
                 // Oops
                 if (block.fromDate.getTime() > block.toDate.getTime()) {
-                    MessageToast.show("Не верный диапазон дат");
+                    MessageToast.show(this.owner.getBundle().getText("wrongPeriod"));
                     return;
                 }
 
                 if (combo.getEnabled() && !block.reason) {
-                    MessageToast.show("Заполните поле " + this.gui.reasonLabel);
+                    MessageToast.show(this.owner.getBundle().getText("fillField", [this.gui.reasonLabel]));
                     return;
                 }
 

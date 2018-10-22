@@ -104,6 +104,12 @@ public class VWaybill {
     @Column(columnDefinition = "NVARCHAR(50)")
     public String TooName = "-";
 
+    // Who last changed
+    @Column(columnDefinition = "NVARCHAR(40)")
+    public String changeUser;
+    @Column(columnDefinition = "TIMESTAMP")
+    public Date changeDate;
+
     public long getId() {
         return id;
     }
@@ -336,5 +342,21 @@ public class VWaybill {
 
     public void setTooName(String tooName) {
         TooName = tooName;
+    }
+
+    public String getChangeUser() {
+        return changeUser;
+    }
+
+    public void setChangeUser(String changeUser) {
+        this.changeUser = changeUser;
+    }
+
+    public Date getChangeDate() {
+        return changeDate;
+    }
+
+    public void setChangeDate(Date changeDate) {
+        this.changeDate = changeDate;
     }
 }

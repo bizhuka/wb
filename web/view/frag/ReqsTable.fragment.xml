@@ -2,7 +2,7 @@
         xmlns="sap.m"
         xmlns:core="sap.ui.core">
     <Table updateStarted="onUpdateStartedReqs" growing="true" growingScrollToLoad="true"
-           noDataText="Нет данных" items="{
+           noDataText="{i18n>noData}" items="{
 					                            path: 'wb>/VReqHeaders',
 					                            sorter : { path:'Gstrp',
                                                            descending:true
@@ -19,7 +19,7 @@
                 </ComboBox>
 
                 <SearchField search="onTextSearch" visible="{ui>/showSortGroup}"
-                             placeholder="Поиск заявки" showRefreshButton="false" width="10rem"/>
+                             placeholder="{i18n>findReqs}" showRefreshButton="false" width="10rem"/>
 
                 <Button browserEvent="onBrowserEvent" press="onSortPress" visible="{ui>/showSortGroup}"
                         icon="sap-icon://sort"/>
@@ -31,44 +31,44 @@
         <columns>
             <Column demandPopin="true" hAlign="Left">
                 <header>
-                    <Label text="№Операции / №Заказа"/>
+                    <Label text="№{i18n>operation} / №{i18n>req}"/>
                 </header>
             </Column>
             <Column demandPopin="true" hAlign="Left" visible="{ui>/showWbColumn}">
                 <header>
-                    <Label text="Пл/ Статус"/>
+                    <Label text="{i18n>wb} / {i18n>status}"/>
                 </header>
             </Column>
             <Column demandPopin="true" hAlign="Left" visible="{ui>/showReason}">
                 <header>
-                    <Label text="Закрытие заявки"/>
+                    <Label text="{i18n>closeReqs}"/>
                 </header>
             </Column>
             <Column demandPopin="true" hAlign="Left">
                 <header>
-                    <Label text="Дата и время план"/>
+                    <Label text="{i18n>planDatetime}"/>
                 </header>
             </Column>
             <Column demandPopin="true" hAlign="Left" visible="{ui>/showActual}">
                 <header>
-                    <Label text="Факт. дата / моточасы"/>
+                    <Label text="{i18n>actualDate} / {i18n>motoHour}"/>
                 </header>
             </Column>
             <Column demandPopin="true" hAlign="Left" minScreenWidth="Tablet" popinDisplay="WithoutHeader"
                     visible="{ui>/showOptColumn}">
                 <header>
-                    <Label text="Группа планирования / Тех место"/>
+                    <Label text="{i18n>planGroup} / {i18n>techSpace}"/>
                 </header>
             </Column>
             <Column demandPopin="true" hAlign="Left" minScreenWidth="Tablet" popinDisplay="WithoutHeader">
                 <header>
-                    <Label text="Текст операции / Вид работ"/>
+                    <Label text="{i18n>operText} / {i18n>workType}"/>
                 </header>
             </Column>
             <Column demandPopin="true" hAlign="Left" minScreenWidth="Tablet" popinDisplay="WithoutHeader"
                     visible="{ui>/showOptColumn}">
                 <header>
-                    <Label text="Класс / Место"/>
+                    <Label text="{i18n>class} / {i18n>place}"/>
                 </header>
             </Column>
         </columns>

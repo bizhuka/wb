@@ -5,7 +5,7 @@
 
         <content>
 
-            <Label text="Дата по факту"/>
+            <Label text="{i18n>actualDate}"/>
 
             <HBox visible="{= ${gui>/origin}==='WB'}">
 
@@ -29,7 +29,7 @@
             </HBox>
 
             <VBox visible="{= ${gui>/origin}==='REQ'}">
-                <Label text="Моточасы"/>
+                <Label text="{i18n>actualDate}"/>
                 <Input value="{gui>/motoHour}" type="Number" valueLiveUpdate="true" liveChange="checkOkEnabled"/>
             </VBox>
 
@@ -42,7 +42,7 @@
                 </ComboBox>
             </VBox>
 
-            <TextArea value="{gui>/text}" width="100%" placeholder="Описание (обязательно)" liveChange="onTextChange"/>
+            <TextArea value="{gui>/text}" width="100%" placeholder="{i18n>descRequired}" liveChange="onTextChange"/>
         </content>
 
         <beginButton>
@@ -51,7 +51,7 @@
         </beginButton>
 
         <endButton>
-            <Button text="Отмена" press="onChangeStatusClose"/>
+            <Button text="{i18n>cancel}" press="onChangeStatusClose"/>
         </endButton>
     </Dialog>
 </core:FragmentDefinition>

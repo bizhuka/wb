@@ -132,37 +132,38 @@ sap.ui.define([
                 info: []
             };
 
+            var bundle = this.getBundle();
             // No GSM
             if (result.status >= this.status.IN_PROCESS && result.gasCnt === 0)
-                result.errors.push("Нет позиций ГСМ (GasSpent) после выезда из гаража");
+                result.errors.push(bundle.getText("noGsm", ["GasSpent"]));
 
             switch (result.status) {
                 case this.status.REJECTED:
                     if (result.schCnt > 0)
-                        result.errors.push("В журнале работ (Schedule) имееются позиции");
+                        result.errors.push(bundle.getText("hasSchedule", ["Schedule"]));
 
                     if (result.histCnt === 0)
-                        result.errors.push("В журнале заявок (ReqHistory) нет позиций");
+                        result.errors.push(bundle.getText("noReqHistory", ["ReqHistory"]));
                     break;
 
                 case this.status.CLOSED:
                     if (result.histCnt > 0)
-                        result.errors.push("Остались позиции в журнале заявок (ReqHistory)");
+                        result.errors.push(bundle.getText("hasReqHistory", ["ReqHistory"]));
                     break;
             }
 
             if (result.status !== this.status.REJECTED) {
                 if (result.reqCnt === 0)
-                    result.errors.push("Нет заявок (ReqHeader)");
+                    result.errors.push(bundle.getText("noReqs") + " (ReqHeader)");
 
                 if (result.schCnt === 0)
-                    result.errors.push("Нет журнала работ (Schedule)");
+                    result.errors.push(bundle.getText("noSchedule", ["Schedule"]));
             }
 
             if (result.delayReason > 0)
-                result.info.push("Причина смещения сроков " + this.getDelayReasonText(result.delayReason));
+                result.info.push(bundle.getText("delayReason") + " " + this.getDelayReasonText(result.delayReason));
             if (result.tooName !== '-')
-                result.info.push("Подрядчик " + result.tooName);
+                result.info.push(bundle.getText("too") + " " + result.tooName);
 
             return result;
         },
@@ -182,11 +183,11 @@ sap.ui.define([
             if (wbInfo.errors.length > 0)
                 return MessageType.Error;
 
-            // Отмена
+            // Cancelled
             if (wbInfo.status === this.status.REJECTED)
                 return MessageType.Warning;
 
-            // Закрытые
+            // Ok closed
             if (wbInfo.status === this.status.CLOSED)
                 return MessageType.Success;
 

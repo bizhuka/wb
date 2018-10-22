@@ -2,7 +2,7 @@
         xmlns="sap.m"
         xmlns:core="sap.ui.core"
         xmlns:f="sap.ui.layout.form">
-    <Dialog contentWidth="85%" title="Карта и пробег" afterOpen="afterMapOpen">
+    <Dialog contentWidth="85%" title="{i18n>mapRun}" afterOpen="afterMapOpen">
 
         <content>
             <f:Form editable="false">
@@ -12,27 +12,27 @@
                 <f:formContainers>
                     <f:FormContainer>
                         <f:formElements>
-                            <f:FormElement label="Количество сообщений">
+                            <f:FormElement label="{i18n>messagesCount}">
                                 <f:fields>
                                     <Text text="{wialon>/count}"/>
                                 </f:fields>
                             </f:FormElement>
-                            <f:FormElement label="Первое сообщение">
+                            <f:FormElement label="{i18n>firstMessage}">
                                 <f:fields>
                                     <Text text="{wialon>/from}"/>
                                 </f:fields>
                             </f:FormElement>
-                            <f:FormElement label="Последнее сообщение">
+                            <f:FormElement label="{i18n>lastMessage}">
                                 <f:fields>
                                     <Text text="{wialon>/to}"/>
                                 </f:fields>
                             </f:FormElement>
-                            <f:FormElement label="Пробег">
+                            <f:FormElement label="{i18n>run}">
                                 <f:fields>
                                     <Text text="{wialon>/mileage}"/>
                                 </f:fields>
                             </f:FormElement>
-                            <f:FormElement label="Пробег за период">
+                            <f:FormElement label="{i18n>runInPeriod}">
                                 <f:fields>
                                     <Text text="{wialon>/diff}"/>
                                 </f:fields>
@@ -47,31 +47,31 @@
 
             <Table growing="true"
                    growingScrollToLoad="true"
-                   noDataText="Нет данных" items="{wialon>/messages}">
+                   noDataText="{i18n>noData}" items="{wialon>/messages}">
                 <columns>
                     <Column demandPopin="true" hAlign="Left">
                         <header>
-                            <Label text="Дата и время"/>
+                            <Label text="{i18n>dateTime}"/>
                         </header>
                     </Column>
                     <Column demandPopin="true" hAlign="Right">
                         <header>
-                            <Label text="Долгота"/>
+                            <Label text="{i18n>longitude}"/>
                         </header>
                     </Column>
                     <Column demandPopin="true" hAlign="Right">
                         <header>
-                            <Label text="Широта"/>
+                            <Label text="{i18n>latitude}"/>
                         </header>
                     </Column>
                     <Column demandPopin="true" hAlign="Right">
                         <header>
-                            <Label text="Пробег"/>
+                            <Label text="{i18n>run}"/>
                         </header>
                     </Column>
                     <Column demandPopin="true" hAlign="Right">
                         <header>
-                            <Label text="Датчик топлива"/>
+                            <Label text="{i18n>gasSensor}"/>
                         </header>
                     </Column>
                 </columns>
@@ -88,7 +88,7 @@
         </content>
 
         <beginButton>
-            <Button text="Отмена" press="closeMapDialog"/>
+            <Button text="{i18n>cancel}" press="closeMapDialog"/>
         </beginButton>
     </Dialog>
 </core:FragmentDefinition>

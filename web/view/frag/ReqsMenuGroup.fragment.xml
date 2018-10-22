@@ -5,12 +5,12 @@
 
     <u:Menu itemSelect="onSortGroupClick">
         <u:MenuItem id="id_group_"
-                    text="Без группировки"/>
+                    text="{i18n>noGroups}"/>
         <u:MenuItem id="id_group_KtschTxt"
-                    text="Класс"/>
+                    text="{i18n>class}"/>
         <u:MenuItem id="id_group_Stand"
-                    text="Местоположение"/>
+                    text="{i18n>space}"/>
         <u:MenuItem id="id_group_Priokx"
-                    text="Приоритет"/>
+                    text="{i18n>priority}"/>
     </u:Menu>
 </core:FragmentDefinition>

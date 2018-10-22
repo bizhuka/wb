@@ -249,10 +249,11 @@ sap.ui.define([
                 var editFields = {
                     Objnr: obj.Objnr
                 };
+                var bundle = _this.owner.getBundle();
                 changeStat.openDialog({
                     origin: 'REQ',
-                    title: 'Закрытие заявки',
-                    ok_text: "Подтвердить",
+                    title: bundle.getText("closeReqs"),
+                    ok_text: bundle.getText("confirm"),
                     text: obj.Reason,
                     reason: obj.StatusReason,
                     fromDate: obj.FromDate ? obj.FromDate : obj.Gstrp,
@@ -276,7 +277,7 @@ sap.ui.define([
                                 oWbModel.refresh();
                             },
                             error: function (err) {
-                                _this.owner.showError(err, "Ошибка при обновлении заявки");
+                                _this.owner.showError(err, _this.owner.getBundle().getText("errUpdateReqs"));
                             }
                         })
                     }

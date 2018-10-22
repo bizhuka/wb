@@ -55,7 +55,7 @@ sap.ui.define([
                 _this.owner.updateDbFrom({
                     link: "/r3/LGORT?_persist=true",
 
-                    title: "Склады",
+                    title: _this.owner.getBundle().getText("lgorts"),
 
                     afterUpdate: function () {
                         _this.table.getBinding("items").refresh();

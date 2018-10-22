@@ -4,24 +4,8 @@
   "firstName": "Test",
   "lastName": "Test",
   "groups": [
-    "WbDoctor",
-    "WbMechanic",
-    "WbShowNewReqs",
-    "WbCreateNew",
-    "WbGarage",
-    "WbClose",
-    "WbCancel",
-    "WbShowList",
-    "WbShowOne",
-    "WBShowFinishedReqs",
-    "WbCloseReqs",
-    "WbAdmin",
-    "WbLoader",
-    "WbAnalyticsCloud",
-    "WbPdfTemplates"
-  ],
-  "werks": [
-    "1010",
-    "1040"
+    "_WbAdministrator",
+    "Werks_1010",
+    "Werks_1040"
   ]
 }

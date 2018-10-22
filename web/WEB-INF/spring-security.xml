@@ -27,8 +27,8 @@
 
         <!--<sec:intercept-url pattern="/check" access="#oauth2.hasScope('${xs.appname}.Check')" method="GET"/>-->
 
-        <!--&lt;!&ndash; Example: Check only authentication on a resource &ndash;&gt;-->
-        <!--<sec:intercept-url pattern="/DisplayServlet" access="isAuthenticated()" method="GET"/>-->
+        <!-- Example: Check only authentication on a resource -->
+        <sec:intercept-url pattern="/csv/*" access="isAuthenticated()" method="POST"/>
 
         <sec:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
         <sec:access-denied-handler ref="oauthAccessDeniedHandler"/>

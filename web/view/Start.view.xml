@@ -11,27 +11,27 @@
 
                 <Title
                         titleStyle="H3"
-                        text="Заявки и путевые листы"
+                        text="{i18n>reqsAndWb}"
                         class="sapUiTinyMarginBegin"
-                        visible="{= ${userInfo>/WbShowNewReqs}===true||${userInfo>/WBShowFinishedReqs}===true||${userInfo>/WbShowList}===true}"/>
+                        visible="{= ${userInfo>/WbShowNewReqs}===true||${userInfo>/WbShowFinishedReqs}===true||${userInfo>/WbShowList}===true}"/>
                 <layout:HorizontalLayout allowWrapping="true"
-                                         visible="{= ${userInfo>/WbShowNewReqs}===true||${userInfo>/WBShowFinishedReqs}===true||${userInfo>/WbShowList}===true}">
+                                         visible="{= ${userInfo>/WbShowNewReqs}===true||${userInfo>/WbShowFinishedReqs}===true||${userInfo>/WbShowList}===true}">
 
                     <GenericTile class="sapUiTinyMarginBegin tileLayout"
-                                 header="Заявки TORO"
-                                 subheader="Количество"
+                                 header="{i18n>toroReqs}"
+                                 subheader="{i18n>count}"
                                  press="showToroRequest"
                                  visible="{= ${userInfo>/WbShowNewReqs}===true}">
 
-                        <TileContent unit="Транспортная служба">
+                        <TileContent unit="{i18n>transService}">
                             <NumericContent scale="" value="4" valueColor="Error"/>
                         </TileContent>
                     </GenericTile>
 
                     <GenericTile class="sapUiTinyMarginBegin tileLayout"
-                                 header="Обработанные заявки"
+                                 header="{i18n>finishedReqs}"
                                  press="showFinishedReqs"
-                                 visible="{= ${userInfo>/WBShowFinishedReqs}===true}">
+                                 visible="{= ${userInfo>/WbShowFinishedReqs}===true}">
 
                         <TileContent unit="" footer="">
                             <ImageContent src="sap-icon://activity-2"/>
@@ -39,12 +39,12 @@
                     </GenericTile>
 
                     <GenericTile class="sapUiTinyMarginBegin tileLayout"
-                                 header="Путевые листы"
-                                 subheader="Количество"
+                                 header="{i18n>waybills}"
+                                 subheader="{i18n>count}"
                                  press="showWayill"
                                  visible="{= ${userInfo>/WbShowList}===true}">
 
-                        <TileContent unit="Диспетчер НГДУ">
+                        <TileContent unit="{i18n>dispatcher}">
                             <NumericContent scale="" value="2" valueColor="Warning" icon="sap-icon://shipping-status"/>
                         </TileContent>
                     </GenericTile>
@@ -52,14 +52,14 @@
 
                 <Title
                         titleStyle="H3"
-                        text="Контроль и осмотр"
+                        text="{i18n>checkHeader}"
                         class="sapUiTinyMarginBegin sapUiMediumMarginTop"
                         visible="{= ${userInfo>/WbDoctor}===true||${userInfo>/WbMechanic}===true}"/>
                 <layout:HorizontalLayout allowWrapping="true"
                                          visible="{= ${userInfo>/WbDoctor}===true||${userInfo>/WbMechanic}===true}">
 
                     <GenericTile class="sapUiTinyMarginBegin tileLayout"
-                                 header="Медосмотр"
+                                 header="{i18n>medCheck}"
                                  press="setDriverValidDate"
                                  visible="{= ${userInfo>/WbDoctor}===true}">
 
@@ -69,7 +69,7 @@
                     </GenericTile>
 
                     <GenericTile class="sapUiTinyMarginBegin tileLayout"
-                                 header="Контроль ТС"
+                                 header="{i18n>checkEo}"
                                  press="eoValidation"
                                  visible="{= ${userInfo>/WbMechanic}===true}">
 
@@ -83,7 +83,7 @@
 
                 <Title
                         titleStyle="H3"
-                        text="Прочее"
+                        text="{i18n>other}"
                         class="sapUiTinyMarginBegin sapUiMediumMarginTop"/>
                 <layout:HorizontalLayout allowWrapping="true">
 
@@ -99,7 +99,7 @@
                     </GenericTile>
 
                     <GenericTile class="sapUiTinyMarginBegin tileLayout"
-                                 header="Загрузка справочников"
+                                 header="{i18n>updateDict}"
                                  press="importR3Tables"
                                  visible="{= ${userInfo>/WbAdmin}===true}">
 
@@ -109,20 +109,20 @@
                     </GenericTile>
 
                     <GenericTile class="sapUiTinyMarginBegin tileLayout"
-                                 header="Шаблоны путевых листов"
+                                 header="{i18n>wbTemplate}"
                                  press="showPdfTemplates"
                                  visible="{= ${userInfo>/WbPdfTemplates}===true}">
 
-                        <TileContent unit="" footer="Бланки">
+                        <TileContent unit="" footer="{i18n>blanks}">
                             <ImageContent src="sap-icon://pdf-attachment"/>
                         </TileContent>
                     </GenericTile>
 
                     <GenericTile class="sapUiTinyMarginBegin tileLayout"
-                                 header="Руводство пользователя"
-                                 subheader="PDF документ"
+                                 header="{i18n>manual}"
+                                 subheader="{i18n>pdfDoc}"
                                  press="showDocumentation">
-                        <TileContent unit="" footer="Транспортная служба">
+                        <TileContent unit="" footer="{i18n>transService}">
                             <ImageContent src="sap-icon://hint"/>
                         </TileContent>
                     </GenericTile>

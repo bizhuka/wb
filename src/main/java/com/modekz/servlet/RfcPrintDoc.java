@@ -60,7 +60,7 @@ public class RfcPrintDoc extends ServletBase {
 
         String N_class = null;
         try {
-            // Заявки
+            // Requests
             PreparedStatement statement = connection.prepareStatement("select * from reqheader where waybill_id = ?");
             statement.setLong(1, waybillId);
             ResultSet rs = statement.executeQuery();

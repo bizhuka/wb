@@ -108,6 +108,10 @@ public class Equipment {
     @Parameter("ILOA_TPLNR")
     public String Tplnr;
 
+    @Column(length = 12)
+    @Parameter("ILOA_ANLNR")
+    public String Anln1;
+
     @Column(columnDefinition = "NVARCHAR(20)")
     @Parameter("EQUI_TYPBZ")
     public String Typbz;
@@ -351,5 +355,13 @@ public class Equipment {
 
     public void setNoDriverDate(Date noDriverDate) {
         NoDriverDate = noDriverDate;
+    }
+
+    public String getAnln1() {
+        return Anln1;
+    }
+
+    public void setAnln1(String anln1) {
+        Anln1 = anln1;
     }
 }

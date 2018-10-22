@@ -147,7 +147,7 @@ sap.ui.define([
                     // Prepare reqs tab
                     var reqsTab = _this.byId("id_reqs_container");
                     var reqsOk = bindingObject.Status !== _this.status.REJECTED;
-                    var reqsText = reqsOk ? "Задание (Заявки)" : "Отмененные заявки";
+                    var reqsText = _this.getBundle().getText(reqsOk ? "reqs" : "cancelledReqs");
 
                     // Change reqs UI
                     _this.getModel("ui").setProperty("/showWbColumn", !reqsOk);
@@ -180,7 +180,7 @@ sap.ui.define([
                             }
                         });
 
-                    // Если утвержден
+                    // Can change driver
                     driverInput.setEnabled(bindingObject.Status === _this.status.CREATED); // AGREED
 
                     // And if ok
@@ -192,13 +192,13 @@ sap.ui.define([
 
         onWlnMessagePress: function (oEvent) {
             if (!bindingObject.GarageDepDate || !bindingObject.GarageArrDate) {
-                MessageToast.show("ТС не прыбало в гараж");
+                MessageToast.show(this.getBundle().getText("errNotInGarage"));
                 return;
             }
 
             // Is Not Integer
             if (isNaN(parseFloat(bindingObject.WialonId)) || !isFinite(bindingObject.WialonId)) {
-                MessageToast.show("Не верное значение точки измерения");
+                MessageToast.show(_this.getBundle().getText("errMesPointValue"));
                 return;
             }
 
@@ -206,75 +206,67 @@ sap.ui.define([
             var button = oEvent.getSource();
             button.setEnabled(false);
 
-            // Date in linux format
-            var fromDate = parseInt(bindingObject.GarageDepDate.getTime() / 1000);
-            var toDate = parseInt(bindingObject.GarageArrDate.getTime() / 1000);
-
             // Which button was pressed
             var id = button.getId().split("-");
             id = id[id.length - 1];
             var _this = this;
 
-            var objExt = null;
-            switch (id) {
+            var objExt = {
+                id: id,
+                wialonId: bindingObject.WialonId,
+
+                // Date in linux format
+                fromDate: parseInt(bindingObject.GarageDepDate.getTime() / 1000),
+                toDate: parseInt(bindingObject.GarageArrDate.getTime() / 1000),
+
+                wlnOk: function () {
+                    MessageToast.show(_this.getBundle().getText("okWialon"));
+                    button.setEnabled(true);
+                },
+
+                wlnError: function () {
+                    MessageToast.show(_this.getBundle().getText("errWialon"));
+                    button.setEnabled(true);
+                }
+            };
+
+            switch (objExt.id) {
                 case "wln_load_spent":
-                    objExt = {
-                        className: "LibWlnLoadSpent",
+                    objExt.className = "LibWlnLoadSpent";
 
-                        wlnCallback: function (json) {
-                            button.setEnabled(true);
+                    objExt.wlnCallback = function (json) {
+                        var oWbModel = _this.getModel("wb");
+                        var path = _this.getBindingPath();
+                        bindingObject = oWbModel.getProperty(path);
 
-                            // Show info
-                            if (!json) {
-                                MessageToast.show("Ошибка при обновлении данных wialon");
-                                return;
-                            }
-                            MessageToast.show("Данные из системы wialon получены");
+                        bindingObject.OdoDiff = (json.OdoDiff / 1000).toFixed(2);
+                        bindingObject.MotoHour = (json.MotoHour / 3600).toFixed(2);
+                        bindingObject.GasSpent = json.GasSpent.toFixed(2);
 
-                            var oWbModel = _this.getModel("wb");
-                            var path = _this.getBindingPath();
-                            bindingObject = oWbModel.getProperty(path);
+                        // Not working!!!
+                        oWbModel.setProperty(path, bindingObject);
 
-                            bindingObject.OdoDiff = (json.OdoDiff / 1000).toFixed(2);
-                            bindingObject.MotoHour = (json.MotoHour / 3600).toFixed(2);
-                            bindingObject.GasSpent = json.GasSpent.toFixed(2);
+                        // TODO fix with model.setProperty
+                        _this.byId("id_wb_odo_diff").setValue(bindingObject.OdoDiff);
+                        _this.byId("id_wb_moto_hour").setValue(bindingObject.MotoHour);
+                        _this.byId("id_wb_gas_spent").setValue(bindingObject.GasSpent);
 
-                            oWbModel.setProperty(path, bindingObject);
-
-                            // TODO
-                            _this.byId("id_wb_odo_diff").setValue(bindingObject.OdoDiff);
-                            _this.byId("id_wb_moto_hour").setValue(bindingObject.MotoHour);
-                            _this.byId("id_wb_gas_spent").setValue(bindingObject.GasSpent);
-
-                            _this.onFuelChanged({
-                                skipSave: true
-                            });
-                        }
+                        _this.onFuelChanged({
+                            skipSave: true
+                        });
                     };
                     break;
 
                 case "wln_show_fuel":
                 case "wln_show_map":
-                    objExt = {
-                        className: "LibWlnMessage",
-
-                        wlnCallback: function () {
-                            button.setEnabled(true);
-                        }
-                    };
+                    objExt.className = "LibWlnMessage";
                     break;
             }
 
             // Use different libraries
             sap.ui.require(["com/modekzWaybill/controller/" + objExt.className], function (WialonLib) {
-                new WialonLib(_this,
-                    id,
-                    bindingObject.WialonId,
-                    fromDate,
-                    toDate,
-                    objExt.wlnCallback);
+                new WialonLib(_this, objExt);
             });
-
         },
 
         updateDriverTab: function () {
@@ -283,7 +275,8 @@ sap.ui.define([
                     path: "/Drivers(Bukrs='" + bindingObject.Bukrs + "',Pernr='" + bindingObject.Driver + "')",
                     model: "wb"
                 });
-        },
+        }
+        ,
 
         on_tab_select: function (oEvent) {
             var key = oEvent.getParameter("selectedKey").split("-");
@@ -292,7 +285,8 @@ sap.ui.define([
             // Call if exist
             if (this[fm])
                 this[fm](oEvent);
-        },
+        }
+        ,
 
         handle_dr_f4Selected: function (oEvent) {
             var text = false;
@@ -330,12 +324,13 @@ sap.ui.define([
                         },
 
                         error: function () {
-                            _this.showError(null, "Ошибка обновления водителя в ПЛ!");
+                            _this.showError(null, _this.getBundle().getText("updateDriverError"));
                         }
                     });
                 }
             });
-        },
+        }
+        ,
 
         handle_dr_f4: function () {
             var _this = this;
@@ -350,7 +345,8 @@ sap.ui.define([
                     _this.handle_dr_f4Selected(oEvent)
                 }
             });
-        },
+        }
+        ,
 
         handle_lgort_f4: function (oEvent) {
             var _this = this;
@@ -374,7 +370,8 @@ sap.ui.define([
                     });
                 }
             });
-        },
+        }
+        ,
 
         on_set_status: function (oEvt) {
             var button = oEvt.getSource();
@@ -391,26 +388,26 @@ sap.ui.define([
                 case "id_bt_dep_date": // id_bt_confirm
                     // case "id_bt_dep_date":
                     if (!bindingObject.Driver) {
-                        this.showError(null, "Водитель не указан!");
+                        this.showError(null, this.getBundle().getText("noDriver"));
                         allTabs.setSelectedKey("id_dr_tab");
                         return;
                     }
                     if (parseInt(bindingObject.Gas_Cnt) === 0) {
-                        this.showError(null, "Не указано ГСМ");
+                        this.showError(null, this.getBundle().getText("noGas"));
                         allTabs.setSelectedKey("id_close_tab");
                         return;
                     }
 
                     if (parseInt(bindingObject.Req_Cnt) === 0) {
-                        this.showError(null, "Заявки не найдены!");
+                        this.showError(null, this.getBundle().getText("noReqs"));
                         return;
                     }
 
                     var changeStat = new LibChangeStatus(_this);
                     changeStat.openDialog({
                         origin: 'WB',
-                        title: 'Выезд из гаража', //Соглосование ПЛ
-                        ok_text: "Выезд", // Утвердить
+                        title: _this.getBundle().getText("outGarage"), // Confirm WB
+                        ok_text: _this.getBundle().getText("out"), // Confirm
                         text: bindingObject.Description,
                         reason: bindingObject.DelayReason,
                         fromDate: bindingObject.FromDate,
@@ -452,8 +449,8 @@ sap.ui.define([
                     changeStat = new LibChangeStatus(_this);
                     changeStat.openDialog({
                         origin: 'WB',
-                        title: 'Отклонение ПЛ',
-                        ok_text: "Отклонить",
+                        title: _this.getBundle().getText("cancelWb"),
+                        ok_text: _this.getBundle().getText("canceling"),
                         text: bindingObject.Description,
                         reason: bindingObject.DelayReason,
                         fromDate: bindingObject.FromDate,
@@ -480,7 +477,7 @@ sap.ui.define([
                     var activeTab = allTabs.getSelectedKey();
                     allTabs.setSelectedKey("id_close_tab");
                     if (activeTab !== "id_close_tab") {
-                        MessageToast.show("Проверьте показания датчиков перед закрытием");
+                        MessageToast.show(this.getBundle().getText("errCheckSensors"));
                         return;
                     }
 
@@ -488,7 +485,7 @@ sap.ui.define([
                     var odoEmpty = (!parseFloat(bindObj.OdoDiff) && !parseFloat(bindObj.MotoHour));
                     var fuelEmpty = !parseFloat(bindObj.GasSpent);
                     if (odoEmpty || fuelEmpty) {
-                        this.showError(null, "Введите показания датчиков и горючего!");
+                        this.showError(null, this.getBundle().getText("errEnterSensors"));
                         return;
                     }
 
@@ -505,8 +502,7 @@ sap.ui.define([
 
                     // Same check as in SAP
                     if (bindObj.Mptyp !== "O" && bindObj.Mptyp !== "S") {
-                        MessageToast.show("Тип точки измерения '" + bindObj.Mptyp + "' в " +
-                            bindObj.Point + " не равен 'O' или 'S'");
+                        MessageToast.show(this.getBundle().getText("errMptyp", [bindObj.Mptyp, bindObj.Point]));
                         return;
                     }
 
@@ -521,20 +517,19 @@ sap.ui.define([
 
                     button.setEnabled(false);
                     $.ajax({
-                        url: '/././measureDoc',
-                        type: 'POST',
-                        data: JSON.stringify({
+                        url: '/././measureDoc?doc=' + encodeURIComponent(JSON.stringify({
                             disMode: "N", // As background task
                             point: bindObj.Point,
                             equnr: bindObj.Equnr,
                             werks: bindObj.Werks,
                             gstrp: _this.toSapDateTime(bindObj.GarageDepDate),
                             gltrp: _this.toSapDateTime(bindObj.GarageArrDate),
-                            text: "ПЛ №" + bindObj.Id,
+                            text: _this.getBundle().getText("wbNum", [bindObj.Id]),
                             odoDiff: bindObj.OdoDiff,
                             motoHour: bindObj.MotoHour,
                             spents: spents
-                        }),
+                        })),
+                        //type: 'POST', data: ,
                         contentType: 'application/json; charset=utf-8',
                         dataType: 'json',
                         success: function (doc) {
@@ -547,7 +542,7 @@ sap.ui.define([
                             // Set new date
                             obj.CloseDate = new Date(1);
                             obj.Status = _this.status.CLOSED;
-                            // Датчики
+                            // From sensors
                             obj.OdoDiff = bindObj.OdoDiff;
                             obj.MotoHour = bindObj.MotoHour;
                             obj.GasSpent = bindObj.GasSpent;
@@ -556,14 +551,15 @@ sap.ui.define([
 
                         error: function (err) {
                             button.setEnabled(true);
-                            _this.showError(err, "Ошибка при закрытии ПЛ в SAP!");
+                            _this.showError(err, _this.getBundle().getText("errCloseWb"));
                         }
                     });
                     return;
             }
 
             _this.setNewStatus(obj);
-        },
+        }
+        ,
 
         setNewStatus: function (obj) {
             var _this = this;
@@ -574,17 +570,19 @@ sap.ui.define([
                     oWbModel.refresh();
                 },
                 error: function () {
-                    _this.showError(null, "Ошибка обновления статуса ПЛ!");
+                    _this.showError(null, _this.getBundle().getText("errWbUpdate"));
                 }
             });
-        },
+        }
+        ,
 
         on_wb_print: function () {
             this.navToPost({
                 url: "/././printDoc/templateWithData?",
                 waybillId: bindingObject.Id
             });
-        },
+        }
+        ,
 
         checkReqsStatus: function () {
             var content = this.byId('id_reqs_container').getContent();
@@ -594,13 +592,14 @@ sap.ui.define([
             for (var i = 0; i < items.length; i++) {
                 var item = items[i].getBindingContext("wb").getObject();
                 if (item.StatusReason === 0) {
-                    MessageToast.show("Позиция №" + (i + 1) + " заявки не согласована!");
+                    MessageToast.show(this.getBundle().getText("reqsNotConfirmed", [i + 1]));
                     return false;
                 }
             }
 
             return true;
-        },
+        }
+        ,
 
         onFuelChanged: function (oEvent) {
             var _this = this;
@@ -635,7 +634,7 @@ sap.ui.define([
 
                 // Check Lgort
                 if (!data[i].GasLgort && !oEvent.skipMessage) {
-                    MessageToast.show("Не указан склад. Позиция №" + (i + 1));
+                    MessageToast.show(_this.getBundle.getText("noLgort", [i + 1]));
                     return false;
                 }
 
@@ -650,24 +649,26 @@ sap.ui.define([
 
                 oWbModel.update(_this.getGasSpentPath(i), updFields, {
                     error: function (err) {
-                        _this.showError(err, "Ошибка при обновлении позиции ГСМ");
+                        _this.showError(err, _this.getBundle().getText("errGasUpdate"));
                     }
                 });
             }
             if (gasTotalSpent > 0 && !oEvent.skipMessage) {
-                MessageToast.show("Израсходовано больше чем залито на " + gasTotalSpent);
+                MessageToast.show(this.getBundle().getText("moreSpent", [gasTotalSpent]));
                 return false;
             }
             this.getModel("fuel").setProperty("/data", data);
             return data;
-        },
+        }
+        ,
 
         on_save_dates: function () {
-            var oWbModel = this.getModel("wb");
+            var _this = this;
+            var oWbModel = _this.getModel("wb");
             // From view
-            bindingObject = oWbModel.getProperty(this.getBindingPath());
+            bindingObject = oWbModel.getProperty(_this.getBindingPath());
 
-            oWbModel.update(this.getBindingPath(true), {
+            oWbModel.update(_this.getBindingPath(true), {
                 CreateDate: bindingObject.CreateDate,
                 ConfirmDate: bindingObject.ConfirmDate,
                 GarageDepDate: bindingObject.GarageDepDate,
@@ -675,10 +676,11 @@ sap.ui.define([
                 CloseDate: bindingObject.CloseDate
             }, {
                 success: function () {
-                    MessageToast.show("Дата и время обновлено");
+                    MessageToast.show(_this.getBundle().getText("dateTimeUpdated"));
                 }
             });
-        },
+        }
+        ,
 
         onFuelTypeChange: function (oEvent) {
             var comboGasType = oEvent.getSource();
@@ -709,4 +711,5 @@ sap.ui.define([
             this.readBindingObject();
         }
     });
-});
+})
+;

@@ -22,7 +22,7 @@ public class RfcMeasureDoc extends ServletBase {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // From js
-        MeasureDoc measureDoc = gson.fromJson(requestAsString(request), MeasureDoc.class);
+        MeasureDoc measureDoc = gson.fromJson(request.getParameter("doc"), MeasureDoc.class); // requestAsString(request)
 
         try (Session session = ODataServiceFactory.getRfcSession().openSession()) {
             session.execute(measureDoc);
