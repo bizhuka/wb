@@ -221,6 +221,15 @@
                                                    id="id_wb_gas_spent"/>
                                         </f:fields>
                                     </f:FormElement>
+                                    <f:FormElement label="{i18n>totalConsumptionTop}">
+                                        <f:fields>
+                                            <Input type="Number" value="{wb>GasTopSpent}"
+                                                   enabled="{= ${wb>Status}===${status>/ARRIVED}}"
+                                                   liveChange="onFuelChanged"
+                                                   valueLiveUpdate="true"
+                                                   id="id_wb_gas_top_spent"/>
+                                        </f:fields>
+                                    </f:FormElement>
 
                                     <f:FormElement>
                                         <f:fields>
@@ -259,7 +268,8 @@
                                                     </Column>
                                                     <Column>
                                                         <header>
-                                                            <Label text="{i18n>consumption}" tooltip="{i18n>consumption}"/>
+                                                            <Label text="{i18n>consumption}"
+                                                                   tooltip="{i18n>consumption}"/>
                                                         </header>
                                                     </Column>
                                                     <Column>
@@ -354,7 +364,8 @@
                                 <f:formElements>
                                     <f:FormElement label="{i18n>created}">
                                         <f:fields>
-                                            <DateTimePicker change="on_save_dates" enabled="{= ${userInfo>/WbChangeDate}===true}"
+                                            <DateTimePicker change="on_save_dates"
+                                                            enabled="{= ${userInfo>/WbChangeDate}===true}"
                                                             value="{ path: 'wb>CreateDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
                                         </f:fields>
                                     </f:FormElement>
@@ -374,19 +385,22 @@
                                     <!--</f:FormElement>-->
                                     <f:FormElement label="{i18n>outGarage}">
                                         <f:fields>
-                                            <DateTimePicker change="on_save_dates" enabled="{= ${userInfo>/WbChangeDate}===true}"
+                                            <DateTimePicker change="on_save_dates"
+                                                            enabled="{= ${userInfo>/WbChangeDate}===true}"
                                                             value="{ path: 'wb>GarageDepDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
                                         </f:fields>
                                     </f:FormElement>
                                     <f:FormElement label="{i18n>inGarage}">
                                         <f:fields>
-                                            <DateTimePicker change="on_save_dates" enabled="{= ${userInfo>/WbChangeDate}===true}"
+                                            <DateTimePicker change="on_save_dates"
+                                                            enabled="{= ${userInfo>/WbChangeDate}===true}"
                                                             value="{ path: 'wb>GarageArrDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
                                         </f:fields>
                                     </f:FormElement>
                                     <f:FormElement label="{i18n>closed}">
                                         <f:fields>
-                                            <DateTimePicker change="on_save_dates" enabled="{= ${userInfo>/WbChangeDate}===true}"
+                                            <DateTimePicker change="on_save_dates"
+                                                            enabled="{= ${userInfo>/WbChangeDate}===true}"
                                                             value="{ path: 'wb>CloseDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
                                         </f:fields>
                                     </f:FormElement>

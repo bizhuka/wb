@@ -36,6 +36,10 @@ public class WialonServlet extends ServletBase {
     // Configuration
     private static ConnWialon connWialon;
 
+    private static double getValue(NodeList columns, int index) {
+        return Double.parseDouble(((Element) columns.item(index)).getAttribute("val"));
+    }
+
     public void init() {
         super.initialize("dd.MM.yyyy HH:mm:ss");
 
@@ -233,16 +237,46 @@ public class WialonServlet extends ServletBase {
             Document document = builder.parse(stream);
             stream.close();
 
+            // Read info about columns
+            int indexOdo = -1, indexMotoHour = -1, indexTopFuel = -1, indexFuel = -1;
+
+            NodeList headers = document.getDocumentElement().getElementsByTagName("header");
+            Element header = (Element) headers.item(0);
+            NodeList columns = header.getElementsByTagName("col");
+            int length = columns.getLength();
+            for (int i = 0; i < length; i++) {
+                Element column = (Element) columns.item(i);
+                String columnName = column.getAttribute("name");
+
+                if (columnName.equals("Пробег"))
+                    indexOdo = i;
+                else if (columnName.equals("Моточасы"))
+                    indexMotoHour = i;
+                else if (columnName.contains("ДАРТ") && columnName.contains("ППУА)"))
+                    indexTopFuel = i;
+                else if ((columnName.contains("ДАРТ") && columnName.contains("ТС)")) || columnName.equals("Потрачено по ДИРТ"))
+                    indexFuel = i;
+            }
+
+
             NodeList allRows = document.getDocumentElement().getElementsByTagName("row");
 
-            int length = allRows.getLength();
+            length = allRows.getLength();
             for (int i = 0; i < length; i++) {
                 Element el = (Element) allRows.item(i);
-                NodeList cols = el.getElementsByTagName("col");
+                columns = el.getElementsByTagName("col");
 
-                wlnSpent.OdoDiff += Double.parseDouble(((Element) cols.item(2)).getAttribute("val"));
-                wlnSpent.MotoHour += Double.parseDouble(((Element) cols.item(3)).getAttribute("val"));
-                wlnSpent.GasSpent += Double.parseDouble(((Element) cols.item(4)).getAttribute("val"));
+                if (indexOdo != -1)
+                    wlnSpent.OdoDiff += getValue(columns, indexOdo);
+
+                if (indexMotoHour != -1)
+                    wlnSpent.MotoHour += getValue(columns, indexMotoHour);
+
+                if (indexTopFuel != -1)
+                    wlnSpent.GasTopSpent += getValue(columns, indexTopFuel);
+
+                if (indexFuel != -1)
+                    wlnSpent.GasSpent += getValue(columns, indexFuel);
             }
         } catch (Exception e) {
             e.printStackTrace();

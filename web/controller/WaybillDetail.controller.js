@@ -242,6 +242,7 @@ sap.ui.define([
                         bindingObject.OdoDiff = (json.OdoDiff / 1000).toFixed(2);
                         bindingObject.MotoHour = (json.MotoHour / 3600).toFixed(2);
                         bindingObject.GasSpent = json.GasSpent.toFixed(2);
+                        bindingObject.GasTopSpent = json.GasTopSpent.toFixed(2);
 
                         // Not working!!!
                         oWbModel.setProperty(path, bindingObject);
@@ -250,6 +251,7 @@ sap.ui.define([
                         _this.byId("id_wb_odo_diff").setValue(bindingObject.OdoDiff);
                         _this.byId("id_wb_moto_hour").setValue(bindingObject.MotoHour);
                         _this.byId("id_wb_gas_spent").setValue(bindingObject.GasSpent);
+                        _this.byId("id_wb_gas_top_spent").setValue(bindingObject.GasTopSpent);
 
                         _this.onFuelChanged({
                             skipSave: true
@@ -275,8 +277,7 @@ sap.ui.define([
                     path: "/Drivers(Bukrs='" + bindingObject.Bukrs + "',Pernr='" + bindingObject.Driver + "')",
                     model: "wb"
                 });
-        }
-        ,
+        },
 
         on_tab_select: function (oEvent) {
             var key = oEvent.getParameter("selectedKey").split("-");
@@ -285,8 +286,7 @@ sap.ui.define([
             // Call if exist
             if (this[fm])
                 this[fm](oEvent);
-        }
-        ,
+        },
 
         handle_dr_f4Selected: function (oEvent) {
             var text = false;
@@ -329,8 +329,7 @@ sap.ui.define([
                     });
                 }
             });
-        }
-        ,
+        },
 
         handle_dr_f4: function () {
             var _this = this;
@@ -345,8 +344,7 @@ sap.ui.define([
                     _this.handle_dr_f4Selected(oEvent)
                 }
             });
-        }
-        ,
+        },
 
         handle_lgort_f4: function (oEvent) {
             var _this = this;
@@ -370,8 +368,7 @@ sap.ui.define([
                     });
                 }
             });
-        }
-        ,
+        },
 
         on_set_status: function (oEvt) {
             var button = oEvt.getSource();
@@ -546,6 +543,7 @@ sap.ui.define([
                             obj.OdoDiff = bindObj.OdoDiff;
                             obj.MotoHour = bindObj.MotoHour;
                             obj.GasSpent = bindObj.GasSpent;
+                            obj.GasTopSpent = bindObj.GasTopSpent;
                             _this.setNewStatus(obj);
                         },
 
@@ -558,8 +556,7 @@ sap.ui.define([
             }
 
             _this.setNewStatus(obj);
-        }
-        ,
+        },
 
         setNewStatus: function (obj) {
             var _this = this;
@@ -573,16 +570,14 @@ sap.ui.define([
                     _this.showError(null, _this.getBundle().getText("errWbUpdate"));
                 }
             });
-        }
-        ,
+        },
 
         on_wb_print: function () {
             this.navToPost({
                 url: "/././printDoc/templateWithData?",
                 waybillId: bindingObject.Id
             });
-        }
-        ,
+        },
 
         checkReqsStatus: function () {
             var content = this.byId('id_reqs_container').getContent();
@@ -598,8 +593,7 @@ sap.ui.define([
             }
 
             return true;
-        }
-        ,
+        },
 
         onFuelChanged: function (oEvent) {
             var _this = this;
@@ -659,8 +653,7 @@ sap.ui.define([
             }
             this.getModel("fuel").setProperty("/data", data);
             return data;
-        }
-        ,
+        },
 
         on_save_dates: function () {
             var _this = this;
@@ -679,8 +672,7 @@ sap.ui.define([
                     MessageToast.show(_this.getBundle().getText("dateTimeUpdated"));
                 }
             });
-        }
-        ,
+        },
 
         onFuelTypeChange: function (oEvent) {
             var comboGasType = oEvent.getSource();
@@ -711,5 +703,4 @@ sap.ui.define([
             this.readBindingObject();
         }
     });
-})
-;
+});

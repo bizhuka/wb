@@ -67,6 +67,8 @@ public class Waybill {
     @Basic
     public double gasSpent;
     @Basic
+    public double gasTopSpent;
+    @Basic
     public int delayReason = DelayReason.NO_DELAY;
 
     // Who last changed
@@ -328,5 +330,13 @@ public class Waybill {
 
     public void setChangeDate(Date changeDate) {
         this.changeDate = changeDate;
+    }
+
+    public double getGasTopSpent() {
+        return gasTopSpent;
+    }
+
+    public void setGasTopSpent(double gasTopSpent) {
+        this.gasTopSpent = gasTopSpent;
     }
 }

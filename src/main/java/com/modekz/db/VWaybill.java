@@ -72,6 +72,8 @@ public class VWaybill {
     @Basic
     public double gasSpent;
     @Basic
+    public double gasTopSpent;
+    @Basic
     public int delayReason = DelayReason.NO_DELAY;
 
     @Basic
@@ -358,5 +360,13 @@ public class VWaybill {
 
     public void setChangeDate(Date changeDate) {
         this.changeDate = changeDate;
+    }
+
+    public double getGasTopSpent() {
+        return gasTopSpent;
+    }
+
+    public void setGasTopSpent(double gasTopSpent) {
+        this.gasTopSpent = gasTopSpent;
     }
 }

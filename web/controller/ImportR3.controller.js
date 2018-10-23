@@ -187,7 +187,7 @@ sap.ui.define([
                         icon: "sap-icon://upload",
                         text: _this.getBundle().getText("import"),
                         press: function () {
-                            // Without this param all request will fail
+                            // Without this param all requests will fail
                             fileUploader.addHeaderParameter(new FileUploaderParameter({
                                 name: "slug",
                                 value: fileUploader.getValue()
