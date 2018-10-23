@@ -3,8 +3,9 @@ sap.ui.define([
     'sap/m/MessageToast',
     'sap/ui/core/MessageType',
     'sap/ui/unified/FileUploader',
+    'sap/ui/unified/FileUploaderParameter',
     'sap/ui/model/json/JSONModel'
-], function (BaseController, MessageToast, MessageType, FileUploader, JSONModel) {
+], function (BaseController, MessageToast, MessageType, FileUploader, FileUploaderParameter, JSONModel) {
     "use strict";
 
     return BaseController.extend("com.modekzWaybill.controller.ImportR3", {
@@ -83,6 +84,20 @@ sap.ui.define([
         loadFromFile: function (params) {
             var _this = this;
 
+            // All post request would be checked (So send GET first)
+            var csrfToken;
+            $.ajax({
+                url: './odata.svc/',
+                type: "GET",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRF-Token", "Fetch");
+                    xhr.setRequestHeader("cache", "false")
+                },
+                complete: function (xhr) {
+                    csrfToken = xhr.getResponseHeader("X-CSRF-Token");
+                }
+            });
+
             // Dynamic columns
             var columns = [];
             var cells = [];
@@ -116,9 +131,12 @@ sap.ui.define([
             var fileUploader = new FileUploader('id_csv_uploader', {
                 uploadUrl: params.url,
 
+                // Can change http headers
+                sendXHR: true,
+
                 uploadComplete: function (oEvent) {
                     // Whole data
-                    var response = JSON.parse($(oEvent.getParameter("response")).text());
+                    var response = JSON.parse(oEvent.getParameter("responseRaw"));
 
                     // Data model
                     var data = {
@@ -169,6 +187,18 @@ sap.ui.define([
                         icon: "sap-icon://upload",
                         text: _this.getBundle().getText("import"),
                         press: function () {
+                            // Without this param all request will fail
+                            fileUploader.addHeaderParameter(new FileUploaderParameter({
+                                name: "slug",
+                                value: fileUploader.getValue()
+                            }));
+
+                            // Pass anti forgery token
+                            fileUploader.addHeaderParameter(new FileUploaderParameter({
+                                name: "x-csrf-token",
+                                value: csrfToken
+                            }));
+
                             fileUploader.upload();
                         }
                     })]
