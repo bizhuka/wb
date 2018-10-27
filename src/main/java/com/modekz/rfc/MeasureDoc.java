@@ -43,6 +43,14 @@ public class MeasureDoc {
     @Parameter("IV_MOTO_HOUR")
     public String motoHour;
 
+    @Export
+    @Parameter("EV_DOCUM")
+    public String docum;
+
+    @Export
+    @Parameter("EV_AUFNR")
+    public String aufnr;
+
     @Table
     @Parameter("IT_GAS_SPENT_POS")
     public List<SpentPos> spents;

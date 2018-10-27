@@ -357,6 +357,23 @@ sap.ui.define([
                 if (navParams.hasOwnProperty(key))
                     url += ("&" + key + "=" + encodeURIComponent(navParams[key]));
             window.location = url;
+        },
+
+        getEoTextFilter: function (text) {
+            return new Filter({
+                filters: [
+                    new Filter("Equnr", FilterOperator.Contains, text),
+                    new Filter("Eqktx", FilterOperator.Contains, text),
+                    new Filter("TooName", FilterOperator.Contains, text),
+                    new Filter("License_num", FilterOperator.Contains, text),
+                    new Filter("N_class", FilterOperator.Contains, text),
+                    new Filter("Eqart", FilterOperator.Contains, text),
+                    new Filter("Typbz", FilterOperator.Contains, text),
+                    new Filter("Imei", FilterOperator.Contains, text),
+                    new Filter("Pltxt", FilterOperator.Contains, text)
+                ],
+                and: false
+            })
         }
     });
 

@@ -51,7 +51,7 @@
         </beginButton>
 
         <endButton>
-            <Button text="{i18n>cancel}" press="onChangeStatusClose"/>
+            <Button icon="sap-icon://accept" text="{i18n>cancel}" press="onChangeStatusClose"/>
         </endButton>
     </Dialog>
 </core:FragmentDefinition>

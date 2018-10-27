@@ -43,8 +43,11 @@ sap.ui.define([
                 // Initial dates
                 if (gui.origin === 'WB') {
                     this.owner.findById('id_reason_combo').setEnabled(false);
-                    this.fromTime = gui.fromDate.getTime();
-                    this.toTime = gui.toDate.getTime();
+                    if (gui.fromDate)
+                        this.fromTime = gui.fromDate.getTime();
+
+                    if (gui.toDate)
+                        this.toTime = gui.toDate.getTime();
                 }
 
                 // First time
@@ -60,7 +63,7 @@ sap.ui.define([
             onDateChanged: function () {
                 this.checkOkEnabled();
 
-                if (this.gui.origin === 'WB')
+                if (this.gui.origin === 'WB' && this.fromTime && this.toTime)
                     this.owner.findById('id_reason_combo').setEnabled(
                         this.gui.fromDate.getTime() !== this.fromTime ||
                         this.gui.toDate.getTime() !== this.toTime
@@ -93,7 +96,7 @@ sap.ui.define([
                     return;
 
                 // Oops
-                if (block.fromDate.getTime() > block.toDate.getTime()) {
+                if (!block.fromDate || !block.toDate || block.fromDate.getTime() > block.toDate.getTime()) {
                     MessageToast.show(this.owner.getBundle().getText("wrongPeriod"));
                     return;
                 }

@@ -79,10 +79,22 @@ public class WBPrintDoc {
 
         @Parameter("SPEED_MAX")
         public BigDecimal speedMax;
+
+        @Parameter("FROM_DATE")
+        public Date fromDate;
+
+        @Parameter("TO_DATE")
+        public Date toDate;
+
+        @Parameter("TOO_NAME")
+        public String tooName;
     }
 
     @BapiStructure
     public static class PrintReq {
+        @Parameter("NUM")
+        public String num;
+
         @Parameter("WAYBILL_ID")
         public String waybill_id;
 
@@ -92,6 +104,9 @@ public class WBPrintDoc {
         @Parameter("GLTRP")
         public Date gltrp;
 
+        @Parameter("DATE_DIFF")
+        public String dateDiff;
+
         @Parameter("PLTXT")
         public String pltxt;
 
@@ -100,6 +115,7 @@ public class WBPrintDoc {
 
         @Parameter("BEBER")
         public String beber;
+
     }
 
 }

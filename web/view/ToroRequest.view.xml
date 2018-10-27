@@ -92,6 +92,7 @@
 
 
                 </semantic:content>
+                <SearchField id="id_eo_search" search="onUpdateStartedSchedule" showRefreshButton="true" width="17.5rem"/>
                 <HBox>
                     <DatePicker id="dpFrom" change="onDatePickChange"/>
                     <DatePicker id="dpTo" change="onDatePickChange"/>

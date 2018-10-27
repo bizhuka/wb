@@ -154,22 +154,8 @@ sap.ui.define([
             var _this = this;
 
             var textFilter = null;
-            if (text) {
-                textFilter = new Filter({
-                    filters: [
-                        new Filter("Equnr", FilterOperator.Contains, text),
-                        new Filter("Eqktx", FilterOperator.Contains, text),
-                        new Filter("TooName", FilterOperator.Contains, text),
-                        new Filter("License_num", FilterOperator.Contains, text),
-                        new Filter("N_class", FilterOperator.Contains, text),
-                        new Filter("Eqart", FilterOperator.Contains, text),
-                        new Filter("Typbz", FilterOperator.Contains, text),
-                        new Filter("Imei", FilterOperator.Contains, text),
-                        new Filter("Pltxt", FilterOperator.Contains, text)
-                    ],
-                    and: false
-                });
-            }
+            if (text)
+                textFilter = _this.getEoTextFilter(text);
 
             // Read user permissions
             _this.filterItemsByUserWerks({

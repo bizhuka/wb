@@ -19,7 +19,7 @@
         </content>
 
         <beginButton>
-            <Button text="{i18n>cancel}" press="onMessageClose"/>
+            <Button icon="sap-icon://accept" text="{i18n>cancel}" press="onMessageClose"/>
         </beginButton>
     </Dialog>
 </core:FragmentDefinition>

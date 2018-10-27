@@ -88,7 +88,7 @@
         </content>
 
         <beginButton>
-            <Button text="{i18n>cancel}" press="closeMapDialog"/>
+            <Button icon="sap-icon://accept" text="{i18n>cancel}" press="closeMapDialog"/>
         </beginButton>
     </Dialog>
 </core:FragmentDefinition>

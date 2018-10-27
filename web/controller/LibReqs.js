@@ -53,10 +53,13 @@ sap.ui.define([
                 // Add fragment by code
                 var fragment = owner.createFragment("com.modekzWaybill.view.frag.ReqsTable", _this);
                 var container = owner.byId(uiData.container);
+                if (!container)
+                    container = owner.findById(uiData.container);
                 container[uiData.containerMethod].call(container, fragment);
 
                 // Define UI params
-                _this.owner.getView().setModel(new JSONModel(uiData), "ui");
+                this.uiModel = new JSONModel(uiData);
+                container.setModel(this.uiModel, "ui");
             },
 
             onBrowserEvent: function (oEvent) {
@@ -282,6 +285,43 @@ sap.ui.define([
                         })
                     }
                 });
+            },
+
+            setWaybillId: function (selectedReqs, waybillId, unset) {
+                // Update TORO header request
+                var owner = this.owner;
+                var oWbModel = owner.getModel("wb");
+
+                // If reqs updated
+                var cnt = 0;
+                var checkIsLast = function () {
+                    if (--cnt === 0)
+                        oWbModel.refresh();
+                };
+                for (var i = 0; i < selectedReqs.length; i++) {
+                    var item = oWbModel.getProperty(selectedReqs[i].sPath);
+
+                    // Only if is equal to original
+                    if (unset && parseInt(item.Waybill_Id) !== parseInt(waybillId))
+                        continue;
+                    cnt++;
+
+                    // Modify to new WAYBILL
+                    var reqHeader = {
+                        Objnr: item.Objnr,
+                        Waybill_Id: unset ? "-1" : waybillId
+                    };
+                    oWbModel.update("/ReqHeaders('" + item.Objnr + "')", reqHeader, {
+                        success: function () {
+                            checkIsLast();
+                        },
+
+                        error: function (err) {
+                            owner.showError(err, owner.getBundle().getText("errUpdateReqs"));
+                            checkIsLast();
+                        }
+                    })
+                }
             }
         });
     }

@@ -94,7 +94,7 @@
         <buttons>
             <Button tooltip="{i18n>noDriver}" icon="sap-icon://employee-rejections" press="setNoDriverDate"/>
             <Button tooltip="{i18n>accident}" enabled="false" icon="sap-icon://collision"/>
-            <Button tooltip="{i18n>cancel}"  icon="sap-icon://decline" press="onEoCloseDialog"/>
+            <Button icon="sap-icon://accept" text="{i18n>cancel}" press="onEoCloseDialog"/>
         </buttons>
     </Dialog>
 </core:FragmentDefinition>

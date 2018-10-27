@@ -77,6 +77,15 @@ public class Waybill {
     @Column(columnDefinition = "TIMESTAMP")
     public Date changeDate;
 
+    @Column(length = 20)
+    public String docum;
+
+    @Column(length = 12)
+    public String aufnr;
+
+    @Basic
+    public boolean withNoReqs = false;
+
     @PrePersist
     @PreUpdate
     public void persist() {
@@ -338,5 +347,29 @@ public class Waybill {
 
     public void setGasTopSpent(double gasTopSpent) {
         this.gasTopSpent = gasTopSpent;
+    }
+
+    public String getDocum() {
+        return docum;
+    }
+
+    public void setDocum(String docum) {
+        this.docum = docum;
+    }
+
+    public String getAufnr() {
+        return aufnr;
+    }
+
+    public void setAufnr(String aufnr) {
+        this.aufnr = aufnr;
+    }
+
+    public boolean isWithNoReqs() {
+        return withNoReqs;
+    }
+
+    public void setWithNoReqs(boolean withNoReqs) {
+        this.withNoReqs = withNoReqs;
     }
 }

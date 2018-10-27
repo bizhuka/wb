@@ -49,7 +49,7 @@
         </content>
 
         <beginButton>
-            <Button text="{i18n>cancel}" press="closeFuelDialog"/>
+            <Button icon="sap-icon://accept" text="{i18n>cancel}" press="closeFuelDialog"/>
         </beginButton>
     </Dialog>
 </core:FragmentDefinition>

@@ -2,6 +2,7 @@ sap.ui.define([
     'com/modekzWaybill/controller/BaseController',
     'sap/m/MessageToast',
     'sap/m/Label',
+    'sap/m/ButtonType',
     'sap/m/MessageBox',
     'sap/ui/core/MessageType',
     'sap/ui/model/Filter',
@@ -9,7 +10,7 @@ sap.ui.define([
     'sap/ui/core/UIComponent',
     'com/modekzWaybill/controller/LibReqs',
     'com/modekzWaybill/controller/LibChangeStatus'
-], function (BaseController, MessageToast, Label, MessageBox, MessageType, Filter, FilterOperator, UIComponent, LibReqs, LibChangeStatus) {
+], function (BaseController, MessageToast, Label, ButtonType, MessageBox, MessageType, Filter, FilterOperator, UIComponent, LibReqs, LibChangeStatus) {
     "use strict";
 
     var C_FIX_COLUMN = 2;
@@ -17,6 +18,7 @@ sap.ui.define([
     var eoFilterInfo = {
         classFilter: null,
         classFilterPrev: null,
+        textFilter: "",
         wholeFilterPrev: null
     };
 
@@ -83,7 +85,7 @@ sap.ui.define([
         onReqStateChange: function (oEvent) {
             // Show additional columns if have enough space
             var reqLayout = oEvent ? oEvent.getParameter("layout") : this.getModel("appView").getProperty("/reqLayout");
-            this.getModel("ui").setProperty("/showOptColumn", reqLayout === "TwoColumnsBeginExpanded" || reqLayout === "OneColumn");
+            this.libReqs.uiModel.setProperty("/showOptColumn", reqLayout === "TwoColumnsBeginExpanded" || reqLayout === "OneColumn");
         },
 
         setReqLayout: function (newLayout) {
@@ -205,17 +207,21 @@ sap.ui.define([
         },
 
         onUpdateStartedSchedule: function () {
-            if (eoFilterInfo.classFilterPrev === eoFilterInfo.classFilter)
+            var _this = this;
+            var textFilter = _this.byId('id_eo_search').getValue();
+
+            if (eoFilterInfo.classFilterPrev === eoFilterInfo.classFilter && eoFilterInfo.textFilter === textFilter)
                 return;
             eoFilterInfo.classFilterPrev = eoFilterInfo.classFilter;
+            eoFilterInfo.textFilter = textFilter;
 
             this.filterItemsByUserWerks({
                 field: "Swerk",
                 and: eoFilterInfo.classFilter,
 
                 ok: function (okFilter) {
-                    eoFilterInfo.wholeFilterPrev = okFilter;
-                    this.tbSchedule.getBinding("items").filter(okFilter);
+                    eoFilterInfo.wholeFilterPrev = _this.makeAndFilter(okFilter, _this.getEoTextFilter(textFilter));
+                    this.tbSchedule.getBinding("items").filter(eoFilterInfo.wholeFilterPrev);
                 }
             });
         },
@@ -412,6 +418,9 @@ sap.ui.define([
             }
 
             this.onUpdateStartedSchedule();
+
+            // If have no reqs
+            this.checkHasRightNoReq();
         },
 
         onEquipSelected: function () {
@@ -432,6 +441,22 @@ sap.ui.define([
                 createButton.setIcon(sap.ui.core.IconPool.getIconURI("sap-icon://create-form"));
                 createButton.setText(this.getBundle().getText("createWb"));
             }
+
+            // If have no reqs
+            this.checkHasRightNoReq();
+        },
+
+        checkHasRightNoReq: function () {
+            // Show in button text
+            var createButton = this.byId('id_wb_create_button');
+            if (!createButton.getVisible())
+                return;
+
+            var selectedReqs = this.libReqs.reqTable.getSelectedContexts(true);
+            var withNoReqs = (selectedReqs.length === 0) && this.getModel("userInfo").getProperty("/WbCreateNoReq");
+            createButton.setType(withNoReqs ? ButtonType.Reject : ButtonType.Default);
+            if (withNoReqs)
+                createButton.setText(createButton.getText() + " - " + this.getBundle().getText("noReqs2"));
         },
 
         checkEoFilter: function () {
@@ -454,6 +479,13 @@ sap.ui.define([
 
         checkReqs: function (selectedReqs, oWaybill, callBack) {
             var _this = this;
+
+            if (selectedReqs.length === 0 && oWaybill.WithNoReqs) {
+                // Second check
+                _this.checkSchedule(oWaybill, callBack);
+                return;
+            }
+
             var oWbModel = _this.getModel("wb");
             var reqFilter = [];
 
@@ -491,6 +523,7 @@ sap.ui.define([
 
         onCreateWaybill: function () {
             // get selection
+            var _this = this;
             var selectedReqs = this.libReqs.reqTable.getSelectedContexts(true);
             var eoItem = this.tbSchedule.getSelectedItem();
 
@@ -498,13 +531,19 @@ sap.ui.define([
             if (!this.checkEoFilter())
                 return;
 
-            if (!selectedReqs || selectedReqs.length === 0 || !eoItem) {
-                MessageBox.warning(_this.getBundle().getText("selectItems"));
-                return;
+            var haveRights = this.getModel("userInfo").getProperty("/WbCreateNoReq");
+            if (selectedReqs.length === 0 || !eoItem) {
+                if (haveRights)
+                    MessageToast.show(this.getBundle().getText("selectItems"));
+                else
+                    MessageBox.warning(this.getBundle().getText("selectItems"));
+
+                // If no car or do not have permission
+                if (!eoItem || !haveRights)
+                    return;
             }
 
             // Prepare objects
-            var _this = this;
             var oWbModel = this.getModel("wb");
             eoItem = oWbModel.getProperty(eoItem.getBindingContextPath());
 
@@ -517,7 +556,8 @@ sap.ui.define([
                 CreateDate: new Date(1),
                 FromDate: fromDate,
                 ToDate: toDate,
-                Status: _this.status.CREATED
+                Status: _this.status.CREATED,
+                WithNoReqs: selectedReqs.length === 0
             };
 
             var createWbDialog = new LibChangeStatus(_this);
@@ -531,7 +571,7 @@ sap.ui.define([
                 dateEdit: true,
 
                 check: function (block) {
-                    if (toDate.getTime() - fromDate.getTime() > block.toDate.getTime() - block.fromDate.getTime()) {
+                    if (!oWaybill.WithNoReqs && toDate.getTime() - fromDate.getTime() > block.toDate.getTime() - block.fromDate.getTime()) {
                         MessageToast.show(_this.getBundle().getText("errNoEnoughDays"));
                         block.afterChecked(false);
                         return;
@@ -558,23 +598,8 @@ sap.ui.define([
                     oWbModel.create('/Waybills', oWaybill, {
                         success: function (ret) {
                             MessageToast.show(_this.getBundle().getText("okCreateItem", [ret.Id]));
-                            oWbModel.refresh();
 
-                            // Update TORO header request
-                            for (var i = 0; i < selectedReqs.length; i++) {
-                                var item = oWbModel.getProperty(selectedReqs[i].sPath);
-
-                                // Modify to new WAYBILL
-                                var reqHeader = {
-                                    Objnr: item.Objnr,
-                                    Waybill_Id: ret.Id
-                                };
-                                oWbModel.update("/ReqHeaders('" + item.Objnr + "')", reqHeader, {
-                                    error: function (err) {
-                                        _this.showError(err, _this.getBundle().getText("errUpdateReqs"));
-                                    }
-                                })
-                            }
+                            _this.libReqs.setWaybillId(selectedReqs, ret.Id);
                         },
 
                         error: function (err) {

@@ -17,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @WebServlet(urlPatterns = {"/printDoc/*"})
 public class RfcPrintDoc extends ServletBase {
@@ -64,12 +65,15 @@ public class RfcPrintDoc extends ServletBase {
             PreparedStatement statement = connection.prepareStatement("select * from reqheader where waybill_id = ?");
             statement.setLong(1, waybillId);
             ResultSet rs = statement.executeQuery();
+            int num = 0;
             while (rs.next()) {
                 WBPrintDoc.PrintReq req = new WBPrintDoc.PrintReq();
 
+                req.num = String.valueOf(++num);
                 req.waybill_id = rs.getString("waybill_id");
                 req.gstrp = rs.getDate("gstrp");
                 req.gltrp = rs.getDate("gltrp");
+                req.dateDiff = String.valueOf(TimeUnit.DAYS.convert(req.gltrp.getTime() - req.gstrp.getTime(), TimeUnit.MILLISECONDS));
                 req.pltxt = rs.getString("pltxt");
                 req.stand = rs.getString("stand");
                 req.beber = rs.getString("beber");
@@ -78,7 +82,7 @@ public class RfcPrintDoc extends ServletBase {
             }
 
             statement = connection.prepareStatement(
-                    "select CURRENT_DATE as datum, w.butxt, d.fio, e.eqktx, e.license_num, e.speed_max, e.pltxt, e.n_class, waybill.*\n" +
+                    "select CURRENT_DATE as datum, w.butxt, d.fio, e.eqktx, e.license_num, e.speed_max, e.pltxt, e.n_class, e.tooname, waybill.*\n" +
                             "from waybill\n" +
                             "left outer join werk as w on waybill.werks = w.werks\n" +
                             "left outer join driver as d on waybill.bukrs = d.bukrs and waybill.driver = d.pernr\n" +
@@ -101,6 +105,9 @@ public class RfcPrintDoc extends ServletBase {
                 root.eqktx = rs.getString("eqktx");
                 root.licenseNum = rs.getString("license_num");
                 root.speedMax = BigDecimal.valueOf(rs.getDouble("speed_max"));
+                root.fromDate = rs.getDate("fromdate");
+                root.toDate = rs.getDate("todate");
+                root.tooName = rs.getString("tooname");
 
                 docs.add(root);
             }

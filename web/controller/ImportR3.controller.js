@@ -77,7 +77,11 @@ sap.ui.define([
                     "+ / -",
                     bundle.getText("grpRole"),
                     bundle.getText("indRole")
-                ]
+                ],
+                sortBy: new sap.ui.model.Sorter("COL_1", null, function (oContext) {
+                    var v = oContext.getProperty("COL_1");
+                    return {key: v, text: v};
+                })
             });
         },
 
@@ -161,6 +165,10 @@ sap.ui.define([
                     // Set new data
                     dialog.setModel(new JSONModel(data));
 
+                    // Group or sort
+                    if (params.sortBy)
+                        table.getBinding("items").sort(params.sortBy);
+
                     _this.showUpdateInfo(response, {
                         title: params.title,
                         afterUpdate: function () {
@@ -209,6 +217,7 @@ sap.ui.define([
                 buttons: [
                     new sap.m.Button({
                         icon: "sap-icon://accept",
+                        text: _this.getBundle().getText("cancel"),
                         press: function () {
                             dialog.close();
                         }

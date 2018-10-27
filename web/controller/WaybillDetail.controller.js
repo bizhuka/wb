@@ -150,7 +150,7 @@ sap.ui.define([
                     var reqsText = _this.getBundle().getText(reqsOk ? "reqs" : "cancelledReqs");
 
                     // Change reqs UI
-                    _this.getModel("ui").setProperty("/showWbColumn", !reqsOk);
+                    _this.libReqs.uiModel.setProperty("/showWbColumn", !reqsOk);
                     reqsTab.setIcon(sap.ui.core.IconPool.getIconURI(reqsOk ? "multiselect-all" : "multiselect-none"));
                     reqsTab.setTooltip(reqsText);
                     _this.byId("id_reqs_title").setText(reqsText);
@@ -396,8 +396,14 @@ sap.ui.define([
                     }
 
                     if (parseInt(bindingObject.Req_Cnt) === 0) {
-                        this.showError(null, this.getBundle().getText("noReqs"));
-                        return;
+                        if (bindingObject.WithNoReqs)
+                            MessageToast.show(this.getBundle().getText("noReqs"));
+                        else {
+                            this.showError(null, this.getBundle().getText("noReqs"));
+                            allTabs.setSelectedKey("id_reqs_container");
+                        }
+                        if (!bindingObject.WithNoReqs)
+                            return;
                     }
 
                     var changeStat = new LibChangeStatus(_this);
@@ -486,6 +492,13 @@ sap.ui.define([
                         return;
                     }
 
+                    // Check again
+                    if (parseInt(bindingObject.Req_Cnt) === 0) {
+                        this.showError(null, this.getBundle().getText("noReqs"));
+                        allTabs.setSelectedKey("id_reqs_container");
+                        return;
+                    }
+
                     // Reqs not closed yet
                     if (!this.checkReqsStatus())
                         return;
@@ -544,6 +557,8 @@ sap.ui.define([
                             obj.MotoHour = bindObj.MotoHour;
                             obj.GasSpent = bindObj.GasSpent;
                             obj.GasTopSpent = bindObj.GasTopSpent;
+                            obj.Docum = doc.docum;
+                            obj.Aufnr = doc.aufnr;
                             _this.setNewStatus(obj);
                         },
 
@@ -628,7 +643,7 @@ sap.ui.define([
 
                 // Check Lgort
                 if (!data[i].GasLgort && !oEvent.skipMessage) {
-                    MessageToast.show(_this.getBundle.getText("noLgort", [i + 1]));
+                    MessageToast.show(_this.getBundle().getText("noLgort", [i + 1]));
                     return false;
                 }
 
@@ -701,6 +716,87 @@ sap.ui.define([
 
             // Read from DB
             this.readBindingObject();
+        },
+
+        on_add_reqs: function () {
+            var _this = this;
+            var oWbModel = _this.getModel("wb");
+
+            // Set or unset waybillId
+            var setWaybillId = function (unset) {
+                var selectedReqs = _this.addReqsLib.reqTable.getSelectedContexts(true);
+                _this.addReqsLib.setWaybillId(selectedReqs, bindingObject.Id, unset);
+                changeReqsDialog.close();
+                _this.addReqsLib.reqTable.removeSelections(true);
+            };
+
+            var changeReqsDialog = new sap.m.Dialog('id_add_reqs_dialog', {
+                title: _this.getBundle().getText("addReqs"),
+                contentWidth: "85%",
+                model: true,
+
+                buttons: [
+                    new sap.m.Button({
+                        icon: "sap-icon://positive",
+                        press: function () {
+                            setWaybillId(false);
+                        }
+                    }),
+
+                    new sap.m.Button({
+                        icon: "sap-icon://negative",
+                        press: function () {
+                            setWaybillId(true);
+                        }
+                    }),
+
+                    new sap.m.Button({
+                        icon: "sap-icon://accept",
+                        text: _this.getBundle().getText("cancel"),
+                        press: function () {
+                            changeReqsDialog.close();
+                        }
+                    })],
+
+                afterClose: function () {
+                    changeReqsDialog.destroy();
+                }
+            });
+            changeReqsDialog.addStyleClass(_this.getContentDensityClass());
+
+            // wtf?
+            changeReqsDialog.setModel(oWbModel, "wb");
+
+            // And another PM requests in dialog
+            _this.addReqsLib = new LibReqs(_this, {
+                showWbColumn: true,
+                selectMode: sap.m.ListMode.MultiSelect,
+                container: changeReqsDialog.getId(),
+                statuses: _this.getResourceArray(_this.status.STATUS_TEXTS).filter(function (pair) {
+                    return pair.key === _this.status.NOT_CREATED || pair.key === _this.status.REJECTED;
+                }),
+
+                getFilter: function () {
+                    // "0" & Ktsch === N_class
+                    var txtKtsch = oWbModel.getProperty("/Equipments('" + bindingObject.Equnr + "')").N_class.substr(1);
+
+                    return _this.makeAndFilter(
+                        // Only use curtain class
+                        new Filter("Ktsch", FilterOperator.EQ, txtKtsch),
+
+                        new Filter({
+                            filters: [
+                                new Filter("Waybill_Id", FilterOperator.EQ, -1), // .EQ NOT_CREATED
+                                new Filter("Status", FilterOperator.EQ, _this.status.REJECTED),
+                                // Or show current WB
+                                new Filter("Waybill_Id", FilterOperator.EQ, bindingObject.Id)
+                            ],
+                            and: false
+                        }))
+                }
+            });
+
+            changeReqsDialog.open();
         }
     });
 });

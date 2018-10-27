@@ -143,25 +143,30 @@ public class CsvUploader extends ServletBase {
                 String grpRole = item.data[1].trim();
                 String indRole = item.data[2].trim();
 
-                boolean bFind = false;
-                for (GroupRole groupRole : grpRoles)
+                DbUpdateInfoPlus.Item findItem = null;
+                for (int i = 0; i < grpRoles.size(); i++) {
+                    GroupRole groupRole = grpRoles.get(i);
                     if (grpRole.equals(groupRole.GrpRole) && indRole.equals(groupRole.IndRole)) {
-                        bFind = true;
+                        findItem = allItems.get(i);
                         break;
                     }
+                }
 
                 PreparedStatement prepStat = null;
-                if ("+".equals(operation) && !bFind)
+                if ("+".equals(operation) && findItem == null)
                     prepStat = prepStatInsert;
 
-                if ("-".equals(operation) && bFind)
-                    prepStat = prepStatInsert;
+                if ("-".equals(operation) && findItem != null)
+                    prepStat = prepStatDelete;
 
                 if (prepStat == null)
                     continue;
 
                 // Add to log
-                allItems.add(item);
+                if (findItem != null)
+                    findItem.data[0] = operation;
+                else
+                    allItems.add(item);
 
                 prepStat.setString(1, grpRole);
                 prepStat.setString(2, indRole);

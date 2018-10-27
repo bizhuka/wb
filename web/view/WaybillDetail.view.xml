@@ -21,14 +21,23 @@
 
             <statuses>
                 <ObjectStatus
-                        title="{i18n>delayReason}"
-                        text="{ path: 'wb>DelayReason', formatter: '.getDelayReasonText'}"
+                        title="{i18n>documAndAufnr}"
+                        text="{ path: 'wb>Docum', formatter: '.alphaOut'} - { path: 'wb>Aufnr', formatter: '.alphaOut'}"
+                        visible="{= ${wb>Status}===${status>/CLOSED}}"
+                        state="Success"/>
+
+                <ObjectStatus
+                        text="{i18n>created}: {i18n>noReqs2}"
+                        visible="{wb>WithNoReqs}"
+                        state="Warning"/>
+
+                <ObjectStatus
+                        text="{i18n>delayReason}: { path: 'wb>DelayReason', formatter: '.getDelayReasonText'}"
                         visible="{= ${wb>DelayReason}!==0}"
                         state="Warning"/>
 
                 <ObjectStatus
-                        title="{i18n>too}"
-                        text="{wb>TooName}"
+                        text="{i18n>too}: {wb>TooName}"
                         visible="{= ${wb>TooName}!=='-'}"
                         state="Warning"/>
             </statuses>
@@ -118,10 +127,12 @@
                     </f:Form>
                 </IconTabFilter>
 
-                <IconTabFilter id="id_reqs_container" icon="sap-icon://multiselect-all" tooltip="{i18n>reqs}">
+                <IconTabFilter id="id_reqs_container" key="id_reqs_container" icon="sap-icon://multiselect-all" tooltip="{i18n>reqs}">
                     <OverflowToolbar design="Transparent">
                         <Title id="id_reqs_title" text="{i18n>reqs}"/>
                         <ToolbarSpacer/>
+                        <Button press="on_add_reqs" icon="sap-icon://add-activity" tooltip="{i18n>addReqs}"
+                                visible="{= (${wb>WithNoReqs}||${userInfo>/WbLateAddReqs}===true)&amp;&amp;${wb>Status}!==${status>/REJECTED}}"/>
                     </OverflowToolbar>
 
                     <!--<core:Fragment fragmentName="com.modekzWaybill.view.frag.ReqsTable" type="XML"/>-->
