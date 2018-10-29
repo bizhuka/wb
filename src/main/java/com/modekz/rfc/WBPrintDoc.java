@@ -107,6 +107,9 @@ public class WBPrintDoc {
         @Parameter("DATE_DIFF")
         public String dateDiff;
 
+        @Parameter("DAUNO")
+        public String duration;
+
         @Parameter("PLTXT")
         public String pltxt;
 

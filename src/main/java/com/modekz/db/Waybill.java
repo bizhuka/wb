@@ -177,8 +177,6 @@ public class Waybill {
         } finally {
             em.close();
         }
-
-
     }
 
     public long getId() {

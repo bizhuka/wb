@@ -64,7 +64,7 @@ sap.ui.define([
                 _this.owner.updateDbFrom({
                     link: "/r3/DRIVER?_persist=true",
 
-                    title: _this.getBundle().getText("drivers"),
+                    title: _this.owner.getBundle().getText("drivers"),
 
                     afterUpdate: function () {
                         _this.table.getBinding("items").refresh();

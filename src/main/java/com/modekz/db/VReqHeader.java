@@ -1,9 +1,8 @@
 package com.modekz.db;
 
+import com.modekz.db.flag.ReqStatusReason;
 import com.sap.db.annotations.Immutable;
-import org.hibersap.annotations.Convert;
 import org.hibersap.annotations.Parameter;
-import org.hibersap.conversion.BooleanConverter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -99,13 +98,19 @@ public class VReqHeader {
     @Column(columnDefinition = "NVARCHAR(100)")
     public String reason;
     @Basic
-    public int statusReason;
+    public int statusReason = ReqStatusReason.REQ_NEW;
     @Basic
     public double motoHour;
     @Column(columnDefinition = "TIMESTAMP")
     public Date fromDate;
     @Column(columnDefinition = "TIMESTAMP")
     public Date toDate;
+    // ---------------------------------------
+    @Basic
+    @Column(columnDefinition = "NVARCHAR(150)")
+    public String description;
+    @Basic
+    public int status;
 
     public String getAufnr() {
         return Aufnr;
@@ -314,14 +319,6 @@ public class VReqHeader {
     public void setKtschTxt(String ktschTxt) {
         KtschTxt = ktschTxt;
     }
-
-    // ---------------------------------------
-    @Basic
-    @Column(columnDefinition = "NVARCHAR(150)")
-    public String description;
-
-    @Basic
-    public int status;
 
     public int getStatus() {
         return status;

@@ -173,7 +173,11 @@ sap.ui.define([
                         return;
 
                     var items = _this.tbSchedule.getItems();
+
+                    // Without time!
                     var dFrom = _this.dpFrom.getDateValue();
+                    dFrom.setHours(0, 0, 0, 0);
+
                     var showOne = _this.getModel("userInfo").getProperty("/WbShowOne") === true;
 
                     for (var i = 0; i < items.length; i++) {
@@ -220,7 +224,9 @@ sap.ui.define([
                 and: eoFilterInfo.classFilter,
 
                 ok: function (okFilter) {
-                    eoFilterInfo.wholeFilterPrev = _this.makeAndFilter(okFilter, _this.getEoTextFilter(textFilter));
+                    eoFilterInfo.wholeFilterPrev = textFilter ?
+                        _this.makeAndFilter(okFilter, _this.getEoTextFilter(textFilter)) :
+                        okFilter;
                     this.tbSchedule.getBinding("items").filter(eoFilterInfo.wholeFilterPrev);
                 }
             });
@@ -420,13 +426,16 @@ sap.ui.define([
             this.onUpdateStartedSchedule();
 
             // If have no reqs
-            this.checkHasRightNoReq();
+            this.onEquipSelected();
         },
 
         onEquipSelected: function () {
             var createButton = this.byId('id_wb_create_button');
             var eoItem = this.tbSchedule.getSelectedItem();
-            if (!eoItem || !this.getModel("userInfo").getProperty("/WbCreateNew")) {
+            var selectedReqs = this.libReqs.reqTable.getSelectedContexts(true);
+            var userInfo = this.getModel("userInfo");
+
+            if (!eoItem || !userInfo.getProperty("/WbCreateNew")) {
                 createButton.setVisible(false);
                 return;
             }
@@ -434,29 +443,16 @@ sap.ui.define([
 
             // Change appearance
             eoItem = eoItem.getBindingContext("wb").getObject();
+            var withNoReqs = (selectedReqs.length === 0) && userInfo.getProperty("/WbCreateNoReq");
+            var addText = withNoReqs ? " - " + this.getBundle().getText("noReqs2") : "";
             if (eoItem.TooName !== '-') {
                 createButton.setIcon(sap.ui.core.IconPool.getIconURI("sap-icon://request"));
-                createButton.setText(this.getBundle().getText("createWithToo"));
+                createButton.setText(this.getBundle().getText("createWithToo") + addText);
             } else {
                 createButton.setIcon(sap.ui.core.IconPool.getIconURI("sap-icon://create-form"));
-                createButton.setText(this.getBundle().getText("createWb"));
+                createButton.setText(this.getBundle().getText("createWb") + addText);
             }
-
-            // If have no reqs
-            this.checkHasRightNoReq();
-        },
-
-        checkHasRightNoReq: function () {
-            // Show in button text
-            var createButton = this.byId('id_wb_create_button');
-            if (!createButton.getVisible())
-                return;
-
-            var selectedReqs = this.libReqs.reqTable.getSelectedContexts(true);
-            var withNoReqs = (selectedReqs.length === 0) && this.getModel("userInfo").getProperty("/WbCreateNoReq");
             createButton.setType(withNoReqs ? ButtonType.Reject : ButtonType.Default);
-            if (withNoReqs)
-                createButton.setText(createButton.getText() + " - " + this.getBundle().getText("noReqs2"));
         },
 
         checkEoFilter: function () {
@@ -599,7 +595,11 @@ sap.ui.define([
                         success: function (ret) {
                             MessageToast.show(_this.getBundle().getText("okCreateItem", [ret.Id]));
 
-                            _this.libReqs.setWaybillId(selectedReqs, ret.Id);
+                            _this.libReqs.setWaybillId(selectedReqs, {
+                                waybillId: ret.Id
+                            });
+
+                            _this.tbSchedule.removeSelections(true);
                         },
 
                         error: function (err) {

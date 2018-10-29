@@ -18,7 +18,7 @@
     </filter>
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/tc*</url-pattern>
     </filter-mapping>
 
     <servlet>

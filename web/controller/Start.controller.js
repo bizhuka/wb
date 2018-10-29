@@ -24,6 +24,54 @@ sap.ui.define([
 
         _onObjectMatched: function () {
             this.getModel("appView").setProperty("/appWidthLimited", true);
+
+            this.countTile({
+                model: "wbTile",
+                url: "/count/wb",
+                texts: "statusTexts",
+                tileStatus: 10,
+                textRes: this.status.STATUS_TEXTS
+            });
+
+            this.countTile({
+                model: "reqTile",
+                url: "/count/req",
+                texts: "reqStatusTexts",
+                tileStatus: 100,
+                textRes: this.status.REQ_STATUS_TEXTS
+            });
+        },
+
+        countTile: function (params) {
+            var _this = this;
+            var data = {
+                busy: true,
+                count: 0,
+                tooltip: ""
+            };
+            var dataModel = new JSONModel(data);
+            this.setModel(dataModel, params.model);
+
+            // After counting
+            var fnComplete = function () {
+                data.busy = false;
+                var items = jsonModel.getProperty("/");
+                data.tooltip = _this.toLocaleDateTime(new Date());
+                for (var i = 0; i < items.length; i++) {
+                    var item = items[i];
+                    if (item.status === params.tileStatus)
+                        data.count = item.cnt;
+
+                    data.tooltip += "\n" + _this.getResText(params.textRes, item.status) + " - " + item.cnt;
+                }
+
+                // Update ui
+                dataModel.setProperty("/", data);
+            };
+
+            var jsonModel = new JSONModel(params.url);
+            jsonModel.attachRequestFailed(fnComplete);
+            jsonModel.attachRequestCompleted(fnComplete);
         },
 
         showToroRequest: function () {

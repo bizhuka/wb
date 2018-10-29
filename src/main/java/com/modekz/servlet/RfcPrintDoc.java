@@ -73,7 +73,11 @@ public class RfcPrintDoc extends ServletBase {
                 req.waybill_id = rs.getString("waybill_id");
                 req.gstrp = rs.getDate("gstrp");
                 req.gltrp = rs.getDate("gltrp");
-                req.dateDiff = String.valueOf(TimeUnit.DAYS.convert(req.gltrp.getTime() - req.gstrp.getTime(), TimeUnit.MILLISECONDS));
+                req.dateDiff = String.valueOf(
+                        TimeUnit.DAYS.convert(req.gltrp.getTime() - req.gstrp.getTime(), TimeUnit.MILLISECONDS) + 1);
+                BigDecimal hours = rs.getBigDecimal("duration");
+                if (BigDecimal.ZERO.compareTo(hours) != 0)
+                    req.duration = "(" + hours + ")";
                 req.pltxt = rs.getString("pltxt");
                 req.stand = rs.getString("stand");
                 req.beber = rs.getString("beber");

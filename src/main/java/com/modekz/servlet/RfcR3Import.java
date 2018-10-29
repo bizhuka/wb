@@ -177,7 +177,7 @@ public class RfcR3Import extends ServletBase {
         return new R3Clause(
                 "SELECT d FROM Driver d WHERE d.Bukrs",
                 Driver.class,
-                new String[]{"Bukrs", "Pernr", "ValidDate"},
+                new String[]{"Bukrs", "Pernr"},
                 "DR~BE",
                 getBukrsR3Clause(em, userInfo)) {
 
@@ -227,7 +227,7 @@ public class RfcR3Import extends ServletBase {
         return new R3Clause(
                 "SELECT e FROM Equipment e WHERE e.Swerk",
                 Equipment.class,
-                new String[]{"Equnr", "NoDriverDate"},
+                new String[]{"Equnr"},
                 "ILOA~SWERK",
                 getWerksR3Clause(userInfo)) {
 
@@ -245,7 +245,7 @@ public class RfcR3Import extends ServletBase {
         return new R3Clause(
                 "SELECT s FROM Schedule s WHERE s.Werks",
                 Schedule.class,
-                new String[]{"Werks", "Datum", "Equnr", "Waybill_Id"},
+                new String[]{"Werks", "Datum", "Equnr"},
                 "AFIH~IWERK",
                 getWerksR3Clause(userInfo)) {
 
@@ -263,7 +263,7 @@ public class RfcR3Import extends ServletBase {
         return new R3Clause(
                 "SELECT r FROM ReqHeader r WHERE r.Iwerk",
                 ReqHeader.class,
-                new String[]{"Objnr", "Waybill_Id"},
+                new String[]{"Objnr"},
                 "AFIH~IWERK",
                 getWerksR3Clause(userInfo)) {
 
@@ -386,7 +386,8 @@ public class RfcR3Import extends ServletBase {
             // Copy value
             for (Field fld : copyFields) {
                 Object src = fld.get(r3Item);
-                fld.set(dbItem, src);
+                if (src != null)
+                    fld.set(dbItem, src);
             }
         }
 

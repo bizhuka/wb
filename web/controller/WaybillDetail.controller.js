@@ -601,7 +601,8 @@ sap.ui.define([
 
             for (var i = 0; i < items.length; i++) {
                 var item = items[i].getBindingContext("wb").getObject();
-                if (item.StatusReason === 0) {
+                if (item.StatusReason === this.status.REQ_NEW ||
+                    item.StatusReason === this.status.REQ_SET) {
                     MessageToast.show(this.getBundle().getText("reqsNotConfirmed", [i + 1]));
                     return false;
                 }
@@ -616,7 +617,7 @@ sap.ui.define([
             var bindObj = oWbModel.getProperty(this.getBindingPath());
 
             // From wialon
-            var gasTotalSpent = parseFloat(bindObj.GasSpent);
+            var gasTotalSpent = parseFloat(bindObj.GasSpent ? bindObj.GasSpent : "0");
 
             // No need
             var data = this.getModel("fuel").getProperty("/data");
@@ -625,6 +626,9 @@ sap.ui.define([
 
             for (var i = 0; i < data.length; i++) {
                 var row = data[i];
+
+                // Blank equals 0
+                row.GasGiven = row.GasGiven ? row.GasGiven : "0";
                 var totalBefore = parseFloat(row.GasBefore) + parseFloat(row.GasGiven);
 
                 gasTotalSpent -= totalBefore;
@@ -725,9 +729,11 @@ sap.ui.define([
             // Set or unset waybillId
             var setWaybillId = function (unset) {
                 var selectedReqs = _this.addReqsLib.reqTable.getSelectedContexts(true);
-                _this.addReqsLib.setWaybillId(selectedReqs, bindingObject.Id, unset);
+                _this.addReqsLib.setWaybillId(selectedReqs, {
+                    waybillId: bindingObject.Id,
+                    unset: unset
+                });
                 changeReqsDialog.close();
-                _this.addReqsLib.reqTable.removeSelections(true);
             };
 
             var changeReqsDialog = new sap.m.Dialog('id_add_reqs_dialog', {

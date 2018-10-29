@@ -19,12 +19,14 @@
 
                     <GenericTile class="sapUiTinyMarginBegin tileLayout"
                                  header="{i18n>toroReqs}"
-                                 subheader="{i18n>count}"
+                                 subheader="∑"
                                  press="showToroRequest"
-                                 visible="{= ${userInfo>/WbShowNewReqs}===true}">
+                                 visible="{= ${userInfo>/WbShowNewReqs}===true}"
+                                 tooltip="{reqTile>/tooltip}">
 
                         <TileContent unit="{i18n>transService}">
-                            <NumericContent scale="" value="4" valueColor="Error"/>
+                            <NumericContent busy="{reqTile>/busy}"
+                                            value="{reqTile>/count}"/>
                         </TileContent>
                     </GenericTile>
 
@@ -40,12 +42,15 @@
 
                     <GenericTile class="sapUiTinyMarginBegin tileLayout"
                                  header="{i18n>waybills}"
-                                 subheader="{i18n>count}"
+                                 subheader="∑"
                                  press="showWayill"
-                                 visible="{= ${userInfo>/WbShowList}===true}">
+                                 visible="{= ${userInfo>/WbShowList}===true}"
+                                 tooltip="{wbTile>/tooltip}">
 
                         <TileContent unit="{i18n>dispatcher}">
-                            <NumericContent scale="" value="2" valueColor="Warning" icon="sap-icon://shipping-status"/>
+                            <NumericContent busy="{wbTile>/busy}"
+                                            value="{wbTile>/count}"
+                                            icon="sap-icon://shipping-status"/>
                         </TileContent>
                     </GenericTile>
                 </layout:HorizontalLayout>

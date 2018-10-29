@@ -1,6 +1,7 @@
 package com.modekz.db;
 
 import com.modekz.ODataServiceFactory;
+import com.modekz.db.flag.ReqStatusReason;
 import org.hibersap.annotations.Parameter;
 
 import javax.persistence.*;
@@ -95,7 +96,7 @@ public class ReqHeader {
     @Column(columnDefinition = "NVARCHAR(100)")
     public String reason;
     @Basic
-    public int statusReason;
+    public int statusReason = ReqStatusReason.REQ_NEW;
     @Basic
     public double motoHour;
     @Column(columnDefinition = "TIMESTAMP")

@@ -63,14 +63,17 @@ public class UserInfo {
         return result;
     }
 
-    public boolean hasGroup(String group) {
-        return groups.indexOf(group) >= 0;
-    }
-
     public String groupsAsJson() {
         StringBuilder sb = new StringBuilder();
         for (String group : groups)
             sb.append(",\"" + group + "\" : true");
         return sb.toString();
+    }
+
+    public String werksCondition() {
+        StringBuilder sb = new StringBuilder();
+        for (String werk : werks)
+            sb.append(",'" + werk + "'");
+        return "(" + sb.toString().substring(1) + ")";
     }
 }

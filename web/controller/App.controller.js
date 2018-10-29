@@ -6,6 +6,7 @@ sap.ui.define([
 
     return BaseController.extend("com.modekzWaybill.controller.App", {
         onInit: function () {
+            var _this = this;
             // call base init
             BaseController.prototype.onInit.apply(this, arguments);
 
@@ -21,9 +22,9 @@ sap.ui.define([
                     }
                 }
             });
-            this.setModel(oViewModel, "appView");
+            _this.setModel(oViewModel, "appView");
 
-            var iOriginalBusyDelay = this.getView().getBusyIndicatorDelay();
+            var iOriginalBusyDelay = _this.getView().getBusyIndicatorDelay();
             var counter = 0;
             var fnSetAppNotBusy = function (result) {
                 if (++counter >= 2) {

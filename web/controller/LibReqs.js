@@ -287,7 +287,7 @@ sap.ui.define([
                 });
             },
 
-            setWaybillId: function (selectedReqs, waybillId, unset) {
+            setWaybillId: function (selectedReqs, params) {
                 // Update TORO header request
                 var owner = this.owner;
                 var oWbModel = owner.getModel("wb");
@@ -298,18 +298,22 @@ sap.ui.define([
                     if (--cnt === 0)
                         oWbModel.refresh();
                 };
+                if (selectedReqs.length === 0)
+                    oWbModel.refresh();
+
                 for (var i = 0; i < selectedReqs.length; i++) {
                     var item = oWbModel.getProperty(selectedReqs[i].sPath);
 
                     // Only if is equal to original
-                    if (unset && parseInt(item.Waybill_Id) !== parseInt(waybillId))
+                    if (params.unset && parseInt(item.Waybill_Id) !== parseInt(params.waybillId))
                         continue;
                     cnt++;
 
                     // Modify to new WAYBILL
                     var reqHeader = {
                         Objnr: item.Objnr,
-                        Waybill_Id: unset ? "-1" : waybillId
+                        Waybill_Id: params.unset ? "-1" : params.waybillId,
+                        StatusReason: params.unset ? owner.status.REQ_NEW : owner.status.REQ_SET
                     };
                     oWbModel.update("/ReqHeaders('" + item.Objnr + "')", reqHeader, {
                         success: function () {
@@ -322,6 +326,9 @@ sap.ui.define([
                         }
                     })
                 }
+
+                // Select items again
+                this.reqTable.removeSelections(true);
             }
         });
     }

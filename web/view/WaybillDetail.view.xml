@@ -12,17 +12,14 @@
                       numberUnit="{ parts:[ { path: 'wb>Status' }, { path: 'wb>Id' } ], formatter: '.getStatusText' }"
                       icon="sap-icon://bar-code">
             <attributes>
-                <ObjectAttribute title="{i18n>planDates}"
-                                 text="{ path: 'wb>FromDate', formatter: '.toLocaleDate' } - { path: 'wb>ToDate', formatter: '.toLocaleDate' }"/>
+                <ObjectAttribute text="{i18n>planDates}: { path: 'wb>FromDate', formatter: '.toLocaleDate' } - { path: 'wb>ToDate', formatter: '.toLocaleDate' }"/>
 
-                <ObjectAttribute title="{i18n>changedBy}"
-                                 text="{wb>ChangeUser} - { path: 'wb>ChangeDate', formatter: '.toLocaleDateTime' }"/>
+                <ObjectAttribute text="{i18n>changedBy}: {wb>ChangeUser} - { path: 'wb>ChangeDate', formatter: '.toLocaleDateTime' }"/>
             </attributes>
 
             <statuses>
                 <ObjectStatus
-                        title="{i18n>documAndAufnr}"
-                        text="{ path: 'wb>Docum', formatter: '.alphaOut'} - { path: 'wb>Aufnr', formatter: '.alphaOut'}"
+                        text="{i18n>documAndAufnr}: { path: 'wb>Docum', formatter: '.alphaOut'} - { path: 'wb>Aufnr', formatter: '.alphaOut'}"
                         visible="{= ${wb>Status}===${status>/CLOSED}}"
                         state="Success"/>
 
@@ -132,7 +129,7 @@
                         <Title id="id_reqs_title" text="{i18n>reqs}"/>
                         <ToolbarSpacer/>
                         <Button press="on_add_reqs" icon="sap-icon://add-activity" tooltip="{i18n>addReqs}"
-                                visible="{= (${wb>WithNoReqs}||${userInfo>/WbLateAddReqs}===true)&amp;&amp;${wb>Status}!==${status>/REJECTED}}"/>
+                                visible="{= ((${wb>WithNoReqs}&amp;&amp;${userInfo>/WbFillNoReq})||${userInfo>/WbLateAddReqs}===true)&amp;&amp;${wb>Status}!==${status>/REJECTED}}"/>
                     </OverflowToolbar>
 
                     <!--<core:Fragment fragmentName="com.modekzWaybill.view.frag.ReqsTable" type="XML"/>-->

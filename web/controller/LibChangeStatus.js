@@ -20,14 +20,14 @@ sap.ui.define([
                 switch (gui.origin) {
                     case "WB":
                         gui.reasons = _owner.getResourceArray(_owner.status.DELAY_TEXTS).filter(function (pair) {
-                            return pair.key !== 0;
+                            return pair.key !== _owner.status.NO_DELAY;
                         });
                         gui.reasonLabel = _owner.getBundle().getText("delayReason");
                         break;
 
                     case "REQ":
                         gui.reasons = _owner.getResourceArray(_owner.status.REQ_STATUS_TEXTS).filter(function (pair) {
-                            return pair.key !== 0;
+                            return pair.key !== _owner.status.REQ_NEW && pair.key !== _owner.status.REQ_SET;
                         });
                         gui.reasonLabel = _owner.getBundle().getText("reqsStatus");
                         break;
