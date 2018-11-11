@@ -2,34 +2,32 @@ package com.modekz.db;
 
 import org.hibersap.annotations.Parameter;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "\"wb.db::pack.schedule\"")
 public class Schedule {
     @Id
-    @Column(length = 4)
+    @Column(name="\"werks\"",length = 4)
     @Parameter("WERKS")
     public String Werks;
 
     @Id
-    @Column(columnDefinition = "DATE")
+    @Column(name="\"datum\"",columnDefinition = "DATE")
     @Parameter("DATUM")
     public Date Datum;
 
     @Id
-    @Column(length = 18)
+    @Column(name="\"equnr\"",length = 18)
     @Parameter("EQUNR")
     public String Equnr;
 
-    @Column(columnDefinition = "NVARCHAR(3)")
+    @Column(name="\"ilart\"",columnDefinition = "VARCHAR(3)")
     @Parameter("ILART")
     public String Ilart;
 
-    @Basic
+    @Column(name="\"waybill_id\"")
     public long Waybill_Id = -1;
 
     public Schedule() {

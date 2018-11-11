@@ -11,7 +11,7 @@
 
                 <contentRight>
                     <Button icon="sap-icon://synchronize" tooltip="{i18n>updateDrivers}" press="onSyncDrivers"
-                            visible="{= ${userInfo>/WbLoader}===true}"/>
+                            visible="{= ${userInfo>/WbLoaderDriver}===true}"/>
                 </contentRight>
             </Bar>
         </customHeader>

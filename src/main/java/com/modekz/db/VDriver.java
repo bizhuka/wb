@@ -1,6 +1,7 @@
 package com.modekz.db;
 
 import com.sap.db.annotations.Immutable;
+import org.eclipse.persistence.annotations.PrimaryKey;
 import org.hibersap.annotations.Parameter;
 
 import javax.persistence.Column;
@@ -11,40 +12,43 @@ import java.util.Date;
 
 @Entity
 @Immutable
-@Table(name = "V_DRIVER")
+@Table(name = "\"v_driver\"")
+@PrimaryKey(columns = {@Column(name = "\"bukrs\"", length = 4), @Column(name = "\"pernr\"", length = 8)})
 public class VDriver {
     @Id
+    @Column(name = "\"bukrs\"")
     @Parameter("DR_BE")
     public String Bukrs;
 
     @Parameter("DR_DATBEG")
-    @Column(columnDefinition = "DATE")
+    @Column(name = "\"datbeg\"", columnDefinition = "DATE")
     public Date Datbeg;
 
     @Parameter("DR_FIO")
-    @Column(columnDefinition = "NVARCHAR(30)")
+    @Column(name = "\"fio\"", columnDefinition = "VARCHAR(30)")
     public String Fio;
 
     @Id
+    @Column(name = "\"pernr\"")
     @Parameter("DR_TN")
     public String Pernr;
 
-    @Column(columnDefinition = "NVARCHAR(50)")
+    @Column(name = "\"podr\"", columnDefinition = "VARCHAR(50)")
     @Parameter("DR_PODR")
     public String Podr;
 
-    @Column(columnDefinition = "NVARCHAR(120)")
+    @Column(name = "\"post\"", columnDefinition = "VARCHAR(120)")
     @Parameter("DR_POST")
     public String Post;
 
     @Parameter("DR_STCD3")
-    @Column(length = 18)
+    @Column(name = "\"stcd3\"", length = 18)
     public String Stcd3;
 
-    @Column(length = 32)
+    @Column(name = "\"barcode\"", length = 32)
     public String Barcode;
 
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name = "\"validdate\"", columnDefinition = "TIMESTAMP")
     public Date ValidDate;
 
     public String getBarcode() {

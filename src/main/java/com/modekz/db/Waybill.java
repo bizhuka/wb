@@ -16,74 +16,82 @@ import java.util.Date;
 //@Cacheable(false) global option
 
 @Entity
+@Table(name = "\"wb.db::pack.waybill\"")
 public class Waybill {
     // For speed
     private static Field[] ownFields = Waybill.class.getDeclaredFields();
     @GeneratedValue
     @Id
+    @Column(name="\"id\"")
     public long id;
-    @Basic
-    @Column(columnDefinition = "NVARCHAR(150)")
+    
+    @Column(name="\"description\"",columnDefinition = "VARCHAR(150)")
     public String description;
-    @Basic
-    @Column(length = 18)
+    
+    @Column(name="\"equnr\"",length = 18)
     public String equnr;
-    @Basic
-    @Column(length = 8)
+    
+    @Column(name="\"driver\"",length = 8)
     public String driver;
-    @Basic
-    @Column(length = 4, nullable = false, updatable = false)
+    
+    @Column(name="\"bukrs\"",length = 4, nullable = false, updatable = false)
     public String bukrs;
-    @Basic
-    @Column(columnDefinition = "DATE")
+    
+    @Column(name="\"fromdate\"",columnDefinition = "DATE")
     public Date fromDate;
-    @Basic
-    @Column(columnDefinition = "DATE")
+    
+    @Column(name="\"todate\"",columnDefinition = "DATE")
     public Date toDate;
-    @Basic
-    @Column(columnDefinition = "TIMESTAMP")
+    
+    @Column(name="\"createdate\"",columnDefinition = "TIMESTAMP")
     public Date createDate;
-    @Basic
-    @Column(columnDefinition = "TIMESTAMP")
+    
+    @Column(name="\"confirmdate\"",columnDefinition = "TIMESTAMP")
     public Date confirmDate;
-    @Basic
-    @Column(columnDefinition = "TIMESTAMP")
+    
+    @Column(name="\"garagedepdate\"",columnDefinition = "TIMESTAMP")
     public Date garageDepDate;
-    @Basic
-    @Column(columnDefinition = "TIMESTAMP")
+    
+    @Column(name="\"garagearrdate\"",columnDefinition = "TIMESTAMP")
     public Date garageArrDate;
-    @Basic
-    @Column(columnDefinition = "TIMESTAMP")
+    
+    @Column(name="\"closedate\"",columnDefinition = "TIMESTAMP")
     public Date closeDate;
-    @Basic
-    @Column(length = 4, nullable = false, updatable = false)
+    
+    @Column(name="\"werks\"",length = 4, nullable = false, updatable = false)
     public String werks;
-    @Basic
+
+    @Column(name="\"status\"")
     public int status = Status.CREATED;
-    @Basic
+
+    @Column(name="\"ododiff\"")
     public double odoDiff;
-    @Basic
+
+    @Column(name="\"motohour\"")
     public double motoHour;
-    @Basic
+
+    @Column(name="\"gasspent\"")
     public double gasSpent;
-    @Basic
+
+    @Column(name="\"gastopspent\"")
     public double gasTopSpent;
-    @Basic
+
+    @Column(name="\"delayreason\"")
     public int delayReason = DelayReason.NO_DELAY;
 
     // Who last changed
-    @Column(columnDefinition = "NVARCHAR(40)")
+    @Column(name="\"changeuser\"",columnDefinition = "VARCHAR(40)")
     public String changeUser;
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name="\"changedate\"",columnDefinition = "TIMESTAMP")
     public Date changeDate;
 
-    @Column(length = 20)
+    @Column(name="\"docum\"",length = 20)
     public String docum;
 
-    @Column(length = 12)
+    @Column(name="\"aufnr\"",length = 12)
     public String aufnr;
 
-    @Basic
+    @Column(name="\"withnoreqs\"")
     public boolean withNoReqs = false;
 
     @PrePersist
@@ -92,7 +100,9 @@ public class Waybill {
         // Current user info
         try {
             changeDate = new Date();
-            changeUser = UserInfo.getCurrentUserInfo(null).email;
+            UserInfo curUser = UserInfo.getCurrentUserInfo(null);
+            if (curUser != null)
+                changeUser = curUser.email;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -157,7 +167,7 @@ public class Waybill {
                 // Cancel WB
                 case Status.REJECTED:
                     Connection connection = ODataServiceFactory.getConnection(em);
-                    PreparedStatement prepDelete = connection.prepareStatement("DELETE FROM SCHEDULE WHERE WAYBILL_ID = ?");
+                    PreparedStatement prepDelete = connection.prepareStatement("DELETE FROM \"wb.db::pack.schedule\" WHERE \"waybill_id\" = ?");
                     prepDelete.setLong(1, this.id);
                     prepDelete.executeUpdate();
                     break;
@@ -165,7 +175,7 @@ public class Waybill {
                 // Close WB
                 case Status.CLOSED:
                     connection = ODataServiceFactory.getConnection(em);
-                    prepDelete = connection.prepareStatement("DELETE FROM REQHISTORY WHERE WAYBILL_ID = ?");
+                    prepDelete = connection.prepareStatement("DELETE FROM \"wb.db::pack.reqhistory\" WHERE \"waybill_id\" = ?");
                     prepDelete.setLong(1, this.id);
                     prepDelete.executeUpdate();
                     break;

@@ -328,22 +328,25 @@ sap.ui.define([
             // Read from R3
             var _this = this;
 
-            // For speed
-            //_this._onObjectMatched();
+            // do not check rights, not ready yet (For speed)
+            var  userModel = _this.getModel("userInfo");
+            var loadSchedule = userModel && userModel.getProperty("/WbLoaderSchedule") === true;
+            if (!loadSchedule)
+                _this._onObjectMatched();
+            else
+                _this.updateDbFrom({
+                    link: "/r3/SCHEDULE?_persist=true&where=" + encodeURIComponent(
+                        "AFKO~GSTRP <= '" + this.toSapDate(this.dpTo.getDateValue()) + "' AND " +
+                        "AFKO~GLTRP >= '" + this.toSapDate(this.dpFrom.getDateValue()) + "'"),
 
-            _this.updateDbFrom({
-                link: "/r3/SCHEDULE?_persist=true&where=" + encodeURIComponent(
-                    "AFKO~GSTRP <= '" + this.toSapDate(this.dpTo.getDateValue()) + "' AND " +
-                    "AFKO~GLTRP >= '" + this.toSapDate(this.dpFrom.getDateValue()) + "'"),
+                    title: _this.getBundle().getText("journal"),
 
-                title: _this.getBundle().getText("journal"),
+                    timeout: 2500, // 2,5 seconds
 
-                timeout: 2500, // 2,5 seconds
-
-                afterUpdate: function () {
-                    _this._onObjectMatched();
-                }
-            });
+                    afterUpdate: function () {
+                        _this._onObjectMatched();
+                    }
+                });
         },
 
         eoTooltip: function (equnr, nClass, tooName, noDriverDate) {

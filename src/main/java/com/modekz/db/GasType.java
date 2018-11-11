@@ -6,20 +6,22 @@ import org.hibersap.annotations.Parameter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @BapiStructure
+@Table(name = "\"wb.db::pack.gastype\"")
 public class GasType {
     @Id
-    @Column(length = 18)
+    @Column(name="\"matnr\"",length = 18)
     @Parameter("MARA_MATNR")
     public String Matnr;
 
-    @Column(columnDefinition = "NVARCHAR(40)")
+    @Column(name="\"maktx\"",columnDefinition = "VARCHAR(40)")
     @Parameter("MAKT_MAKTX")
     public String Maktx;
 
-    @Column(columnDefinition = "NVARCHAR(30)")
+    @Column(name="\"msehl\"",columnDefinition = "VARCHAR(30)")
     @Parameter("T006A_MSEHL")
     public String Msehl;
 

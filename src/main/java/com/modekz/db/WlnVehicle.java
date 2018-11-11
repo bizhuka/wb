@@ -3,22 +3,20 @@ package com.modekz.db;
 import org.hibersap.annotations.BapiStructure;
 import org.hibersap.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 @Entity
 @BapiStructure
+@Table(name = "\"wb.db::pack.wlnvehicle\"")
 public class WlnVehicle {
     // Unique guid
     @Id
-    @Column(length = 32)
+    @Column(name="\"gd\"",length = 32)
     @Parameter("GUID")
     public String gd;
 
     // Text
-    @Column(columnDefinition = "NVARCHAR(50)")
+    @Column(name="\"nm\"",columnDefinition = "VARCHAR(50)")
     @Parameter("TEXT")
     public String nm;
 
@@ -27,20 +25,25 @@ public class WlnVehicle {
     public int cls;
 
     // Tech id for request
-    @Column(length = 5)
+    @Column(name="\"id\"",length = 5)
     @Parameter("ID")
     public String id;
 
     // IMEI or sim card number
-    @Column(length = 20)
+    @Column(name="\"uid\"",length = 20)
     @Parameter("IMEI")
     public String uid;
 
     // Copy from pos.p
+    @Column(name="\"mileage\"")
     public Double mileage;
+    @Column(name="\"gps_mileage\"")
     public Double gps_mileage;
+    @Column(name="\"rs485_fls02\"")
     public Double rs485_fls02;
+    @Column(name="\"rs485_fls12\"")
     public Double rs485_fls12;
+    @Column(name="\"rs485_fls22\"")
     public Double rs485_fls22;
 
     @Transient

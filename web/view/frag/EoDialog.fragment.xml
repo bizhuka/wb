@@ -14,7 +14,7 @@
                 <contentRight>
                     <Button icon="sap-icon://synchronize" press="onEoUpdate"
                             tooltip="{i18n>eoListUpdate}"
-                            visible="{= ${userInfo>/WbLoader}===true}"/>
+                            visible="{= ${userInfo>/WbLoaderEo}===true}"/>
                 </contentRight>
             </Bar>
         </customHeader>
@@ -93,7 +93,7 @@
 
         <buttons>
             <Button tooltip="{i18n>noDriver}" icon="sap-icon://employee-rejections" press="setNoDriverDate"/>
-            <Button tooltip="{i18n>accident}" enabled="false" icon="sap-icon://collision"/>
+            <!--<Button tooltip="{i18n>accident}" enabled="false" icon="sap-icon://collision"/>-->
             <Button icon="sap-icon://accept" text="{i18n>cancel}" press="onEoCloseDialog"/>
         </buttons>
     </Dialog>

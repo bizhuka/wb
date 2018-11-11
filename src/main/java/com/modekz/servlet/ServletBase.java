@@ -27,10 +27,15 @@ public class ServletBase extends HttpServlet {
                 new GsonBuilder().setDateFormat(pattern).create();
     }
 
-    void callCaseMethod(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        // Detect method
-        String name = request.getPathInfo().substring(1);
+    void callByServletPath(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        callByName(request.getServletPath().substring(1), request, response);
+    }
 
+    void callByPathInfo(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        callByName(request.getPathInfo().substring(1), request, response);
+    }
+
+    private void callByName(String name, HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
             Method method = this.getClass().getMethod(name, HttpServletRequest.class, HttpServletResponse.class);
             method.invoke(this, request, response);

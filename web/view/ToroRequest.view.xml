@@ -28,7 +28,7 @@
                                            visible="{= ${userInfo>/WbShowFinishedReqs}===true}"/>
                     <OverflowToolbarButton icon="sap-icon://synchronize" press="onReqUpdate"
                                            tooltip="{i18n>updateReqs}"
-                                           visible="{= ${userInfo>/WbLoader}===true}"/>
+                                           visible="{= ${userInfo>/WbLoaderReq}===true}"/>
                     <OverflowToolbarButton
                             icon="sap-icon://exit-full-screen"
                             press="navBackLayout"
@@ -53,7 +53,7 @@
                 <semantic:customHeaderContent>
                     <OverflowToolbarButton icon="sap-icon://synchronize" press="onEoUpdate"
                                            tooltip="{i18n>eoListUpdate}"
-                                           visible="{= ${userInfo>/WbLoader}===true}"/>
+                                           visible="{= ${userInfo>/WbLoaderEo}===true}"/>
 
 
                     <OverflowToolbarButton

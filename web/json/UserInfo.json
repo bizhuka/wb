@@ -1,11 +1,10 @@
 {
   "login": "test",
-  "email": "test@gmail.com",
-  "firstName": "Test",
-  "lastName": "Test",
-  "groups": [
-    "_WbAdministrator",
-    "Werks_1010",
-    "Werks_1040"
+  "email": "modekz@gmail.com",
+  "firstName": "BIRZHAN",
+  "lastName": "MOLDABAYEV",
+  "werks": [
+    "1010",
+    "1040"
   ]
 }

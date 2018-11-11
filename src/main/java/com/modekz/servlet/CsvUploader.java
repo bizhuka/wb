@@ -2,7 +2,6 @@ package com.modekz.servlet;
 
 import com.modekz.ODataServiceFactory;
 import com.modekz.db.Equipment;
-import com.modekz.db.GroupRole;
 import com.modekz.json.DbUpdateInfo;
 import com.modekz.json.DbUpdateInfoPlus;
 
@@ -25,7 +24,7 @@ public class CsvUploader extends ServletBase {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        callCaseMethod(request, response);
+        callByPathInfo(request, response);
     }
 
     @SuppressWarnings("unused")
@@ -39,7 +38,7 @@ public class CsvUploader extends ServletBase {
             em.getTransaction().begin();
             Connection connection = ODataServiceFactory.getConnection(em);
 
-            PreparedStatement prepStatUpdate = connection.prepareStatement("UPDATE DRIVER SET BARCODE = ? WHERE STCD3 = ?");
+            PreparedStatement prepStatUpdate = connection.prepareStatement("UPDATE \"wb.db::pack.driver\" SET \"barcode\" = ? WHERE \"stcd3\" = ?");
 
             // All content
             for (DbUpdateInfoPlus.Item item : info.items) {
@@ -113,98 +112,96 @@ public class CsvUploader extends ServletBase {
         }
     }
 
-    @SuppressWarnings("unused")
-    public void uploadGrpRoles(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        EntityManager em = ODataServiceFactory.getEmf().createEntityManager();
-
-        try {
-            // Result
-            DbUpdateInfoPlus info = new DbUpdateInfoPlus(getUploadedFile(request), 3);
-            em.getTransaction().begin();
-
-            Connection connection = ODataServiceFactory.getConnection(em);
-            PreparedStatement prepStatInsert = connection.prepareStatement("INSERT INTO GroupRole (GrpRole, IndRole) VALUES(?,?);");
-            PreparedStatement prepStatDelete = connection.prepareStatement("DELETE FROM GroupRole WHERE GrpRole = ? AND IndRole = ?");
-
-            // All items
-            List<GroupRole> grpRoles = GroupRole.getAllGroupRoles();
-            List<DbUpdateInfoPlus.Item> allItems = new ArrayList<>(grpRoles.size() + info.items.size());
-
-            // Copy prev items to show user
-            for (GroupRole groupRole : grpRoles) {
-                String[] lines = {"*", groupRole.GrpRole, groupRole.IndRole};
-                allItems.add(new DbUpdateInfoPlus.Item(lines));
-            }
-
-            // All content
-            for (DbUpdateInfoPlus.Item item : info.items) {
-                // + or -
-                String operation = item.data[0].trim();
-                String grpRole = item.data[1].trim();
-                String indRole = item.data[2].trim();
-
-                DbUpdateInfoPlus.Item findItem = null;
-                for (int i = 0; i < grpRoles.size(); i++) {
-                    GroupRole groupRole = grpRoles.get(i);
-                    if (grpRole.equals(groupRole.GrpRole) && indRole.equals(groupRole.IndRole)) {
-                        findItem = allItems.get(i);
-                        break;
-                    }
-                }
-
-                PreparedStatement prepStat = null;
-                if ("+".equals(operation) && findItem == null)
-                    prepStat = prepStatInsert;
-
-                if ("-".equals(operation) && findItem != null)
-                    prepStat = prepStatDelete;
-
-                if (prepStat == null)
-                    continue;
-
-                // Add to log
-                if (findItem != null)
-                    findItem.data[0] = operation;
-                else
-                    allItems.add(item);
-
-                prepStat.setString(1, grpRole);
-                prepStat.setString(2, indRole);
-                prepStat.addBatch();
-            }
-
-            // Aggregated info
-            int[] insertResults = prepStatInsert.executeBatch();
-            int[] deleteResults = prepStatDelete.executeBatch();
-
-            // Detailed info
-            int insertIndex = 0, deleteIndex = 0;
-            for (DbUpdateInfoPlus.Item item : allItems) {
-                String operation = item.data[0];
-                if ("+".equals(operation)) {
-                    if (insertResults[insertIndex++] > 0) {
-                        item.result = DbUpdateInfoPlus.INSERTED;
-                        info.inserted++;
-                    }
-                } else if ("-".equals(operation)) {
-                    if (deleteResults[deleteIndex++] > 0) {
-                        item.result = DbUpdateInfoPlus.DELETED;
-                        info.deleted++;
-                    }
-                }
-            }
-
-            // And write data back
-            info.items = allItems;
-            writeJson(response, info);
-
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            throw new ServletException(ex);
-        } finally {
-            em.close();
-        }
-    }
-
-
+//    @SuppressWarnings("unused")
+//    public void uploadGrpRoles(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//        EntityManager em = ODataServiceFactory.getEmf().createEntityManager();
+//
+//        try {
+//            // Result
+//            DbUpdateInfoPlus info = new DbUpdateInfoPlus(getUploadedFile(request), 3);
+//            em.getTransaction().begin();
+//
+//            Connection connection = ODataServiceFactory.getConnection(em);
+//            PreparedStatement prepStatInsert = connection.prepareStatement("INSERT INTO \"wb.db::pack.grouprole\" (\"grprole\", \"indrole\") VALUES(?,?);");
+//            PreparedStatement prepStatDelete = connection.prepareStatement("DELETE FROM \"wb.db::pack.grouprole\" WHERE \"grprole\" = ? and \"indrole\" = ?");
+//
+//            // All items
+//            List<GroupRole> grpRoles = GroupRole.getAllGroupRoles();
+//            List<DbUpdateInfoPlus.Item> allItems = new ArrayList<>(grpRoles.size() + info.items.size());
+//
+//            // Copy prev items to show user
+//            for (GroupRole groupRole : grpRoles) {
+//                String[] lines = {"*", groupRole.grprole, groupRole.indrole};
+//                allItems.add(new DbUpdateInfoPlus.Item(lines));
+//            }
+//
+//            // All content
+//            for (DbUpdateInfoPlus.Item item : info.items) {
+//                // + or -
+//                String operation = item.data[0].trim();
+//                String grpRole = item.data[1].trim();
+//                String indRole = item.data[2].trim();
+//
+//                DbUpdateInfoPlus.Item findItem = null;
+//                for (int i = 0; i < grpRoles.size(); i++) {
+//                    GroupRole groupRole = grpRoles.get(i);
+//                    if (grpRole.equals(groupRole.grprole) && indRole.equals(groupRole.indrole)) {
+//                        findItem = allItems.get(i);
+//                        break;
+//                    }
+//                }
+//
+//                PreparedStatement prepStat = null;
+//                if ("+".equals(operation) && findItem == null)
+//                    prepStat = prepStatInsert;
+//
+//                if ("-".equals(operation) && findItem != null)
+//                    prepStat = prepStatDelete;
+//
+//                if (prepStat == null)
+//                    continue;
+//
+//                // Add to log
+//                if (findItem != null)
+//                    findItem.data[0] = operation;
+//                else
+//                    allItems.add(item);
+//
+//                prepStat.setString(1, grpRole);
+//                prepStat.setString(2, indRole);
+//                prepStat.addBatch();
+//            }
+//
+//            // Aggregated info
+//            int[] insertResults = prepStatInsert.executeBatch();
+//            int[] deleteResults = prepStatDelete.executeBatch();
+//
+//            // Detailed info
+//            int insertIndex = 0, deleteIndex = 0;
+//            for (DbUpdateInfoPlus.Item item : allItems) {
+//                String operation = item.data[0];
+//                if ("+".equals(operation)) {
+//                    if (insertResults[insertIndex++] > 0) {
+//                        item.result = DbUpdateInfoPlus.INSERTED;
+//                        info.inserted++;
+//                    }
+//                } else if ("-".equals(operation)) {
+//                    if (deleteResults[deleteIndex++] > 0) {
+//                        item.result = DbUpdateInfoPlus.DELETED;
+//                        info.deleted++;
+//                    }
+//                }
+//            }
+//
+//            // And write data back
+//            info.items = allItems;
+//            writeJson(response, info);
+//
+//            em.getTransaction().commit();
+//        } catch (Exception ex) {
+//            throw new ServletException(ex);
+//        } finally {
+//            em.close();
+//        }
+//    }
 }

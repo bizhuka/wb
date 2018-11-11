@@ -7,119 +7,121 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
+@Table(name = "\"wb.db::pack.equipment\"")
 public class Equipment {
-    @Column(length = 4)
+    @Column(name="\"baujj\"",length = 4)
     @Parameter("EQUI_BAUJJ")
     public String Baujj;
 
-    @Column(length = 2)
+    @Column(name="\"baumm\"",length = 2)
     @Parameter("EQUI_BAUMM")
     public String Baumm;
 
-    @Column(length = 4)
+    @Column(name="\"bukrs\"",length = 4)
     @Parameter("T001K_BUKRS")
     public String Bukrs;
 
-    @Column(columnDefinition = "DATE")
+    @Column(name="\"datbi\"",columnDefinition = "DATE")
     @Parameter("EQUZ_DATBI")
     public Date Datbi;
 
-    @Column(length = 10)
+    @Column(name="\"engine_type\"",length = 10)
     @Parameter("FLEET_ENGINE_TYPE")
     public String Engine_type;
 
-    @Column(columnDefinition = "NVARCHAR(10)")
+    @Column(name="\"eqart\"",columnDefinition = "VARCHAR(10)")
     @Parameter("EQUI_EQART")
     public String Eqart;
 
-    @Column(columnDefinition = "NVARCHAR(40)")
+    @Column(name="\"eqktx\"",columnDefinition = "VARCHAR(40)")
     @Parameter("EQKT_EQKTX")
     public String Eqktx;
 
     @Id
-    @Column(length = 18)
+    @Column(name="\"equnr\"",length = 18)
     @Parameter("EQUI_EQUNR")
     public String Equnr;
 
-    @Column(length = 18)
+    @Column(name="\"fleet_num\"",length = 18)
     @Parameter("FLEET_FLEET_NUM")
     public String Fleet_num;
 
-    @Column(length = 12)
+    @Column(name="\"fuel_pri\"",length = 12)
     @Parameter("FLEET_FUEL_PRI")
     public String Fuel_pri;
 
-    @Column(length = 12)
+    @Column(name="\"fuel_sec\"",length = 12)
     @Parameter("FLEET_FUEL_SEC")
     public String Fuel_sec;
 
-    @Column(length = 18)
+    @Column(name="\"gernr\"",length = 18)
     @Parameter("EQUI_GERNR")
     public String Gernr;
 
-    @Column(length = 3)
+    @Column(name="\"herld\"",length = 3)
     @Parameter("EQUI_HERLD")
     public String Herld;
 
-    @Column(columnDefinition = "NVARCHAR(30)")
+    @Column(name="\"herst\"",columnDefinition = "VARCHAR(30)")
     @Parameter("EQUI_HERST")
     public String Herst;
 
-    @Column(columnDefinition = "DATE")
+    @Column(name="\"inbdt\"",columnDefinition = "DATE")
     @Parameter("EQUI_INBDT")
     public Date Inbdt;
 
-    @Column(length = 15)
+    @Column(name="\"license_num\"",length = 15)
     @Parameter("FLEET_LICENSE_NUM")
     public String License_num;
 
-    @Column(length = 15)
+    @Column(name="\"n_class\"",length = 15)
     @Parameter("KLAH_CLASS")
     public String N_class;
 
-    @Column(length = 12)
+    @Column(name="\"point\"",length = 12)
     @Parameter("IMPTT_POINT")
     public String Point;
 
-    @Column(columnDefinition = "NVARCHAR(40)")
+    @Column(name="\"pltxt\"",columnDefinition = "VARCHAR(40)")
     @Parameter("IFLOTX_PLTXT")
     public String Pltxt;
 
-    @Column(length = 1)
+    @Column(name="\"mptyp\"",length = 1)
     @Parameter("IMPTT_MPTYP")
     public String Mptyp;
 
-    @Column(columnDefinition = "NVARCHAR(40)")
+    @Column(name="\"imei\"",columnDefinition = "VARCHAR(40)")
     @Parameter("WV_IMEI")
     public String Imei;
 
-    @Column(length = 5)
+    @Column(name="\"wialonid\"",length = 5)
     @Parameter("WV_ID")
     public String WialonId;
 
+    @Column(name="\"speed_max\"",length = 5)
     @Parameter("FLEET_SPEED_MAX")
     public BigDecimal Speed_max;
 
-    @Column(length = 4)
+    @Column(name="\"swerk\"",length = 4)
     @Parameter("ILOA_SWERK")
     public String Swerk;
 
-    @Column(length = 30)
+    @Column(name="\"tplnr\"",length = 30)
     @Parameter("ILOA_TPLNR")
     public String Tplnr;
 
-    @Column(length = 12)
+    @Column(name="\"anln1\"",length = 12)
     @Parameter("ILOA_ANLNR")
     public String Anln1;
 
-    @Column(columnDefinition = "NVARCHAR(20)")
+    @Column(name="\"typbz\"",columnDefinition = "VARCHAR(20)")
     @Parameter("EQUI_TYPBZ")
     public String Typbz;
 
-    @Column(columnDefinition = "NVARCHAR(50)")
+    @Column(name="\"tooname\"",columnDefinition = "VARCHAR(50)")
     public String TooName = "-";
 
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name="\"nodriverdate\"",columnDefinition = "TIMESTAMP")
     public Date NoDriverDate;
 
     @PrePersist

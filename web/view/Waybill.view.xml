@@ -8,7 +8,7 @@
         <!--		tooltip="{i18n>home.cart}"/>-->
         <!--</headerContent>-->
         <content>
-            <Table id="id_waybill_table" selectionMode="MultiToggle" rowSelectionChange="onItemPressed"
+            <Table id="id_waybill_table"
                    class="sapUiResponsiveMargin"
                    growing="true" growingScrollToLoad="true"
                    noDataText="{i18n>noData}" items="{

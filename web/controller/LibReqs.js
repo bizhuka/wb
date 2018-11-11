@@ -62,9 +62,9 @@ sap.ui.define([
                 container.setModel(this.uiModel, "ui");
             },
 
-            onBrowserEvent: function (oEvent) {
-                this._bKeyboard = oEvent.type === "keyup";
-            },
+            // onBrowserEvent: function (oEvent) {
+            //     this._bKeyboard = oEvent.type === "keyup";
+            // },
 
             onSortPress: function (oEvent) {
                 var _this = this;
@@ -100,7 +100,8 @@ sap.ui.define([
                     });
 
                 var eDock = sap.ui.core.Popup.Dock;
-                this[id].open(this._bKeyboard, menuButton, eDock.BeginTop, eDock.BeginBottom, menuButton);
+                //this._bKeyboard
+                this[id].open(false, menuButton, eDock.BeginTop, eDock.BeginBottom, menuButton);
             },
 
             onUpdateStartedReqs(oEvent) {

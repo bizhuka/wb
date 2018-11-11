@@ -1,11 +1,12 @@
 package com.modekz.json;
 
-import com.modekz.db.GroupRole;
 import com.modekz.servlet.ServletBase;
-import com.sap.xs2.security.container.SecurityContext;
 import com.sap.xs2.security.container.UserInfoException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -18,54 +19,81 @@ public class UserInfo {
     public String email;
     public String firstName;
     public String lastName;
-    public List<String> groups;
+    public List<String> scopes;
     public List<String> werks;
 
+    private static String getFileAsString(ServletBase servlet, String path) throws IOException {
+        if (servlet == null)
+            return null;
+        return IOUtils.toString(servlet.getServletContext().getResourceAsStream(path), "UTF-8");
+    }
+
     public static UserInfo getCurrentUserInfo(ServletBase servlet) throws UserInfoException, IOException, ServletException {
+        // Main result
         UserInfo result;
+
+        // tech info
+        final JSONObject[] jsonObjects = new JSONObject[1];
+
         if (SystemUtils.IS_OS_WINDOWS) {
-            String context = IOUtils.toString(
-                    servlet.getServletContext().getResourceAsStream("/json/UserInfo.json"), "UTF-8");
-            result = servlet.gson.fromJson(context, UserInfo.class);
+            if (servlet == null)
+                return null;
+
+            String json = getFileAsString(servlet, "/json/UserInfo.json");
+            result = servlet.gson.fromJson(json, UserInfo.class);
+
+            // For test from local file
+            json = getFileAsString(servlet, "/json/token.json");
+            try {
+                jsonObjects[0] = new JSONObject(json);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         } else {
-            // From secure origin
-            com.sap.xs2.security.container.UserInfo info = SecurityContext.getUserInfo();
             result = new UserInfo();
+
+            // From secure origin
+            com.sap.xs2.security.container.UserInfo info = new com.sap.xs2.security.container.UserInfo() {
+                {
+                    jsonObjects[0] = this.json;
+                }
+            };
             result.login = info.getLogonName();
             result.email = info.getEmail();
             result.firstName = info.getGivenName();
             result.lastName = info.getFamilyName();
 
             //noinspection deprecation
-            result.groups = Arrays.asList(info.getSystemAttribute("xs.saml.groups"));
+            List<String> items = Arrays.asList(info.getSystemAttribute("xs.saml.groups"));
+            // Read allowed werks
+            result.werks = new ArrayList<>(items.size());
+
+            // All scopes and
+            for (String item : items)
+                if (item.startsWith("Werks_"))
+                    result.werks.add(item.substring(6));
         }
-        // All items
-        List<GroupRole> grpRoles = GroupRole.getAllGroupRoles();
 
-        // Copy to temp var
-        List<String> items = result.groups;
-
-        // Split
-        result.groups = new ArrayList<>(items.size());
-        result.werks = new ArrayList<>();
-
-        // All groups and
-        for (String item : items)
-            if (item.startsWith("Werks_"))
-                result.werks.add(item.substring(6));
-            else if (item.startsWith("_Wb")) {
-                for (GroupRole groupRole : grpRoles)
-                    if (item.equals(groupRole.GrpRole))
-                        result.groups.add(groupRole.IndRole);
-            } else
-                result.groups.add(item);
+        // Read scopes
+        result.scopes = new ArrayList<>();
+        try {
+            JSONArray jsonArray = jsonObjects[0].getJSONArray("scope");
+            for (int i = 0; i < jsonArray.length(); ++i) {
+                String scope = jsonArray.getString(i);
+                String[] arr = scope.split("\\.");
+                if (arr.length == 2)
+                    result.scopes.add(arr[1]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return result;
     }
 
-    public String groupsAsJson() {
+    public String scopesAsJson() {
         StringBuilder sb = new StringBuilder();
-        for (String group : groups)
+        for (String group : scopes)
             sb.append(",\"" + group + "\" : true");
         return sb.toString();
     }

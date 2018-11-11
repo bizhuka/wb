@@ -30,7 +30,7 @@
 
                 <ObjectStatus
                         text="{i18n>delayReason}: { path: 'wb>DelayReason', formatter: '.getDelayReasonText'}"
-                        visible="{= ${wb>DelayReason}!==0}"
+                        visible="{= ${wb>DelayReason}!==${status>/NO_DELAY}}"
                         state="Warning"/>
 
                 <ObjectStatus

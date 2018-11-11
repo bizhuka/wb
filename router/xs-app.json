@@ -1,9 +1,31 @@
 {
+  "welcomeFile": "index.html",
+  "authenticationMethod": "route",
   "routes": [
+    {
+      "source": "/sap/bc/ina",
+      "destination": "wb-analytics",
+      "httpMethods": [
+        "POST",
+        "GET"
+      ],
+      "authenticationType": "xsuaa",
+      "scope": "$XSAPPNAME.WbAnalyticsCloud"
+    },
+    {
+      "source": "/sap/bc/ina",
+      "destination": "wb-analytics",
+      "httpMethods": [
+        "OPTIONS"
+      ],
+      "authenticationType": "none"
+    },
     {
       "source": "^/",
       "target": "/",
-      "destination": "wb-emba2"
+      "authenticationType": "xsuaa",
+      "destination": "wb-emba2",
+      "scope": "$XSAPPNAME.WbAuthorized"
     }
   ]
 }

@@ -22,8 +22,8 @@
             <Link text="{i18n>tooCars} ({i18n>textFile})"
                   press="uploadEquipment"/>
 
-            <Link text="{i18n>grpRoles} ({i18n>textFile})"
-                  press="uploadGroupRoles"/>
+            <!--<Link text="{i18n>grpRoles} ({i18n>textFile})"-->
+                  <!--press="uploadGroupRoles"/>-->
         </l:content>
     </l:VerticalLayout>
 </mvc:View>

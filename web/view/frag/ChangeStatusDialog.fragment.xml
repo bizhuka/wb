@@ -28,10 +28,10 @@
                         value="{ path: 'gui>/toDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'medium', strictParsing: true}}"/>
             </HBox>
 
-            <VBox visible="{= ${gui>/origin}==='REQ'}">
+            <!--<VBox visible="{= ${gui>/origin}==='REQ'}">
                 <Label text="{i18n>actualDate}"/>
                 <Input value="{gui>/motoHour}" type="Number" valueLiveUpdate="true" liveChange="checkOkEnabled"/>
-            </VBox>
+            </VBox>-->
 
             <VBox>
                 <Label text="{gui>/reasonLabel}"/>

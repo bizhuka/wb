@@ -31,7 +31,7 @@ public class RfcPrintDoc extends ServletBase {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        callCaseMethod(request, response);
+        callByPathInfo(request, response);
     }
 
     @SuppressWarnings("unused")
@@ -62,7 +62,7 @@ public class RfcPrintDoc extends ServletBase {
         String N_class = null;
         try {
             // Requests
-            PreparedStatement statement = connection.prepareStatement("select * from reqheader where waybill_id = ?");
+            PreparedStatement statement = connection.prepareStatement("select * from \"wb.db::pack.reqheader\" where \"waybill_id\" = ?");
             statement.setLong(1, waybillId);
             ResultSet rs = statement.executeQuery();
             int num = 0;
@@ -86,12 +86,12 @@ public class RfcPrintDoc extends ServletBase {
             }
 
             statement = connection.prepareStatement(
-                    "select CURRENT_DATE as datum, w.butxt, d.fio, e.eqktx, e.license_num, e.speed_max, e.pltxt, e.n_class, e.tooname, waybill.*\n" +
-                            "from waybill\n" +
-                            "left outer join werk as w on waybill.werks = w.werks\n" +
-                            "left outer join driver as d on waybill.bukrs = d.bukrs and waybill.driver = d.pernr\n" +
-                            "left outer join equipment as e on waybill.equnr = e.equnr\n" +
-                            "where waybill.id = ?");
+                    "select CURRENT_DATE as datum, w.\"butxt\", d.\"fio\", e.\"eqktx\", e.\"license_num\", e.\"speed_max\", e.\"pltxt\", e.\"n_class\", e.\"tooname\", waybill.*\n" +
+                            "from \"wb.db::pack.waybill\" as  waybill\n" +
+                            "left outer join \"wb.db::pack.werk\" as w on waybill.\"werks\" = w.\"werks\"\n" +
+                            "left outer join \"wb.db::pack.driver\" as d on waybill.\"bukrs\" = d.\"bukrs\" and waybill.\"driver\" = d.\"pernr\"\n" +
+                            "left outer join \"wb.db::pack.equipment\" as e on waybill.\"equnr\" = e.\"equnr\"\n" +
+                            "where waybill.\"id\" = ?");
             statement.setLong(1, waybillId);
             rs = statement.executeQuery();
 

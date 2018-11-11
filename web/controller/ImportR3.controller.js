@@ -68,22 +68,22 @@ sap.ui.define([
             });
         },
 
-        uploadGroupRoles: function () {
-            var bundle = this.getBundle();
-            this.loadFromFile({
-                title: bundle.getText("grpRoles"),
-                url: "./csv/uploadGrpRoles",
-                columns: [
-                    "+ / -",
-                    bundle.getText("grpRole"),
-                    bundle.getText("indRole")
-                ],
-                sortBy: new sap.ui.model.Sorter("COL_1", null, function (oContext) {
-                    var v = oContext.getProperty("COL_1");
-                    return {key: v, text: v};
-                })
-            });
-        },
+        // uploadGroupRoles: function () {
+        //     var bundle = this.getBundle();
+        //     this.loadFromFile({
+        //         title: bundle.getText("grpRoles"),
+        //         url: "./csv/uploadGrpRoles",
+        //         columns: [
+        //             "+ / -",
+        //             bundle.getText("grpRole"),
+        //             bundle.getText("indRole")
+        //         ],
+        //         sortBy: new sap.ui.model.Sorter("COL_1", null, function (oContext) {
+        //             var v = oContext.getProperty("COL_1");
+        //             return {key: v, text: v};
+        //         })
+        //     });
+        // },
 
         loadFromFile: function (params) {
             var _this = this;
@@ -181,7 +181,6 @@ sap.ui.define([
             var dialog = new sap.m.Dialog({
                 title: params.title,
                 contentWidth: "85%",
-                model: true,
 
                 subHeader: new sap.m.Bar({
                     contentLeft: [

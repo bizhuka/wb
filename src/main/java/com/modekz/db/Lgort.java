@@ -4,25 +4,24 @@ import org.eclipse.persistence.annotations.PrimaryKey;
 import org.hibersap.annotations.BapiStructure;
 import org.hibersap.annotations.Parameter;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @BapiStructure
-@PrimaryKey(columns = {@Column(name = "WERKS", length = 4), @Column(name = "LGORT", length = 4)})
+@PrimaryKey(columns = {@Column(name = "\"werks\"", length = 4), @Column(name = "\"lgort\"", length = 4)})
+@Table(name = "\"wb.db::pack.lgort\"")
 public class Lgort {
-    @Basic
-    @Column
+    @Id
+    @Column(name = "\"werks\"", length = 4)
     @Parameter("T001L_WERKS")
     public String Werks;
 
-    @Column
+    @Id
+    @Column(name = "\"lgort\"", length = 4)
     @Parameter("T001L_LGORT")
     public String Lgort;
 
-    @Column(columnDefinition = "NVARCHAR(16)")
+    @Column(name="\"lgobe\"",columnDefinition = "VARCHAR(16)")
     @Parameter("T001L_LGOBE")
     public String Lgobe;
 

@@ -24,17 +24,17 @@ public class CountInfo extends ServletBase {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        callCaseMethod(request, response);
+        callByPathInfo(request, response);
     }
 
     @SuppressWarnings("unused")
     public void wb(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        doCount(request, response, "v_count_wb");
+        doCount(request, response, "\"v_count_wb\"");
     }
 
     @SuppressWarnings("unused")
     public void req(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        doCount(request, response, "v_count_req");
+        doCount(request, response, "\"v_count_req\"");
     }
 
     private void doCount(HttpServletRequest request, HttpServletResponse response, String viewName) throws ServletException {
@@ -47,8 +47,8 @@ public class CountInfo extends ServletBase {
             // Allowed werks
             UserInfo userInfo = UserInfo.getCurrentUserInfo(this);
 
-            String sql = "SELECT status, sum(cnt) AS cnt FROM " + viewName + " WHERE werks IN " + userInfo.werksCondition() +
-                    " GROUP BY status ORDER BY status;";
+            String sql = "SELECT \"status\", sum(\"cnt\") AS cnt FROM " + viewName + " WHERE \"werks\" IN " + userInfo.werksCondition() +
+                    " GROUP BY \"status\" ORDER BY \"status\";";
             PreparedStatement preparedSelect = connection.prepareStatement(sql);
 
             ResultSet result = preparedSelect.executeQuery();

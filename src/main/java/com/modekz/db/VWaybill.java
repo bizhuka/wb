@@ -9,117 +9,112 @@ import java.util.Date;
 
 @Entity
 @Immutable
-@Table(name = "V_WAYBILL")
+@Table(name = "\"v_waybill\"")
 public class VWaybill {
 
     @GeneratedValue
     @Id
+    @Column(name="\"id\"")
     public long id;
 
-    @Basic
-    @Column(columnDefinition = "NVARCHAR(150)")
+    @Column(name="\"description\"",columnDefinition = "VARCHAR(150)")
     public String description;
 
-    @Basic
-    @Column(length = 18)
+    @Column(name="\"equnr\"",length = 18)
     public String equnr;
 
-    @Basic
-    @Column(length = 8)
+    @Column(name="\"driver\"",length = 8)
     public String driver;
 
-    @Basic
-    @Column(length = 4, nullable = false, updatable = false) //
+    @Column(name="\"bukrs\"",length = 4, nullable = false, updatable = false)
     public String bukrs;
 
-    @Basic
-    @Column(columnDefinition = "DATE")
+    @Column(name="\"fromdate\"",columnDefinition = "DATE")
     public Date fromDate;
 
-    @Basic
-    @Column(columnDefinition = "DATE")
+    @Column(name="\"todate\"",columnDefinition = "DATE")
     public Date toDate;
 
-    @Basic
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name="\"createdate\"",columnDefinition = "TIMESTAMP")
     public Date createDate;
 
-    @Basic
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name="\"confirmdate\"",columnDefinition = "TIMESTAMP")
     public Date confirmDate;
 
-    @Basic
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name="\"garagedepdate\"",columnDefinition = "TIMESTAMP")
     public Date garageDepDate;
 
-    @Basic
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name="\"garagearrdate\"",columnDefinition = "TIMESTAMP")
     public Date garageArrDate;
 
-    @Basic
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name="\"closedate\"",columnDefinition = "TIMESTAMP")
     public Date closeDate;
 
-    @Basic
-    @Column(length = 4, nullable = false, updatable = false)
+    @Column(name="\"werks\"",length = 4, nullable = false, updatable = false)
     public String werks;
-    @Basic
+
+    @Column(name="\"status\"")
     public int status = Status.CREATED;
-    @Basic
+
+    @Column(name="\"ododiff\"")
     public double odoDiff;
-    @Basic
+
+    @Column(name="\"motohour\"")
     public double motoHour;
-    @Basic
+
+    @Column(name="\"gasspent\"")
     public double gasSpent;
-    @Basic
+
+    @Column(name="\"gastopspent\"")
     public double gasTopSpent;
-    @Basic
+
+    @Column(name="\"delayreason\"")
     public int delayReason = DelayReason.NO_DELAY;
 
-    @Basic
-    public long Req_Cnt;
-    @Basic
-    public long Sch_Cnt;
-    @Basic
-    public long Hist_Cnt;
-    @Basic
-    public long Gas_Cnt;
-
-    @Column(columnDefinition = "NVARCHAR(40)")
-    public String Eqktx;
-
-    @Column(columnDefinition = "NVARCHAR(30)")
-    public String Fio;
-
-    @Column(length = 12)
-    public String Point;
-
-    @Column(length = 5)
-    public String WialonId;
-
-    @Column(length = 15)
-    public String License_num;
-
-    @Column(length = 1)
-    public String Mptyp;
-
-    @Column(columnDefinition = "NVARCHAR(50)")
-    public String TooName = "-";
-
     // Who last changed
-    @Column(columnDefinition = "NVARCHAR(40)")
+    @Column(name="\"changeuser\"",columnDefinition = "VARCHAR(40)")
     public String changeUser;
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name="\"changedate\"",columnDefinition = "TIMESTAMP")
     public Date changeDate;
 
-    @Column(length = 20)
+    @Column(name="\"docum\"",length = 20)
     public String docum;
 
-    @Column(length = 12)
+    @Column(name="\"aufnr\"",length = 12)
     public String aufnr;
 
-    @Basic
+    @Column(name="\"withnoreqs\"")
     public boolean withNoReqs = false;
+
+    @Column(name="\"req_cnt\"")
+    public long Req_Cnt;
+    @Column(name="\"sch_cnt\"")
+    public long Sch_Cnt;
+    @Column(name="\"hist_cnt\"")
+    public long Hist_Cnt;
+    @Column(name="\"gas_cnt\"")
+    public long Gas_Cnt;
+
+    @Column(name="\"eqktx\"",columnDefinition = "VARCHAR(40)")
+    public String Eqktx;
+
+    @Column(name="\"fio\"",columnDefinition = "VARCHAR(30)")
+    public String Fio;
+
+    @Column(name="\"point\"",length = 12)
+    public String Point;
+
+    @Column(name="\"wialonid\"",length = 5)
+    public String WialonId;
+
+    @Column(name="\"license_num\"",length = 15)
+    public String License_num;
+
+    @Column(name="\"mptyp\"",length = 1)
+    public String Mptyp;
+
+    @Column(name="\"tooname\"",columnDefinition = "VARCHAR(50)")
+    public String TooName = "-";
 
     public long getId() {
         return id;

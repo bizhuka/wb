@@ -10,106 +10,108 @@ import java.util.Date;
 
 @Entity
 @Immutable
-@Table(name = "V_REQHEADER")
+@Table(name = "\"v_reqheader\"")
 public class VReqHeader {
-    @Column(length = 12)
+    @Column(name = "\"aufnr\"", length = 12)
     @Parameter("AFIH_AUFNR")
     public String Aufnr;
 
-    @Column(length = 3)
+    @Column(name = "\"beber\"", length = 3)
     @Parameter("ILOA_BEBER")
     public String Beber;
 
-    @Column(length = 18)
+    @Column(name = "\"equnr\"", length = 18)
     @Parameter("AFIH_EQUNR")
     public String Equnr;
 
-    @Column(columnDefinition = "DATE")
+    @Column(name = "\"gltrp\"", columnDefinition = "DATE")
     @Parameter("AFKO_GLTRP")
     public Date Gltrp;
 
-    @Column(columnDefinition = "DATE")
+    @Column(name = "\"gstrp\"", columnDefinition = "DATE")
     @Parameter("AFKO_GSTRP")
     public Date Gstrp;
 
-    @Basic
+    @Column(name = "\"waybill_id\"")
     public long Waybill_Id = -1;
 
-    @Column(columnDefinition = "NVARCHAR(3)")
+    @Column(name = "\"ilart\"", columnDefinition = "VARCHAR(3)")
     @Parameter("AFIH_ILART")
     public String Ilart;
 
-    @Column(columnDefinition = "NVARCHAR(30)")
+    @Column(name = "\"ilatx\"", columnDefinition = "VARCHAR(30)")
     @Parameter("T353I_ILATX")
     public String Ilatx;
 
-    @Column(length = 3)
+    @Column(name = "\"ingpr\"", length = 3)
     @Parameter("AFIH_INGPR")
     public String Ingpr;
 
-    @Column(columnDefinition = "NVARCHAR(18)")
+    @Column(name = "\"innam\"", columnDefinition = "VARCHAR(18)")
     @Parameter("T024I_INNAM")
     public String Innam;
 
-    @Column(length = 4)
+    @Column(name = "\"iwerk\"", length = 4)
     @Parameter("AFIH_IWERK")
     public String Iwerk;
 
-    @Column(length = 7)
+    @Column(name = "\"ktsch\"", length = 7)
     @Parameter("AFVC_KTSCH")
     public String Ktsch;
 
-    @Column(columnDefinition = "NVARCHAR(40)")
+    @Column(name = "\"ltxa1\"", columnDefinition = "VARCHAR(40)")
     @Parameter("AFVC_LTXA1")
     public String Ltxa1;
 
     @Id
-    @Column(length = 22)
+    @Column(name = "\"objnr\"", length = 22)
     @Parameter("AFVC_OBJNR")
     public String Objnr;
 
-    @Column(columnDefinition = "NVARCHAR(40)")
+    @Column(name = "\"pltxt\"", columnDefinition = "VARCHAR(40)")
     @Parameter("IFLOTX_PLTXT")
     public String Pltxt;
 
-    @Column(length = 1)
+    @Column(name = "\"priok\"", length = 1)
     @Parameter("AFIH_PRIOK")
     public String Priok;
 
-    @Column(columnDefinition = "NVARCHAR(20)")
+    @Column(name = "\"priokx\"", columnDefinition = "VARCHAR(20)")
     @Parameter("T356_PRIOKX")
     public String Priokx;
 
-    @Column(columnDefinition = "NVARCHAR(40)")
+    @Column(name = "\"stand\"", columnDefinition = "VARCHAR(40)")
     @Parameter("T499S_KTEXT")
     public String Stand;
 
-    @Column(length = 30)
+    @Column(name = "\"tplnr\"", length = 30)
     @Parameter("ILOA_TPLNR")
     public String Tplnr;
 
+    @Column(name = "\"duration\"")
     @Parameter("AFVV_DAUNO")
     public BigDecimal Duration;
 
-    @Column(columnDefinition = "NVARCHAR(40)")
+    @Column(name = "\"ktschtxt\"", columnDefinition = "VARCHAR(40)")
     @Parameter("T435T_TXT")
     public String KtschTxt;
 
-    @Column(columnDefinition = "NVARCHAR(100)")
+    @Column(name = "\"reason\"", columnDefinition = "VARCHAR(100)")
     public String reason;
-    @Basic
+
+    @Column(name = "\"statusreason\"")
     public int statusReason = ReqStatusReason.REQ_NEW;
-    @Basic
+    @Column(name = "\"motohour\"")
     public double motoHour;
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name = "\"fromdate\"", columnDefinition = "TIMESTAMP")
     public Date fromDate;
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name = "\"todate\"", columnDefinition = "TIMESTAMP")
     public Date toDate;
     // ---------------------------------------
-    @Basic
-    @Column(columnDefinition = "NVARCHAR(150)")
+
+    @Column(name="\"description\"",columnDefinition = "VARCHAR(150)")
     public String description;
-    @Basic
+    @Column(name="\"status\"")
     public int status;
 
     public String getAufnr() {

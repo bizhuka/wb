@@ -52,7 +52,7 @@ public class WialonServlet extends ServletBase {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        callCaseMethod(request, response);
+        callByPathInfo(request, response);
     }
 
     private HttpMethod getAsMethod(String url) throws IOException, ServletException {

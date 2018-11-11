@@ -186,8 +186,8 @@ public class RfcR3Import extends ServletBase {
 
             {
                 Connection connection = ODataServiceFactory.getConnection(em);
-                prepStatInsert = connection.prepareStatement("INSERT INTO DRIVER (DATBEG, FIO, PODR, POST, STCD3, BUKRS, PERNR) VALUES(?,?,?,?,?,?,?);");
-                prepStatUpdate = connection.prepareStatement("UPDATE DRIVER SET DATBEG = ?, FIO = ?, PODR = ?, POST = ?, STCD3 = ? WHERE BUKRS = ? AND PERNR = ?");
+                prepStatInsert = connection.prepareStatement("INSERT INTO \"wb.db::pack.driver\" (\"datbeg\", \"fio\", \"podr\", \"post\", \"stcd3\", \"bukrs\", \"pernr\") VALUES(?,?,?,?,?,?,?);");
+                prepStatUpdate = connection.prepareStatement("UPDATE \"wb.db::pack.driver\" SET \"datbeg\" = ?, \"fio\" = ?, \"podr\" = ?, \"post\" = ?, \"stcd3\" = ? WHERE \"bukrs\" = ? and \"pernr\" = ?");
             }
 
             @Override

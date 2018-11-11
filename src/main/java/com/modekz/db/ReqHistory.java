@@ -4,16 +4,18 @@ import org.eclipse.persistence.annotations.PrimaryKey;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-@PrimaryKey(columns = {@Column(name = "WAYBILL_ID"), @Column(name = "OBJNR", length = 22)})
+@PrimaryKey(columns = {@Column(name = "\"waybill_id\""), @Column(name = "\"objnr\"", length = 22)})
+@Table(name = "\"wb.db::pack.reqhistory\"")
 public class ReqHistory {
-    @Column
+    @Column(name = "\"waybill_id\"")
     public long Waybill_Id;
 
-    @Column
+    @Column(name = "\"objnr\"", length = 22)
     public String Objnr;
-
 
     public ReqHistory() {
 

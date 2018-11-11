@@ -21,9 +21,9 @@
                 <SearchField search="onTextSearch" visible="{ui>/showSortGroup}"
                              placeholder="{i18n>findReqs}" showRefreshButton="false" width="10rem"/>
 
-                <Button browserEvent="onBrowserEvent" press="onSortPress" visible="{ui>/showSortGroup}"
+                <Button press="onSortPress" visible="{ui>/showSortGroup}"
                         icon="sap-icon://sort"/>
-                <Button browserEvent="onBrowserEvent" press="onGroupPress" visible="{ui>/showSortGroup}"
+                <Button press="onGroupPress" visible="{ui>/showSortGroup}"
                         icon="sap-icon://group-2"/>
             </OverflowToolbar>
         </headerToolbar>

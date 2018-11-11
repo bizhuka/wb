@@ -1,9 +1,6 @@
 package com.modekz.db;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 import org.hibersap.annotations.BapiStructure;
@@ -11,21 +8,22 @@ import org.hibersap.annotations.Parameter;
 
 @Entity
 @BapiStructure
+@Table(name = "\"wb.db::pack.werk\"")
 public class Werk {
     @Basic
-    @Column(length = 4)
+    @Column(name="\"bukrs\"",length = 4)
     @Parameter("T001K_BUKRS")
     public String Bukrs;
 
-    @Column(columnDefinition = "NVARCHAR(25)")
+    @Column(name="\"butxt\"",columnDefinition = "VARCHAR(25)")
     @Parameter("T001_BUTXT")
     public String Butxt;
 
-    @Column(columnDefinition = "NVARCHAR(30)")
+    @Column(name="\"name1\"",columnDefinition = "VARCHAR(30)")
     @Parameter("T001W_NAME1")
     public String Name1;
 
-    @Column(length = 4)
+    @Column(name="\"werks\"",length = 4)
     @Parameter("T001W_WERKS")
     @Id
     public String Werks;

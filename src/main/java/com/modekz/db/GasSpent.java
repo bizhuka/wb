@@ -4,30 +4,35 @@ import org.eclipse.persistence.annotations.PrimaryKey;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-@PrimaryKey(columns = {@Column(name = "WAYBILL_ID"), @Column(name = "POS")})
+@PrimaryKey(columns = {@Column(name = "\"waybill_id\""), @Column(name = "\"pos\"")})
+@Table(name = "\"wb.db::pack.gasspent\"")
 public class GasSpent {
-    @Column
+    @Id
+    @Column(name = "\"waybill_id\"")
     public long Waybill_Id;
 
-    @Column
+    @Id
+    @Column(name = "\"pos\"")
     // Relative position is crucial
     public int Pos;
 
-    @Column(length = 18, nullable = false)
+    @Column(name="\"gasmatnr\"",length = 18, nullable = false)
     public String GasMatnr;
 
-    @Column
+    @Column(name = "\"gasbefore\"")
     public double GasBefore;
 
-    @Column
+    @Column(name = "\"gasgive\"")
     public double GasGive;
 
-    @Column
+    @Column(name = "\"gasgiven\"")
     public double GasGiven;
 
-    @Column(length = 4)
+    @Column(name="\"gaslgort\"",length = 4)
     public String GasLgort;
 
     public long getWaybill_Id() {

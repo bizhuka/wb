@@ -12,7 +12,7 @@
 
                 <contentRight>
                     <Button icon="sap-icon://synchronize" tooltip="{i18n>updateLgorts}" press="onSyncLgorts"
-                            visible="{= ${userInfo>/WbLoader}===true}"/>
+                            visible="{= ${userInfo>/WbLoaderLgort}===true}"/>
                 </contentRight>
             </Bar>
         </customHeader>

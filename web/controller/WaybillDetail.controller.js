@@ -739,7 +739,6 @@ sap.ui.define([
             var changeReqsDialog = new sap.m.Dialog('id_add_reqs_dialog', {
                 title: _this.getBundle().getText("addReqs"),
                 contentWidth: "85%",
-                model: true,
 
                 buttons: [
                     new sap.m.Button({
