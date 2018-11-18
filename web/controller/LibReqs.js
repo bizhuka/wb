@@ -239,8 +239,24 @@ sap.ui.define([
                 return _owner.getResText(_owner.status.REQ_STATUS_TEXTS, id);
             },
 
-            onWaybillPress(oEvent) {
+            onWaybillPress: function (oEvent) {
                 this.owner.onWaybillPress.call(this.owner, oEvent);
+            },
+
+            getHourDiff: function (fromDate, toDate) {
+                if (!fromDate || !toDate)
+                    return "";
+
+                var sec_num = (toDate.getTime() - fromDate.getTime()) / 1000;
+
+                var hours = Math.floor(sec_num / 3600);
+                var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+                var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+                if (hours < 10) hours = "0" + hours;
+                if (minutes < 10) minutes = "0" + minutes;
+                if (seconds < 10) seconds = "0" + seconds;
+                return hours + ':' + minutes + ':' + seconds;
             },
 
             onStatusReasonPress: function (oEvent) {
@@ -258,21 +274,19 @@ sap.ui.define([
                     origin: 'REQ',
                     title: bundle.getText("closeReqs"),
                     ok_text: bundle.getText("confirm"),
-                    text: obj.Reason,
+                    text: obj.Reason ? obj.Reason : bundle.getText("done"),
                     reason: obj.StatusReason,
                     fromDate: obj.FromDate ? obj.FromDate : obj.Gstrp,
                     toDate: obj.ToDate ? obj.ToDate : obj.Gltrp,
-                    motoHour: obj.MotoHour,
                     dateEdit: true,
 
                     check: function (block) {
                         editFields.Reason = block.text;
                         editFields.StatusReason = parseInt(block.reason);
-                        editFields.MotoHour = parseFloat(block.motoHour);
                         editFields.FromDate = block.fromDate;
                         editFields.ToDate = block.toDate;
 
-                        block.afterChecked(true);
+                        block.afterChecked(editFields.StatusReason !== _this.owner.status.REQ_SET);
                     },
 
                     success: function () {

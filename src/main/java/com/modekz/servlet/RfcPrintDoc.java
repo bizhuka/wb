@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class RfcPrintDoc extends ServletBase {
 
     public void init() {
-
+        super.initialize(null);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -61,31 +61,7 @@ public class RfcPrintDoc extends ServletBase {
 
         String N_class = null;
         try {
-            // Requests
-            PreparedStatement statement = connection.prepareStatement("select * from \"wb.db::pack.reqheader\" where \"waybill_id\" = ?");
-            statement.setLong(1, waybillId);
-            ResultSet rs = statement.executeQuery();
-            int num = 0;
-            while (rs.next()) {
-                WBPrintDoc.PrintReq req = new WBPrintDoc.PrintReq();
-
-                req.num = String.valueOf(++num);
-                req.waybill_id = rs.getString("waybill_id");
-                req.gstrp = rs.getDate("gstrp");
-                req.gltrp = rs.getDate("gltrp");
-                req.dateDiff = String.valueOf(
-                        TimeUnit.DAYS.convert(req.gltrp.getTime() - req.gstrp.getTime(), TimeUnit.MILLISECONDS) + 1);
-                BigDecimal hours = rs.getBigDecimal("duration");
-                if (BigDecimal.ZERO.compareTo(hours) != 0)
-                    req.duration = "(" + hours + ")";
-                req.pltxt = rs.getString("pltxt");
-                req.stand = rs.getString("stand");
-                req.beber = rs.getString("beber");
-
-                reqs.add(req);
-            }
-
-            statement = connection.prepareStatement(
+            PreparedStatement statement = connection.prepareStatement(
                     "select CURRENT_DATE as datum, w.\"butxt\", d.\"fio\", e.\"eqktx\", e.\"license_num\", e.\"speed_max\", e.\"pltxt\", e.\"n_class\", e.\"tooname\", waybill.*\n" +
                             "from \"wb.db::pack.waybill\" as  waybill\n" +
                             "left outer join \"wb.db::pack.werk\" as w on waybill.\"werks\" = w.\"werks\"\n" +
@@ -93,11 +69,15 @@ public class RfcPrintDoc extends ServletBase {
                             "left outer join \"wb.db::pack.equipment\" as e on waybill.\"equnr\" = e.\"equnr\"\n" +
                             "where waybill.\"id\" = ?");
             statement.setLong(1, waybillId);
-            rs = statement.executeQuery();
+            ResultSet rs = statement.executeQuery();
 
             // Add single item
+            WBPrintDoc.PrintDoc root = null;
             while (rs.next()) {
-                WBPrintDoc.PrintDoc root = new WBPrintDoc.PrintDoc();
+                // From js
+                String sRoot = request.getParameter("root");
+                root = gson.fromJson(sRoot, WBPrintDoc.PrintDoc.class);
+
                 N_class = rs.getString("n_class");
 
                 root.id = rs.getString("id");
@@ -114,6 +94,39 @@ public class RfcPrintDoc extends ServletBase {
                 root.tooName = rs.getString("tooname");
 
                 docs.add(root);
+            }
+
+            // Requests
+            if (root != null) {
+                statement = connection.prepareStatement("select * from \"wb.db::pack.reqheader\" where \"waybill_id\" = ?");
+                statement.setLong(1, waybillId);
+                rs = statement.executeQuery();
+                int num = 0;
+                while (rs.next()) {
+                    WBPrintDoc.PrintReq req = new WBPrintDoc.PrintReq();
+
+                    req.num = String.valueOf(++num);
+                    req.waybill_id = rs.getString("waybill_id");
+                    req.gstrp = rs.getDate("gstrp");
+                    req.gltrp = rs.getDate("gltrp");
+
+                    // Copy from wb for too
+                    if (!root.tooName.equals("-")) {
+                        req.gstrp = root.fromDate;
+                        req.gltrp = root.toDate;
+                    }
+
+                    req.dateDiff = String.valueOf(
+                            TimeUnit.DAYS.convert(req.gltrp.getTime() - req.gstrp.getTime(), TimeUnit.MILLISECONDS) + 1);
+                    BigDecimal hours = rs.getBigDecimal("duration");
+                    if (BigDecimal.ZERO.compareTo(hours) != 0)
+                        req.duration = "(" + hours + ")";
+                    req.pltxt = rs.getString("pltxt");
+                    req.stand = rs.getString("stand");
+                    req.beber = rs.getString("beber");
+
+                    reqs.add(req);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

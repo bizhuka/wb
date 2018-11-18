@@ -3,11 +3,12 @@ sap.ui.define([
     'sap/ui/core/UIComponent',
     'sap/m/MessageBox',
     'sap/m/MessageToast',
+    'sap/m/SelectDialog',
     'sap/ui/model/json/JSONModel',
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator',
     'com/modekzWaybill/controller/LibDriver'
-], function (BaseController, UIComponent, MessageBox, MessageToast, JSONModel, Filter, FilterOperator, LibDriver) {
+], function (BaseController, UIComponent, MessageBox, MessageToast, SelectDialog, JSONModel, Filter, FilterOperator, LibDriver) {
     "use strict";
 
     return BaseController.extend("com.modekzWaybill.controller.Start", {
@@ -156,7 +157,7 @@ sap.ui.define([
         },
 
         openAnalytics: function () {
-            window.open('https://erp-service.eu1.sapanalytics.cloud/sap/fpa/ui/tenants/009/app.html#;view_id=story;storyId=78A5EADAC36110C14FED3BA56FF91751', '_blank');
+            window.open('https://erp-service.eu1.sapanalytics.cloud/sap/fpa/ui/tenants/009/app.html#;view_id=contentLib;tab=MyFiles', '_blank');
         },
 
         showUserInfo: function () {
@@ -164,7 +165,69 @@ sap.ui.define([
         },
 
         showDocumentation: function () {
-            MessageToast.show(this.getBundle().getText("manualNotPrepared"));
+            var _this = this;
+            var scopes = this.getModel("userInfo").getProperty("/scopes");
+            var manuals = [];
+            for (var i = 0; i < scopes.length; i++) {
+                var scope = scopes[i];
+                if (scope.indexOf("Manual", scope.length - "Manual".length) !== -1)
+                    manuals.push({
+                        name: "ZWB_"  + scope.substr(2).toUpperCase() + ".PDF"
+                    });
+            }
+
+            switch (manuals.length) {
+                case 0: // No documentation
+                    MessageToast.show(this.getBundle().getText("manualNotPrepared"));
+                    return;
+
+                case 1: // Just one
+                    _this.navToPost({
+                        url: "/printDoc/template?",
+                        objid: manuals[0].name,
+                        contentType: "application/pdf"
+                    });
+                    return;
+            }
+
+            // Many docs
+            var dialog = new SelectDialog({
+                contentWidth: "50%",
+
+                items: {
+                    path: "/",
+                    template: new sap.m.StandardListItem({
+                        title: "{name}"
+                    })
+                },
+
+                afterClose: function () {
+                    dialog.destroy();
+                },
+
+                search: function (oEvent) {
+                    var sValue = oEvent.getParameter("value");
+                    var oBinding = oEvent.getSource().getBinding("items");
+                    oBinding.filter(new Filter("name", FilterOperator.Contains, sValue));
+                },
+
+                confirm: function (oEvent) {
+                    var aContexts = oEvent.getParameter("selectedContexts");
+                    if (!aContexts || !aContexts.length)
+                        return;
+
+                    _this.navToPost({
+                        url: "/printDoc/template?",
+                        objid: aContexts[0].getObject().name,
+                        contentType: "application/pdf"
+                    })
+                }
+            });
+            dialog.setModel(new JSONModel(manuals));
+
+            dialog.addStyleClass(this.getContentDensityClass());
+            dialog.open();
+
         },
 
         eoValidation: function () {

@@ -139,6 +139,7 @@ sap.ui.define([
 
         readBindingObject: function (callback) {
             var _this = this;
+            var userModel = _this.getModel("userInfo");
 
             _this.getModel("wb").read(_this.getBindingPath(), {
                 success: function (waybill) {
@@ -181,7 +182,9 @@ sap.ui.define([
                         });
 
                     // Can change driver
-                    driverInput.setEnabled(bindingObject.Status === _this.status.CREATED); // AGREED
+                    driverInput.setEnabled(
+                        bindingObject.Status === _this.status.CREATED && // AGREED
+                        userModel.getProperty("/WbSetDriver") === true );
 
                     // And if ok
                     if (callback)
@@ -389,10 +392,20 @@ sap.ui.define([
                         allTabs.setSelectedKey("id_dr_tab");
                         return;
                     }
+
                     if (parseInt(bindingObject.Gas_Cnt) === 0) {
                         this.showError(null, this.getBundle().getText("noGas"));
                         allTabs.setSelectedKey("id_close_tab");
                         return;
+                    }
+                    // Check gas again
+                    var fuelRows = _this.getModel("fuel").getProperty("/data");
+                    for (var i = 0; i < fuelRows.length; i++) {
+                        var row = fuelRows[i];
+                        if (row.GasMatnr && parseFloat(row.GasGive) <= 0) {
+                            this.showError(null, this.getBundle().getText("noGas"));
+                            return;
+                        }
                     }
 
                     if (parseInt(bindingObject.Req_Cnt) === 0) {
@@ -503,7 +516,7 @@ sap.ui.define([
                     if (!this.checkReqsStatus())
                         return;
 
-                    var fuelRows = _this.onFuelChanged({
+                    fuelRows = _this.onFuelChanged({
                         skipSave: true
                     });
                     // Fuel not ok
@@ -517,7 +530,7 @@ sap.ui.define([
                     }
 
                     var spents = [];
-                    for (var i = 0; i < fuelRows.length; i++)
+                    for (i = 0; i < fuelRows.length; i++)
                         if (fuelRows[i].GasMatnr)
                             spents.push({
                                 matnr: fuelRows[i].GasMatnr,
@@ -587,10 +600,31 @@ sap.ui.define([
             });
         },
 
-        on_wb_print: function () {
+        on_wb_print: function (oEvent) {
+            if (!this.menu) {
+                this.menu = this.createFragment("com.modekzWaybill.view.frag.PrintMenu");
+                this.menu.setModel(new JSONModel("/././json/printOption.json"), "po");
+            }
+            this.menu.openBy(oEvent.getSource());
+        },
+
+        do_wb_print: function () {
+            var watermarks = this.menu.getModel("po").getProperty("/list");
+
+            var root = {};
+            for (var i = 1; i <= watermarks.length; i++) {
+                var watermark = watermarks[i - 1];
+                if (watermark.enabled) {
+                    root["kzText" + i] = watermark.kzText;
+                    root["ruText" + i] = watermark.ruText;
+                }
+                // Hide border or show in ms word
+                root["block" + i] = watermark.enabled ? "" : "<a:noFill/>";
+            }
             this.navToPost({
                 url: "/././printDoc/templateWithData?",
-                waybillId: bindingObject.Id
+                waybillId: bindingObject.Id,
+                root: JSON.stringify(root)
             });
         },
 
@@ -654,10 +688,10 @@ sap.ui.define([
                 // Only this fields
                 var updFields = {
                     GasMatnr: row.GasMatnr,
-                    GasBefore: row.GasBefore,
-                    GasGive: row.GasGive,
-                    GasGiven: row.GasGiven,
-                    GasLgort: row.GasLgort
+                    GasBefore: String(row.GasBefore),
+                    GasGive: String(row.GasGive),
+                    GasGiven: String(row.GasGiven),
+                    GasLgort: String(row.GasLgort)
                 };
 
                 oWbModel.update(_this.getGasSpentPath(i), updFields, {
@@ -693,23 +727,28 @@ sap.ui.define([
             });
         },
 
-        onFuelTypeChange: function (oEvent) {
-            var comboGasType = oEvent.getSource();
+        onFuelTypeChange: function (param) {
+            var newObject = param;
 
-            // Which pos
-            var id = comboGasType.getId().split("-");
-            id = id[id.length - 1];
+            if (param.getSource) {
+                var comboGasType = param.getSource();
+                var gasMatnr = comboGasType.getSelectedKey();
+
+                // Which pos
+                var id = comboGasType.getId().split("-");
+                id = id[id.length - 1];
+                newObject = {
+                    Pos: parseInt(id),
+                    GasMatnr: gasMatnr
+                };
+            }
+            newObject.Waybill_Id = String(waybillId); // As string!
 
             try {
-                var gasMatnr = comboGasType.getSelectedKey();
-                if (gasMatnr === "")
+                if (newObject.GasMatnr === "")
                     this.getModel("wb").remove(this.getGasSpentPath(id));
                 else
-                    this.getModel("wb").create("/GasSpents", {
-                        Waybill_Id: waybillId + "", // As string!
-                        Pos: parseInt(id),
-                        GasMatnr: gasMatnr
-                    });
+                    this.getModel("wb").create("/GasSpents", newObject);
             } catch (e) {
                 console.log(e)
             }
@@ -802,6 +841,42 @@ sap.ui.define([
             });
 
             changeReqsDialog.open();
+        },
+
+        onGetPrevGasInfo: function (oEvent) {
+            var _this = this;
+            var button = oEvent.getSource();
+            button.setEnabled(false);
+
+            $.ajax({
+                url: '/././select/prevGas?equnr=' + bindingObject.Equnr,
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (prevDoc) {
+                    button.setEnabled(true);
+
+                    if (!prevDoc.GasMatnr)
+                        return;
+
+                    var fuelModel = _this.getModel("fuel");
+
+                    // Set data
+                    var data = fuelModel.getProperty("/data");
+                    data[0].GasMatnr = prevDoc.GasMatnr;
+                    data[0].GasBefore = prevDoc.GasBefore;
+
+                    // Refresh
+                    fuelModel.setProperty("/data", data);
+
+                    // Update DB
+                    _this.onFuelTypeChange(prevDoc)
+                },
+
+                error: function (err) {
+                    button.setEnabled(true);
+                    _this.showError(err, _this.getBundle().getText("errGetData"));
+                }
+            });
         }
     });
 });

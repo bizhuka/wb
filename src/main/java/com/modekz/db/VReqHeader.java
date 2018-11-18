@@ -101,8 +101,6 @@ public class VReqHeader {
 
     @Column(name = "\"statusreason\"")
     public int statusReason = ReqStatusReason.REQ_NEW;
-    @Column(name = "\"motohour\"")
-    public double motoHour;
     @Column(name = "\"fromdate\"", columnDefinition = "TIMESTAMP")
     public Date fromDate;
     @Column(name = "\"todate\"", columnDefinition = "TIMESTAMP")
@@ -280,14 +278,6 @@ public class VReqHeader {
 
     public void setStatusReason(int statusReason) {
         this.statusReason = statusReason;
-    }
-
-    public double getMotoHour() {
-        return motoHour;
-    }
-
-    public void setMotoHour(double motoHour) {
-        this.motoHour = motoHour;
     }
 
     public Date getFromDate() {

@@ -93,7 +93,7 @@
                                   visible="{ui>/showWbColumn}"/>
 
                 <ObjectIdentifier title="{ path: 'wb>StatusReason', formatter: '.getStatusReasonText'}"
-                                  titleActive="{= ${userInfo>/WbCloseReqs}===true}"
+                                  titleActive="{= ${userInfo>/WbCloseReqs}===true&amp;&amp;${wb>Status}!==${status>/CLOSED}}"
                                   titlePress="onStatusReasonPress"
                                   text="{wb>Reason}"/>
 
@@ -103,7 +103,7 @@
 
                 <ObjectStatus
                         title="{ path: 'wb>FromDate', formatter: '.owner.toLocaleDateTime' } - { path: 'wb>ToDate', formatter: '.owner.toLocaleDateTime' }"
-                        text="&#xA;{wb>MotoHour}"
+                        text="&#xA;{ parts:[ { path: 'wb>FromDate' }, { path: 'wb>ToDate' } ], formatter: '.getHourDiff' }"
                         visible="{= ${wb>FromDate}!==null}"/>
 
                 <ObjectStatus title="{wb>Innam}" text="&#xA;{wb>Pltxt}" visible="{ui>/showOptColumn}"/>

@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
 
 @WebServlet(urlPatterns = {"/csv/*"})
 public class CsvUploader extends ServletBase {
@@ -81,7 +79,7 @@ public class CsvUploader extends ServletBase {
             for (DbUpdateInfoPlus.Item item : info.items) {
 
                 // Works + Plate
-                String equnr = "ID_" + item.data[1] + "_" + item.data[4];
+                String equnr = ("ID_" + item.data[1] + "_" + item.data[4]).replaceAll("\\s+", "");
                 Equipment eo = em.find(Equipment.class, equnr);
                 if (eo == null) {
                     eo = new Equipment();

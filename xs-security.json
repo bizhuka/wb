@@ -35,7 +35,12 @@
     { "name": "$XSAPPNAME.WbShowFinishedReqs", "description": "Просмотр обработанных заявок" },
     { "name": "$XSAPPNAME.WbShowList", "description": "Просмотр списка ПЛ" },
     { "name": "$XSAPPNAME.WbShowNewReqs", "description": "Просмотр Заявок TORO" },
-    { "name": "$XSAPPNAME.WbShowOne", "description": "Просмотр отдельного ПЛ" }
+    { "name": "$XSAPPNAME.WbShowOne", "description": "Просмотр отдельного ПЛ" },
+    { "name": "$XSAPPNAME.WbEngineerManual", "description": "Рабочая инструкция инженера" },
+    { "name": "$XSAPPNAME.WbMechanicManual", "description": "Рабочая инструкция механика" },
+    { "name": "$XSAPPNAME.WbDoctorManual", "description": "Рабочая инструкция доктора" },
+    { "name": "$XSAPPNAME.WbSetDriver", "description": "Назначить водителя" },
+    { "name": "$XSAPPNAME.WbChangeWialonData", "description": "Менять данные Wialon" }
   ],
   "role-templates": [
     { "name": "WbAdmin", "description": "Администратор программы", "scope-references": [ "$XSAPPNAME.WbAdmin" ] },
@@ -61,6 +66,11 @@
     { "name": "WbShowFinishedReqs", "description": "Просмотр обработанных заявок", "scope-references": [ "$XSAPPNAME.WbShowFinishedReqs" ] },
     { "name": "WbShowList", "description": "Просмотр списка ПЛ", "scope-references": [ "$XSAPPNAME.WbShowList" ] },
     { "name": "WbShowNewReqs", "description": "Просмотр Заявок TORO", "scope-references": [ "$XSAPPNAME.WbShowNewReqs" ] },
-    { "name": "WbShowOne", "description": "Просмотр отдельного ПЛ", "scope-references": [ "$XSAPPNAME.WbShowOne" ] }
+    { "name": "WbShowOne", "description": "Просмотр отдельного ПЛ", "scope-references": [ "$XSAPPNAME.WbShowOne" ] },
+    { "name": "WbEngineerManual", "description": "Рабочая инструкция инженера", "scope-references": [ "$XSAPPNAME.WbEngineerManual" ] },
+    { "name": "WbMechanicManual", "description": "Рабочая инструкция механика", "scope-references": [ "$XSAPPNAME.WbMechanicManual" ] },
+    { "name": "WbDoctorManual", "description": "Рабочая инструкция доктора", "scope-references": [ "$XSAPPNAME.WbDoctorManual" ] },
+    { "name": "WbSetDriver", "description": "Назначить водителя", "scope-references": [ "$XSAPPNAME.WbSetDriver" ] },
+    { "name": "WbChangeWialonData", "description": "Менять данные Wialon", "scope-references": [ "$XSAPPNAME.WbChangeWialonData" ] }
   ]
 }

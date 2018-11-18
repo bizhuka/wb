@@ -26,7 +26,8 @@
 
                         <TileContent unit="{i18n>transService}">
                             <NumericContent busy="{reqTile>/busy}"
-                                            value="{reqTile>/count}"/>
+                                            value="{reqTile>/count}"
+                                            valueColor="{= ${reqTile>/count}>70?'Error':${reqTile>/count}>50?'Critical':'Neutral'}"/>
                         </TileContent>
                     </GenericTile>
 
@@ -50,7 +51,8 @@
                         <TileContent unit="{i18n>dispatcher}">
                             <NumericContent busy="{wbTile>/busy}"
                                             value="{wbTile>/count}"
-                                            icon="sap-icon://shipping-status"/>
+                                            icon="sap-icon://shipping-status"
+                                            valueColor="{= ${reqTile>/count}>50?'Error':${reqTile>/count}>40?'Critical':'Neutral'}"/>
                         </TileContent>
                     </GenericTile>
                 </layout:HorizontalLayout>

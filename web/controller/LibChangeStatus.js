@@ -84,7 +84,6 @@ sap.ui.define([
                     fromDate: _this.gui.fromDate,
                     toDate: _this.gui.toDate,
                     reason: _this.gui.reason, // combo.getSelectedKey(),
-                    motoHour: (_this.gui.toDate.getTime() - _this.gui.fromDate.getTime()) / (3600 * 1000), // diff in hours _this.gui.motoHour,
 
                     afterChecked: function (ok) {
                         okButton.setEnabled(ok);

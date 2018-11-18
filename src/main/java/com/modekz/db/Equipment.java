@@ -78,6 +78,10 @@ public class Equipment {
     @Parameter("KLAH_CLASS")
     public String N_class;
 
+    @Column(name = "\"ktschtxt\"", columnDefinition = "VARCHAR(40)")
+    @Parameter("_T435T_TXT")
+    public String KtschTxt;
+
     @Column(name="\"point\"",length = 12)
     @Parameter("IMPTT_POINT")
     public String Point;
@@ -365,5 +369,13 @@ public class Equipment {
 
     public void setAnln1(String anln1) {
         Anln1 = anln1;
+    }
+
+    public String getKtschTxt() {
+        return KtschTxt;
+    }
+
+    public void setKtschTxt(String ktschTxt) {
+        KtschTxt = ktschTxt;
     }
 }

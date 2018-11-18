@@ -88,6 +88,35 @@ public class WBPrintDoc {
 
         @Parameter("TOO_NAME")
         public String tooName;
+
+        @Parameter("WM_KZ1")
+        public String kzText1;
+        @Parameter("WM_RU1")
+        public String ruText1;
+        @Parameter("WM_BL1")
+        public String block1;
+
+        @Parameter("WM_KZ2")
+        public String kzText2;
+        @Parameter("WM_RU2")
+        public String ruText2;
+        @Parameter("WM_BL2")
+        public String block2;
+
+        @Parameter("WM_KZ3")
+        public String kzText3;
+        @Parameter("WM_RU3")
+        public String ruText3;
+        @Parameter("WM_BL3")
+        public String block3;
+
+        @Parameter("WM_KZ4")
+        public String kzText4;
+        @Parameter("WM_RU4")
+        public String ruText4;
+        @Parameter("WM_BL4")
+        public String block4;
+
     }
 
     @BapiStructure
