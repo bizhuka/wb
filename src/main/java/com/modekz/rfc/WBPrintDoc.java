@@ -1,5 +1,6 @@
 package com.modekz.rfc;
 
+import com.modekz.db.GasSpent;
 import org.hibersap.annotations.*;
 
 import java.math.BigDecimal;
@@ -36,6 +37,10 @@ public class WBPrintDoc {
     @Parameter("IT_REQ")
     public List<PrintReq> reqs;
 
+    @Table
+    @Parameter("IT_GAS")
+    public List<GasSpent> gasSpents;
+
     @Export
     @Parameter("EV_BIN_DATA")
     public byte[] data;
@@ -44,11 +49,12 @@ public class WBPrintDoc {
         this.objid = objid;
     }
 
-    public WBPrintDoc(long waybillId, String N_class, List<PrintDoc> docs, List<PrintReq> reqs) {
+    public WBPrintDoc(long waybillId, String N_class, List<PrintDoc> docs, List<PrintReq> reqs, List<GasSpent> gasSpents) {
         this.waybillId = String.valueOf(waybillId);
         this.N_class = N_class;
         this.docs = docs;
         this.reqs = reqs;
+        this.gasSpents = gasSpents;
     }
 
     @BapiStructure
@@ -66,7 +72,7 @@ public class WBPrintDoc {
         public String pltxt;
 
         @Parameter("DRIVER")
-        public String driver;
+        public int driver;
 
         @Parameter("DRIVER_FIO")
         public String driverFio;
@@ -89,34 +95,37 @@ public class WBPrintDoc {
         @Parameter("TOO_NAME")
         public String tooName;
 
+        @Parameter("TYPBZ")
+        public String typbz;
+
+        @Parameter("ANLN1")
+        public String anln1;
+
         // Watermarks
         @Parameter("WM_KZ1")
         public String k1;
         @Parameter("WM_RU1")
         public String r1;
-        @Parameter("WM_BL1")
-        public String b1;
 
         @Parameter("WM_KZ2")
         public String k2;
         @Parameter("WM_RU2")
         public String r2;
-        @Parameter("WM_BL2")
-        public String b2;
 
         @Parameter("WM_KZ3")
         public String k3;
         @Parameter("WM_RU3")
         public String r3;
-        @Parameter("WM_BL3")
-        public String b3;
 
         @Parameter("WM_KZ4")
         public String k4;
         @Parameter("WM_RU4")
         public String r4;
-        @Parameter("WM_BL4")
-        public String b4;
+
+        @Parameter("WM_KZ5")
+        public String k5;
+        @Parameter("WM_RU5")
+        public String r5;
     }
 
     @BapiStructure
@@ -148,6 +157,11 @@ public class WBPrintDoc {
         @Parameter("BEBER")
         public String beber;
 
+        @Parameter("ILATX")
+        public String ilatx;
+
+        @Parameter("LTXA1")
+        public String ltxa1;
     }
 
 }

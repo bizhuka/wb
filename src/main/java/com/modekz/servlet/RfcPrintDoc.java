@@ -1,12 +1,14 @@
 package com.modekz.servlet;
 
 import com.modekz.ODataServiceFactory;
+import com.modekz.db.GasSpent;
 import com.modekz.rfc.WBPrintDoc;
 import org.hibersap.session.Session;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -62,11 +64,12 @@ public class RfcPrintDoc extends ServletBase {
         Connection connection = ODataServiceFactory.getConnection(em);
         List<WBPrintDoc.PrintDoc> docs = new ArrayList<>();
         List<WBPrintDoc.PrintReq> reqs = new ArrayList<>();
+        List<GasSpent> gasSpents = new ArrayList<>();
 
         String N_class = null;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "select CURRENT_DATE as datum, w.\"butxt\", d.\"fio\", e.\"eqktx\", e.\"license_num\", e.\"speed_max\", e.\"pltxt\", e.\"n_class\", e.\"tooname\", waybill.*\n" +
+                    "select CURRENT_DATE as datum, w.\"butxt\", d.\"fio\", e.\"eqktx\", e.\"license_num\", e.\"speed_max\", e.\"pltxt\", e.\"n_class\", e.\"tooname\", e.\"typbz\", e.\"anln1\", waybill.*\n" +
                             "from \"wb.db::pack.waybill\" as  waybill\n" +
                             "left outer join \"wb.db::pack.werk\" as w on waybill.\"werks\" = w.\"werks\"\n" +
                             "left outer join \"wb.db::pack.driver\" as d on waybill.\"bukrs\" = d.\"bukrs\" and waybill.\"driver\" = d.\"pernr\"\n" +
@@ -92,16 +95,13 @@ public class RfcPrintDoc extends ServletBase {
                 // From js 16 base -> 2 base
                 String n = Integer.toBinaryString(Integer.parseInt(request.getParameter("n"), 16));
                 for (int i = 1; i <= n.length(); i++) {
+                    // to empty string
+                    if (n.charAt(i - 1) == '0')
+                        continue;
+
                     Field kField = fieldMap.get("k" + i);
                     Field rField = fieldMap.get("r" + i);
-                    Field bField = fieldMap.get("b" + i);
                     json = jsonArr.getJSONObject(i - 1);
-
-                    // to empty string
-                    if (n.charAt(i - 1) == '0') {
-                        bField.set(root, "<a:noFill/>");
-                        continue;
-                    }
 
                     // get from file
                     kField.set(root, json.getString("kzText"));
@@ -124,7 +124,7 @@ public class RfcPrintDoc extends ServletBase {
                 root.datum = rs.getDate("datum");
                 root.bukrsName = rs.getString("butxt");
                 root.pltxt = rs.getString("pltxt");
-                root.driver = rs.getString("driver");
+                root.driver = Integer.parseInt(rs.getString("driver"));
                 root.driverFio = rs.getString("fio");
                 root.eqktx = rs.getString("eqktx");
                 root.licenseNum = rs.getString("license_num");
@@ -132,6 +132,8 @@ public class RfcPrintDoc extends ServletBase {
                 root.fromDate = rs.getDate("fromdate");
                 root.toDate = rs.getDate("todate");
                 root.tooName = rs.getString("tooname");
+                root.typbz = rs.getString("typbz");
+                root.anln1 = rs.getString("anln1");
 
                 docs.add(root);
             }
@@ -164,9 +166,16 @@ public class RfcPrintDoc extends ServletBase {
                     req.pltxt = rs.getString("pltxt");
                     req.stand = rs.getString("stand");
                     req.beber = rs.getString("beber");
+                    req.ilatx = rs.getString("ilatx");
+                    req.ltxa1 = rs.getString("ltxa1");
 
                     reqs.add(req);
                 }
+
+                // Just fill with something
+                gasSpents = em.createQuery(
+                        "SELECT t FROM GasSpent t WHERE t.Waybill_Id = " + waybillId, GasSpent.class).getResultList();
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -176,7 +185,7 @@ public class RfcPrintDoc extends ServletBase {
         }
 
         // Pass data for template
-        WBPrintDoc printDoc = new WBPrintDoc(waybillId, N_class, docs, reqs);
+        WBPrintDoc printDoc = new WBPrintDoc(waybillId, N_class, docs, reqs, gasSpents);
 
         try (Session session = ODataServiceFactory.getRfcSession().openSession()) {
             session.execute(printDoc);

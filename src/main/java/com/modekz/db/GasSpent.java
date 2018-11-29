@@ -1,11 +1,13 @@
 package com.modekz.db;
 
 import org.eclipse.persistence.annotations.PrimaryKey;
+import org.hibersap.annotations.Parameter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 
 @Entity
 @PrimaryKey(columns = {@Column(name = "\"waybill_id\""), @Column(name = "\"pos\"")})
@@ -23,14 +25,17 @@ public class GasSpent {
     @Column(name="\"gasmatnr\"",length = 18, nullable = false)
     public String GasMatnr;
 
-    @Column(name = "\"gasbefore\"")
-    public double GasBefore;
+    @Parameter("BEFORE")
+    @Column(name = "\"gasbefore\"", columnDefinition = "FLOAT")
+    public BigDecimal GasBefore;
 
-    @Column(name = "\"gasgive\"")
-    public double GasGive;
+    @Parameter("GIVE")
+    @Column(name = "\"gasgive\"", columnDefinition = "FLOAT")
+    public BigDecimal GasGive;
 
-    @Column(name = "\"gasgiven\"")
-    public double GasGiven;
+    @Parameter("GIVEN")
+    @Column(name = "\"gasgiven\"", columnDefinition = "FLOAT")
+    public BigDecimal GasGiven;
 
     @Column(name="\"gaslgort\"",length = 4)
     public String GasLgort;
@@ -59,27 +64,27 @@ public class GasSpent {
         this.GasMatnr = GasMatnr;
     }
 
-    public double getGasBefore() {
+    public BigDecimal getGasBefore() {
         return GasBefore;
     }
 
-    public void setGasBefore(double GasBefore) {
+    public void setGasBefore(BigDecimal GasBefore) {
         this.GasBefore = GasBefore;
     }
 
-    public double getGasGive() {
+    public BigDecimal getGasGive() {
         return GasGive;
     }
 
-    public void setGasGive(double GasGive) {
+    public void setGasGive(BigDecimal GasGive) {
         this.GasGive = GasGive;
     }
 
-    public double getGasGiven() {
+    public BigDecimal getGasGiven() {
         return GasGiven;
     }
 
-    public void setGasGiven(double GasGiven) {
+    public void setGasGiven(BigDecimal GasGiven) {
         this.GasGiven = GasGiven;
     }
 
