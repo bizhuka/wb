@@ -184,7 +184,7 @@ sap.ui.define([
                     // Can change driver
                     driverInput.setEnabled(
                         bindingObject.Status === _this.status.CREATED && // AGREED
-                        userModel.getProperty("/WbSetDriver") === true );
+                        userModel.getProperty("/WbSetDriver") === true);
 
                     // And if ok
                     if (callback)
@@ -604,28 +604,60 @@ sap.ui.define([
             if (!this.menu) {
                 this.menu = this.createFragment("com.modekzWaybill.view.frag.PrintMenu");
                 this.menu.setModel(new JSONModel("/././json/printOption.json"), "po");
+                this.menu.setModel(new JSONModel("/././json/printOption.json"), "po2");
             }
             this.menu.openBy(oEvent.getSource());
         },
 
         do_wb_print: function () {
-            var watermarks = this.menu.getModel("po").getProperty("/list");
+            var po = this.menu.getModel("po").getProperty("/list");
+            // Original copy
+            var po2 = this.menu.getModel("po2").getProperty("/list");
 
-            var root = {};
-            for (var i = 1; i <= watermarks.length; i++) {
-                var watermark = watermarks[i - 1];
-                if (watermark.enabled) {
-                    root["kzText" + i] = watermark.kzText;
-                    root["ruText" + i] = watermark.ruText;
-                }
-                // Hide border or show in ms word
-                root["block" + i] = watermark.enabled ? "" : "<a:noFill/>";
+            // url params
+            var params = {
+                url: "/././print/doc?",
+                id: bindingObject.Id,
+                n: ""
+            };
+
+            // Create short url (do not pass default values)
+            for (var i = 1; i <= po.length; i++) {
+                var watermark = po[i - 1];
+                var watermark2 = po2[i - 1];
+
+                // As binary
+                params.n += watermark.enabled ? "1" : "0";
+
+                // How pass texts
+                if (!watermark.enabled)
+                    continue;
+
+                if (watermark.kzText !== watermark2.kzText)
+                    params["k" + i] = watermark.kzText;
+
+                if (watermark.ruText !== watermark2.ruText)
+                    params["r" + i] = watermark.ruText;
             }
-            this.navToPost({
-                url: "/././printDoc/templateWithData?",
-                waybillId: bindingObject.Id,
-                root: JSON.stringify(root)
-            });
+
+            // Get full url
+            params.n = parseInt(params.n, 2).toString(16); // From 2 based -> hex
+            var docUrl = this.absolutePath(this.navToPost(params, true));
+
+            // Just load for localhost
+            if (docUrl.lastIndexOf('http://localhost', 0) !== 0)
+                docUrl = "https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(docUrl);
+
+            // And show in browser
+            window.location = docUrl;
+        },
+
+        absolutePath: function (href) {
+            if (!this.link)
+                this.link = document.createElement("a");
+
+            this.link.href = href;
+            return this.link.href;
         },
 
         checkReqsStatus: function () {
@@ -822,7 +854,7 @@ sap.ui.define([
 
                 getFilter: function () {
                     // "0" & Ktsch === N_class
-                    var txtKtsch = oWbModel.getProperty("/Equipments('" + bindingObject.Equnr + "')").N_class.substr(1);
+                    var txtKtsch = oWbModel.getProperty("/Equipments('" + bindingObject.Equnr + "')").N_class; //.substr(1);
 
                     return _this.makeAndFilter(
                         // Only use curtain class

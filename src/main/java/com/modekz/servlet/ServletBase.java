@@ -106,4 +106,8 @@ public class ServletBase extends HttpServlet {
         }
         return sb.toString();
     }
+
+    public String getFileAsString(String path) throws IOException {
+        return IOUtils.toString(this.getServletContext().getResourceAsStream(path), "UTF-8");
+    }
 }

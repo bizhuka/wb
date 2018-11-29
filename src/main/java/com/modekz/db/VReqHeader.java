@@ -4,7 +4,10 @@ import com.modekz.db.flag.ReqStatusReason;
 import com.sap.db.annotations.Immutable;
 import org.hibersap.annotations.Parameter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -88,7 +91,15 @@ public class VReqHeader {
     @Parameter("ILOA_TPLNR")
     public String Tplnr;
 
-    @Column(name = "\"duration\"")
+    @Column(name = "\"ntanz\"", columnDefinition = "TIME")
+    @Parameter("AFVV_NTANZ")
+    public Date BegTime;
+
+    @Column(name = "\"ntenz\"", columnDefinition = "TIME")
+    @Parameter("AFVV_NTENZ")
+    public Date EndTime;
+
+    @Column(name = "\"duration\"", columnDefinition = "FLOAT")
     @Parameter("AFVV_DAUNO")
     public BigDecimal Duration;
 
@@ -107,9 +118,9 @@ public class VReqHeader {
     public Date toDate;
     // ---------------------------------------
 
-    @Column(name="\"description\"",columnDefinition = "VARCHAR(150)")
+    @Column(name = "\"description\"", columnDefinition = "VARCHAR(150)")
     public String description;
-    @Column(name="\"status\"")
+    @Column(name = "\"status\"")
     public int status;
 
     public String getAufnr() {
@@ -326,5 +337,21 @@ public class VReqHeader {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Date getBegTime() {
+        return BegTime;
+    }
+
+    public void setBegTime(Date begTime) {
+        BegTime = begTime;
+    }
+
+    public Date getEndTime() {
+        return EndTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        EndTime = endTime;
     }
 }

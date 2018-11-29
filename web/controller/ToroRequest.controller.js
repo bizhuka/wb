@@ -329,7 +329,7 @@ sap.ui.define([
             var _this = this;
 
             // do not check rights, not ready yet (For speed)
-            var  userModel = _this.getModel("userInfo");
+            var userModel = _this.getModel("userInfo");
             var loadSchedule = userModel && userModel.getProperty("/WbLoaderSchedule") === true;
             if (!loadSchedule)
                 _this._onObjectMatched();
@@ -413,7 +413,7 @@ sap.ui.define([
                 for (var key in arrClass)
                     if (arrClass.hasOwnProperty(key)) {
                         // "0" & Ktsch === N_class
-                        key = "0" + key;
+                        // key = "0" + key;
                         oFilters.push(new Filter("N_class", FilterOperator.EQ, key));
                     }
 

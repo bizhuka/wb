@@ -3,6 +3,8 @@ package com.modekz.servlet;
 import com.modekz.ODataServiceFactory;
 import com.modekz.rfc.WBPrintDoc;
 import org.hibersap.session.Session;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
@@ -10,16 +12,18 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@WebServlet(urlPatterns = {"/printDoc/*"})
+@WebServlet(urlPatterns = {"/print/*"})
 public class RfcPrintDoc extends ServletBase {
 
     public void init() {
@@ -47,13 +51,13 @@ public class RfcPrintDoc extends ServletBase {
     }
 
     @SuppressWarnings("unused")
-    public void templateWithData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doc(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // for DB
         EntityManager em = ODataServiceFactory.getEmf().createEntityManager();
         em.getTransaction().begin();
 
         // Only 1 parameter
-        long waybillId = Long.parseLong(request.getParameter("waybillId"));
+        long waybillId = Long.parseLong(request.getParameter("id"));
 
         Connection connection = ODataServiceFactory.getConnection(em);
         List<WBPrintDoc.PrintDoc> docs = new ArrayList<>();
@@ -74,9 +78,45 @@ public class RfcPrintDoc extends ServletBase {
             // Add single item
             WBPrintDoc.PrintDoc root = null;
             while (rs.next()) {
-                // From js
-                String sRoot = request.getParameter("root");
-                root = gson.fromJson(sRoot, WBPrintDoc.PrintDoc.class);
+                // Original document
+                JSONObject json = new JSONObject(getFileAsString("/json/printOption.json"));
+                JSONArray jsonArr = json.getJSONArray("list");
+
+                // Destination
+                root = new WBPrintDoc.PrintDoc();
+                Field[] fieldArr = WBPrintDoc.PrintDoc.class.getDeclaredFields();
+                Map<String, Field> fieldMap = new HashMap<>();
+                for (Field field : fieldArr)
+                    fieldMap.put(field.getName(), field);
+
+                // From js 16 base -> 2 base
+                String n = Integer.toBinaryString(Integer.parseInt(request.getParameter("n"), 16));
+                for (int i = 1; i <= n.length(); i++) {
+                    Field kField = fieldMap.get("k" + i);
+                    Field rField = fieldMap.get("r" + i);
+                    Field bField = fieldMap.get("b" + i);
+                    json = jsonArr.getJSONObject(i - 1);
+
+                    // to empty string
+                    if (n.charAt(i - 1) == '0') {
+                        bField.set(root, "<a:noFill/>");
+                        continue;
+                    }
+
+                    // get from file
+                    kField.set(root, json.getString("kzText"));
+                    rField.set(root, json.getString("ruText"));
+
+                    // kz text - from url
+                    String k = request.getParameter("k" + i);
+                    if (k != null)
+                        kField.set(root, k);
+
+                    // ru text - from url
+                    String r = request.getParameter("r" + i);
+                    if (r != null)
+                        rField.set(root, r);
+                }
 
                 N_class = rs.getString("n_class");
 
@@ -128,7 +168,7 @@ public class RfcPrintDoc extends ServletBase {
                     reqs.add(req);
                 }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
         } finally {

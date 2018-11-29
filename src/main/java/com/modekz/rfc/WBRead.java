@@ -46,6 +46,10 @@ public class WBRead {
     @Parameter("LGORT")
     public List<Lgort> lgortList;
 
+    @Table
+    @Parameter("EQUNR_GRP")
+    public List<EqunrGrp> equnrGrpList;
+
     public WBRead(String method, String where) {
         this.method = method;
         this.where = where;

@@ -78,7 +78,11 @@ public class WialonServlet extends ServletBase {
                     cookies = httpclient.getState().getCookies();
                     break;
                 case 1:
-                    urls[2] = getMethod.getResponseBodyAsString().substring(122, 143);
+                    String sBody = getMethod.getResponseBodyAsString();
+                    // TODO!!!!!!!!!!!!!!
+//                    System.out.println("-----------------");
+//                    System.out.println(sBody);
+                    urls[2] = sBody.substring(122, 142);
                     break;
                 case 2:
                     initialState.addCookies(cookies);

@@ -2,6 +2,7 @@ package com.modekz.servlet;
 
 import com.modekz.ODataServiceFactory;
 import com.modekz.db.Equipment;
+import com.modekz.db.EqunrGrp;
 import com.modekz.json.DbUpdateInfo;
 import com.modekz.json.DbUpdateInfoPlus;
 
@@ -96,7 +97,17 @@ public class CsvUploader extends ServletBase {
                 eo.setEqktx(item.data[2]);
                 eo.setTooName(item.data[3]);
                 eo.setLicense_num(item.data[4]);
-                eo.setN_class(item.data[5]);
+
+                // Delete leading zero
+                String clNum = item.data[5];
+                if (clNum.startsWith("0"))
+                    clNum = clNum.substring(1);
+
+                // Change to group
+                clNum = EqunrGrp.getClassNum(em, clNum);
+
+                // And set it
+                eo.setN_class(clNum);
 
                 em.merge(eo);
             }

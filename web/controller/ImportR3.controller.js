@@ -30,6 +30,14 @@ sap.ui.define([
             });
         },
 
+        uploadEqunrGrp: function () {
+            this.updateDbFrom({
+                link: "/r3/EQUNR_GRP?_persist=true",
+
+                title: this.getBundle().getText("equnrGrp")
+            });
+        },
+
         loadWlnVehicle: function () {
             this.updateDbFrom({
                 link: "/wialon/loadWlnVehicle",

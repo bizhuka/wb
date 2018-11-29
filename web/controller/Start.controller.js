@@ -150,7 +150,7 @@ sap.ui.define([
                 return;
 
             this.navToPost({
-                url: "/printDoc/template?",
+                url: "/print/template?",
                 objid: aContexts[0].getObject().Id,
                 contentType: "application/pdf"
             })
@@ -183,7 +183,7 @@ sap.ui.define([
 
                 case 1: // Just one
                     _this.navToPost({
-                        url: "/printDoc/template?",
+                        url: "/print/template?",
                         objid: manuals[0].name,
                         contentType: "application/pdf"
                     });
@@ -217,7 +217,7 @@ sap.ui.define([
                         return;
 
                     _this.navToPost({
-                        url: "/printDoc/template?",
+                        url: "/print/template?",
                         objid: aContexts[0].getObject().name,
                         contentType: "application/pdf"
                     })

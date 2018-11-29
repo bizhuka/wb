@@ -263,7 +263,7 @@ public class RfcR3Import extends ServletBase {
         return new R3Clause(
                 "SELECT r FROM ReqHeader r WHERE r.Iwerk",
                 ReqHeader.class,
-                new String[]{"Objnr"},
+                new String[]{"Objnr", "Waybill_Id"},
                 "AFIH~IWERK",
                 getWerksR3Clause(userInfo)) {
 
@@ -329,6 +329,24 @@ public class RfcR3Import extends ServletBase {
         };
     }
 
+    @SuppressWarnings("unused")
+    public R3Clause getR3ClauseEQUNR_GRP(UserInfo userInfo, EntityManager em) {
+        return new R3Clause(
+                "SELECT p FROM EqunrGrp p",
+                EqunrGrp.class,
+                new String[]{"Ktsch"},
+                null,
+                null) {
+
+            @Override
+            String getKey(Object object) {
+                EqunrGrp equnrGrp = (EqunrGrp) object;
+
+                return equnrGrp.Ktsch;
+            }
+        };
+    }
+
     private String getWerksR3Clause(UserInfo userInfo) {
         StringBuilder result = new StringBuilder(" IN (");
         for (int i = 0; i < userInfo.werks.size(); i++) {
@@ -372,7 +390,7 @@ public class RfcR3Import extends ServletBase {
             this.where = where;
 
             // updating fields
-            Field[] fields = mainClass.getDeclaredFields();
+            Field[] fields = mainClass.getFields();
             this.copyFields = new ArrayList<>(fields.length - exclude.length);
 
             for (Field fld : fields)

@@ -89,34 +89,34 @@ public class WBPrintDoc {
         @Parameter("TOO_NAME")
         public String tooName;
 
+        // Watermarks
         @Parameter("WM_KZ1")
-        public String kzText1;
+        public String k1;
         @Parameter("WM_RU1")
-        public String ruText1;
+        public String r1;
         @Parameter("WM_BL1")
-        public String block1;
+        public String b1;
 
         @Parameter("WM_KZ2")
-        public String kzText2;
+        public String k2;
         @Parameter("WM_RU2")
-        public String ruText2;
+        public String r2;
         @Parameter("WM_BL2")
-        public String block2;
+        public String b2;
 
         @Parameter("WM_KZ3")
-        public String kzText3;
+        public String k3;
         @Parameter("WM_RU3")
-        public String ruText3;
+        public String r3;
         @Parameter("WM_BL3")
-        public String block3;
+        public String b3;
 
         @Parameter("WM_KZ4")
-        public String kzText4;
+        public String k4;
         @Parameter("WM_RU4")
-        public String ruText4;
+        public String r4;
         @Parameter("WM_BL4")
-        public String block4;
-
+        public String b4;
     }
 
     @BapiStructure

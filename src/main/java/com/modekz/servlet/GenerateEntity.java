@@ -57,6 +57,9 @@ public class GenerateEntity extends ServletBase {
                     case "date":
                         type = "LocalDate";
                         break;
+                    case "time":
+                        type = "LocalTime";
+                        break;
                     case "timestamp":
                         type = "UTCTimestamp";
                         break;
@@ -74,6 +77,10 @@ public class GenerateEntity extends ServletBase {
                         break;
                     case "bool":
                         type = "Boolean";
+                        break;
+                    default:
+                        System.err.println(column);
+                        System.err.println(type);
                         break;
                 }
 

@@ -90,6 +90,13 @@ sap.ui.define([
                     }
                 };
 
+                if (this.gui.origin === 'WB') {
+                    if (block.fromDate)
+                        block.fromDate.setHours(12, 0, 0, 0);
+                    if (block.toDate)
+                        block.toDate.setHours(12, 0, 0, 0);
+                }
+
                 // No text
                 if (block.text.length === 0)
                     return;

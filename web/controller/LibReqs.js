@@ -223,6 +223,34 @@ sap.ui.define([
                 return this.owner.alphaOut(objnr.substr(2, 10)) + "~" + this.owner.alphaOut(objnr.substr(12, 8))
             },
 
+            showReqTime: function (duration, begTime, endTime) {
+                var ok = begTime && endTime ?
+                    begTime.getTime() !== -21600000 ||
+                    endTime.getTime() !== -21600000 : false;
+                var result = ok ? this.toShortTime(begTime) + " - " +
+                    (endTime.getTime() === -21600000 ? "24:00" : this.toShortTime(endTime)) : "";
+
+                // Duration in hours
+                if (parseInt(duration)){
+                    var hours = Math.floor(duration);
+                    var minutes = Math.round((duration - hours) * 60);
+
+                    if (hours < 10) hours = "0" + hours;
+                    if (minutes < 10) minutes = "0" + minutes;
+
+                    result += ' (' + hours + ':' + minutes + ')';
+                }
+
+                return result;
+            },
+
+            toShortTime: function (time) {
+                return time ? time.toLocaleTimeString("ru-RU", {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) : "";
+            },
+
             waybillOut: function (waybillId) {
                 // Do not show with empty waybill
                 if (parseInt(waybillId) === -1)
@@ -250,13 +278,13 @@ sap.ui.define([
                 var sec_num = (toDate.getTime() - fromDate.getTime()) / 1000;
 
                 var hours = Math.floor(sec_num / 3600);
-                var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
-                var seconds = sec_num - (hours * 3600) - (minutes * 60);
+                var minutes = Math.round((sec_num - (hours * 3600)) / 60);
+                //var seconds = sec_num - (hours * 3600) - (minutes * 60);
 
                 if (hours < 10) hours = "0" + hours;
                 if (minutes < 10) minutes = "0" + minutes;
-                if (seconds < 10) seconds = "0" + seconds;
-                return hours + ':' + minutes + ':' + seconds;
+                //if (seconds < 10) seconds = "0" + seconds;
+                return hours + ':' + minutes; //+ ':' + seconds;
             },
 
             onStatusReasonPress: function (oEvent) {

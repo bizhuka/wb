@@ -60,7 +60,8 @@ public class CountInfo extends ServletBase {
             }
 
             response.setContentType("application/json; charset=utf-8");
-            response.getWriter().print("[" + sb.toString().substring(1) + "]");
+            String textResult = sb.length() > 1 ? sb.toString().substring(1) : "";
+            response.getWriter().print("[" + textResult + "]");
 
             em.getTransaction().commit();
         } catch (Exception ex) {

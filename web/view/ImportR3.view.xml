@@ -13,6 +13,9 @@
             <Link text="{i18n>gasType} (Sap)"
                   press="importGasType"/>
 
+            <Link text="{i18n>equnrGrp} (Sap)"
+                  press="uploadEqunrGrp"/>
+
             <Link text="{i18n>sensors} (Wialon)"
                   press="loadWlnVehicle"/>
 

@@ -21,6 +21,14 @@
       "authenticationType": "none"
     },
     {
+      "source": "/print",
+      "destination": "wb-emba2",
+      "httpMethods": [
+        "GET"
+      ],
+      "authenticationType": "none"
+    },
+    {
       "source": "^/",
       "target": "/",
       "authenticationType": "xsuaa",

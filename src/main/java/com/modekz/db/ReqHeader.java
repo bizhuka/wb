@@ -87,7 +87,15 @@ public class ReqHeader {
     @Parameter("ILOA_TPLNR")
     public String Tplnr;
 
-    @Column(name = "\"duration\"")
+    @Column(name = "\"ntanz\"", columnDefinition = "TIME")
+    @Parameter("AFVV_NTANZ")
+    public Date BegTime;
+
+    @Column(name = "\"ntenz\"", columnDefinition = "TIME")
+    @Parameter("AFVV_NTENZ")
+    public Date EndTime;
+
+    @Column(name = "\"duration\"", columnDefinition = "FLOAT")
     @Parameter("AFVV_DAUNO")
     public BigDecimal Duration;
 
@@ -325,5 +333,21 @@ public class ReqHeader {
 
     public void setKtschTxt(String ktschTxt) {
         KtschTxt = ktschTxt;
+    }
+
+    public Date getBegTime() {
+        return BegTime;
+    }
+
+    public void setBegTime(Date begTime) {
+        BegTime = begTime;
+    }
+
+    public Date getEndTime() {
+        return EndTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        EndTime = endTime;
     }
 }

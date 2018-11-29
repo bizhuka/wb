@@ -2,7 +2,6 @@ package com.modekz.json;
 
 import com.modekz.servlet.ServletBase;
 import com.sap.xs2.security.container.UserInfoException;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,12 +21,6 @@ public class UserInfo {
     public List<String> scopes;
     public List<String> werks;
 
-    private static String getFileAsString(ServletBase servlet, String path) throws IOException {
-        if (servlet == null)
-            return null;
-        return IOUtils.toString(servlet.getServletContext().getResourceAsStream(path), "UTF-8");
-    }
-
     public static UserInfo getCurrentUserInfo(ServletBase servlet) throws UserInfoException, IOException, ServletException {
         // Main result
         UserInfo result;
@@ -39,11 +32,11 @@ public class UserInfo {
             if (servlet == null)
                 return null;
 
-            String json = getFileAsString(servlet, "/json/UserInfo.json");
+            String json = servlet.getFileAsString("/json/UserInfo.json");
             result = servlet.gson.fromJson(json, UserInfo.class);
 
             // For test from local file
-            json = getFileAsString(servlet, "/json/token.json");
+            json = servlet.getFileAsString("/json/token.json");
             try {
                 jsonObjects[0] = new JSONObject(json);
             } catch (JSONException e) {

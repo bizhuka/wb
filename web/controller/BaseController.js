@@ -290,6 +290,10 @@ sap.ui.define([
             var _this = this;
             var oWbModel = _this.getModel("wb");
 
+            // dates only
+            var toDate = parseInt(_this.toSapDate(oWaybill.ToDate));
+            var fromDate = parseInt(_this.toSapDate(oWaybill.FromDate));
+
             oWbModel.read("/Schedules", {
                 // Bug in odata filter + 1 day
                 filters: [
@@ -304,10 +308,10 @@ sap.ui.define([
                     var items = oData.results;
                     for (var i = 0; i < items.length; i++) {
                         var item = items[i];
+                        var itemDate = parseInt(_this.toSapDate(item.Datum));
 
                         // added one day previously
-                        if (item.Datum.getTime() > oWaybill.ToDate.getTime() ||
-                            item.Datum.getTime() < oWaybill.FromDate.getTime())
+                        if (itemDate > toDate || itemDate < fromDate)
                             continue;
 
                         item.Waybill_Id = parseInt(item.Waybill_Id);
@@ -349,13 +353,17 @@ sap.ui.define([
         },
 
         // Use get :)
-        navToPost: function (navParams) {
+        navToPost: function (navParams, justReturn) {
             var url = navParams.url;
             delete navParams.url;
 
             for (var key in navParams)
                 if (navParams.hasOwnProperty(key))
                     url += ("&" + key + "=" + encodeURIComponent(navParams[key]));
+
+            if (justReturn)
+                return url;
+            // else navigate
             window.location = url;
         },
 
