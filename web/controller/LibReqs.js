@@ -162,7 +162,8 @@ sap.ui.define([
                         new Filter("Stand", FilterOperator.Contains, textFilter),
                         new Filter("Priokx", FilterOperator.Contains, textFilter),
                         new Filter("Ktsch", FilterOperator.Contains, textFilter),
-                        new Filter("KtschTxt", FilterOperator.Contains, textFilter)
+                        new Filter("KtschTxt", FilterOperator.Contains, textFilter),
+                        new Filter("Fing", FilterOperator.Contains, textFilter)
                     ];
 
                     if (!isNaN(textFilter))
@@ -179,10 +180,25 @@ sap.ui.define([
 
                 // And filter
                 var reqsItems = this.reqTable.getBinding("items");
-                this.owner.filterItemsByUserWerks({
-                    field: "Iwerk",
+                this.owner.filterBy({
+                    filters: [
+                        {
+                            field: "Iwerk",
+                            scope: "werks"
+                        },
 
-                    and: andFilter,
+                        {
+                            field: "Beber",
+                            scope: "beber"
+                        },
+
+                        {
+                            field: "Ingpr",
+                            scope: "ingrp"
+                        },
+
+                        andFilter
+                    ],
 
                     ok: function (okFilter) {
                         reqsItems.filter(okFilter);
@@ -231,7 +247,7 @@ sap.ui.define([
                     (endTime.getTime() === -21600000 ? "24:00" : this.toShortTime(endTime)) : "";
 
                 // Duration in hours
-                if (parseInt(duration)){
+                if (parseInt(duration)) {
                     var hours = Math.floor(duration);
                     var minutes = Math.round((duration - hours) * 60);
 

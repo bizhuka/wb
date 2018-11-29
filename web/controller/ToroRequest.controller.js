@@ -7,10 +7,11 @@ sap.ui.define([
     'sap/ui/core/MessageType',
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator',
+    'sap/ui/model/json/JSONModel',
     'sap/ui/core/UIComponent',
     'com/modekzWaybill/controller/LibReqs',
     'com/modekzWaybill/controller/LibChangeStatus'
-], function (BaseController, MessageToast, Label, ButtonType, MessageBox, MessageType, Filter, FilterOperator, UIComponent, LibReqs, LibChangeStatus) {
+], function (BaseController, MessageToast, Label, ButtonType, MessageBox, MessageType, Filter, FilterOperator, JSONModel, UIComponent, LibReqs, LibChangeStatus) {
     "use strict";
 
     var C_FIX_COLUMN = 2;
@@ -18,7 +19,7 @@ sap.ui.define([
     var eoFilterInfo = {
         classFilter: null,
         classFilterPrev: null,
-        textFilter: "",
+        textFilter: null,
         wholeFilterPrev: null
     };
 
@@ -219,9 +220,15 @@ sap.ui.define([
             eoFilterInfo.classFilterPrev = eoFilterInfo.classFilter;
             eoFilterInfo.textFilter = textFilter;
 
-            this.filterItemsByUserWerks({
-                field: "Swerk",
-                and: eoFilterInfo.classFilter,
+            this.filterBy({
+                filters: [
+                    {
+                        field: "Swerk",
+                        scope: "werks"
+                    },
+
+                    eoFilterInfo.classFilter
+                ],
 
                 ok: function (okFilter) {
                     eoFilterInfo.wholeFilterPrev = textFilter ?
@@ -328,25 +335,27 @@ sap.ui.define([
             // Read from R3
             var _this = this;
 
-            // do not check rights, not ready yet (For speed)
-            var userModel = _this.getModel("userInfo");
-            var loadSchedule = userModel && userModel.getProperty("/WbLoaderSchedule") === true;
-            if (!loadSchedule)
-                _this._onObjectMatched();
-            else
-                _this.updateDbFrom({
-                    link: "/r3/SCHEDULE?_persist=true&where=" + encodeURIComponent(
-                        "AFKO~GSTRP <= '" + this.toSapDate(this.dpTo.getDateValue()) + "' AND " +
-                        "AFKO~GLTRP >= '" + this.toSapDate(this.dpFrom.getDateValue()) + "'"),
+            // Check rights
+            var userModel = new JSONModel("/./userInfo");
+            userModel.attachRequestCompleted(function () {
+                var loadSchedule = userModel.getProperty("/WbLoaderSchedule") === true;
+                if (!loadSchedule)
+                    _this._onObjectMatched();
+                else
+                    _this.updateDbFrom({
+                        link: "/r3/SCHEDULE?_persist=true&where=" + encodeURIComponent(
+                            "AFKO~GSTRP <= '" + _this.toSapDate(_this.dpTo.getDateValue()) + "' AND " +
+                            "AFKO~GLTRP >= '" + _this.toSapDate(_this.dpFrom.getDateValue()) + "'"),
 
-                    title: _this.getBundle().getText("journal"),
+                        title: _this.getBundle().getText("journal"),
 
-                    timeout: 2500, // 2,5 seconds
+                        timeout: 2500, // 2,5 seconds
 
-                    afterUpdate: function () {
-                        _this._onObjectMatched();
-                    }
-                });
+                        afterUpdate: function () {
+                            _this._onObjectMatched();
+                        }
+                    });
+            });
         },
 
         eoTooltip: function (equnr, nClass, tooName, noDriverDate) {

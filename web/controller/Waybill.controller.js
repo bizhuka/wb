@@ -80,10 +80,15 @@ sap.ui.define([
 
             var andFilter = oFilter.length > 0 ? new Filter({filters: oFilter, and: true}) : null;
 
-            this.filterItemsByUserWerks({
-                field: "Werks",
+            this.filterBy({
+                filters: [
+                    {
+                        field: "Werks",
+                        scope: "werks"
+                    },
 
-                and: andFilter,
+                    andFilter
+                ],
 
                 ok: function (okFilter) {
                     wayBillTable.getBinding("items").filter(okFilter);

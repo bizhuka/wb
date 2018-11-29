@@ -8,7 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -124,7 +123,6 @@ public class RfcPrintDoc extends ServletBase {
                 root.datum = rs.getDate("datum");
                 root.bukrsName = rs.getString("butxt");
                 root.pltxt = rs.getString("pltxt");
-                root.driver = Integer.parseInt(rs.getString("driver"));
                 root.driverFio = rs.getString("fio");
                 root.eqktx = rs.getString("eqktx");
                 root.licenseNum = rs.getString("license_num");
@@ -134,6 +132,13 @@ public class RfcPrintDoc extends ServletBase {
                 root.tooName = rs.getString("tooname");
                 root.typbz = rs.getString("typbz");
                 root.anln1 = rs.getString("anln1");
+
+                // Delete leading zeros
+                try {
+                    root.driver = Integer.parseInt(rs.getString("driver"));
+                } catch (Exception e) {
+                    root.driver = 0;
+                }
 
                 docs.add(root);
             }

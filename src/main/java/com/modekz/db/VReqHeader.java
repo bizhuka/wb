@@ -116,6 +116,10 @@ public class VReqHeader {
     public Date fromDate;
     @Column(name = "\"todate\"", columnDefinition = "TIMESTAMP")
     public Date toDate;
+
+    @Column(name = "\"fing\"", columnDefinition = "VARCHAR(14)")
+    @Parameter("T357_FING")
+    public String Fing;
     // ---------------------------------------
 
     @Column(name = "\"description\"", columnDefinition = "VARCHAR(150)")
@@ -353,5 +357,13 @@ public class VReqHeader {
 
     public void setEndTime(Date endTime) {
         EndTime = endTime;
+    }
+
+    public String getFing() {
+        return Fing;
+    }
+
+    public void setFing(String fing) {
+        this.Fing = fing;
     }
 }

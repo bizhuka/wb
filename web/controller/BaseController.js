@@ -39,16 +39,36 @@ sap.ui.define([
             return mainFilter;
         },
 
-        filterItemsByUserWerks: function (params) {
-            var allowedWerks = this.getModel("userInfo").getProperty("/werks");
+        filterBy: function (params) {
+            var total = [];
 
-            var filters = [];
-            for (var j = 0; j < allowedWerks.length; j++)
-                filters.push(new Filter(params.field, FilterOperator.EQ, allowedWerks[j]));
-            var werksFilter = new Filter({filters: filters, and: false});
+            for (var i = 0; i < params.filters.length; i++) {
+                // Just skip nulls
+                var line = params.filters[i];
+                if(!line)
+                    continue;
+
+                // Just add
+                if (line instanceof Filter) {
+                    total.push(line);
+                    continue;
+                }
+
+                // Create by scope
+                var items = this.getModel("userInfo").getProperty("/" + line.scope);
+                if (items.length === 0)
+                    continue;
+
+                var filters = [];
+                for (var j = 0; j < items.length; j++)
+                    filters.push(new Filter(line.field, FilterOperator.EQ, items[j]));
+
+                // Based on rights
+                total.push(new Filter({filters: filters, and: false}));
+            }
 
             // Return filter
-            params.ok.call(this, this.makeAndFilter(werksFilter, params.and));
+            params.ok.call(this, new Filter({filters: total, and: true}));
         },
 
         filterItemsByUserBukrs: function (params) {
@@ -61,8 +81,13 @@ sap.ui.define([
             }
 
             // Slow read
-            this.filterItemsByUserWerks({
-                field: "Werks",
+            this.filterBy({
+                filters: [
+                    {
+                        field: "Werks",
+                        scope: "werks"
+                    }
+                ],
 
                 ok: function (okFilter) {
                     _this.getModel("wb").read("/Werks", {

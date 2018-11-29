@@ -12,5 +12,13 @@
                     text="{i18n>space}"/>
         <u:MenuItem id="id_group_Priokx"
                     text="{i18n>priority}"/>
+        <u:MenuItem id="id_group_Ilatx"
+                    text="{i18n>workType}"/>
+        <u:MenuItem id="id_group_Innam"
+                    text="{i18n>planGroup}"/>
+        <u:MenuItem id="id_group_Pltxt"
+                    text="{i18n>techSpace}"/>
+        <u:MenuItem id="id_group_Fing"
+                    text="{i18n>prodArea}"/>
     </u:Menu>
 </core:FragmentDefinition>

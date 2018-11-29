@@ -172,7 +172,7 @@ sap.ui.define([
                 var scope = scopes[i];
                 if (scope.indexOf("Manual", scope.length - "Manual".length) !== -1)
                     manuals.push({
-                        name: "ZWB_"  + scope.substr(2).toUpperCase() + ".PDF"
+                        name: "ZWB_" + scope.substr(2).toUpperCase() + ".PDF"
                     });
             }
 
@@ -269,10 +269,15 @@ sap.ui.define([
                 textFilter = _this.getEoTextFilter(text);
 
             // Read user permissions
-            _this.filterItemsByUserWerks({
-                field: "Swerk",
+            _this.filterBy({
+                filters: [
+                    {
+                        field: "Swerk",
+                        scope: "werks"
+                    },
 
-                and: textFilter,
+                    textFilter
+                ],
 
                 ok: function (okFilter) {
                     callback.call(this, _this.makeAndFilter(okFilter, new Filter("TooName", FilterOperator.EQ, '-')));

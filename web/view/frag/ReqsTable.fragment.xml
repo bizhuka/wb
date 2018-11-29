@@ -57,7 +57,8 @@
             <Column demandPopin="true" hAlign="Left" minScreenWidth="Tablet" popinDisplay="WithoutHeader"
                     visible="{ui>/showOptColumn}">
                 <header>
-                    <Label text="{i18n>planGroup} / {i18n>techSpace}"/>
+                    <Label text="{i18n>planGroupShort} / {i18n>prodAreaShort} / {i18n>techSpaceShort}"
+                           tooltip="{i18n>planGroup} / {i18n>prodArea} / {i18n>techSpace}"/>
                 </header>
             </Column>
             <Column demandPopin="true" hAlign="Left" minScreenWidth="Tablet" popinDisplay="WithoutHeader">
@@ -109,7 +110,7 @@
                         text="&#xA;{ parts:[ { path: 'wb>FromDate' }, { path: 'wb>ToDate' } ], formatter: '.getHourDiff' }"
                         visible="{= ${wb>FromDate}!==null}"/>
 
-                <ObjectStatus title="{wb>Innam}" text="&#xA;{wb>Pltxt}" visible="{ui>/showOptColumn}"/>
+                <ObjectStatus title="{wb>Innam}:&#xA;{wb>Fing}" text="&#xA;{wb>Pltxt}" visible="{ui>/showOptColumn}"/>
                 <ObjectIdentifier title="{wb>Ltxa1}" text="{wb>Ilatx}"/>
                 <ObjectStatus title="{wb>KtschTxt}" text="&#xA;{wb>Stand}" visible="{ui>/showOptColumn}" tooltip="{wb>Ktsch}"/>
             </cells>

@@ -113,6 +113,10 @@ public class ReqHeader {
     @Column(name = "\"todate\"", columnDefinition = "TIMESTAMP")
     public Date toDate;
 
+    @Column(name = "\"fing\"", columnDefinition = "VARCHAR(14)")
+    @Parameter("T357_FING")
+    public String Fing;
+
     @PreUpdate
     public void persist() {
         if (this.Waybill_Id == -1)
@@ -349,5 +353,13 @@ public class ReqHeader {
 
     public void setEndTime(Date endTime) {
         EndTime = endTime;
+    }
+
+    public String getFing() {
+        return Fing;
+    }
+
+    public void setFing(String fing) {
+        this.Fing = fing;
     }
 }

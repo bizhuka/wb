@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class UserInfo {
@@ -20,6 +19,8 @@ public class UserInfo {
     public String lastName;
     public List<String> scopes;
     public List<String> werks;
+    public List<String> ingrp;
+    public List<String> beber;
 
     public static UserInfo getCurrentUserInfo(ServletBase servlet) throws UserInfoException, IOException, ServletException {
         // Main result
@@ -55,27 +56,38 @@ public class UserInfo {
             result.email = info.getEmail();
             result.firstName = info.getGivenName();
             result.lastName = info.getFamilyName();
-
-            //noinspection deprecation
-            List<String> items = Arrays.asList(info.getSystemAttribute("xs.saml.groups"));
-            // Read allowed werks
-            result.werks = new ArrayList<>(items.size());
-
-            // All scopes and
-            for (String item : items)
-                if (item.startsWith("Werks_"))
-                    result.werks.add(item.substring(6));
         }
 
         // Read scopes
         result.scopes = new ArrayList<>();
         try {
+            // Get scopes
             JSONArray jsonArray = jsonObjects[0].getJSONArray("scope");
             for (int i = 0; i < jsonArray.length(); ++i) {
                 String scope = jsonArray.getString(i);
                 String[] arr = scope.split("\\.");
                 if (arr.length == 2)
                     result.scopes.add(arr[1]);
+            }
+
+            // Rights by values
+            JSONArray items = jsonObjects[0].getJSONObject("xs.system.attributes").getJSONArray("xs.saml.groups");
+
+            // Read allowed werks
+            result.werks = new ArrayList<>();
+            result.ingrp = new ArrayList<>();
+            result.beber = new ArrayList<>();
+
+            // All scopes and
+            for (int i = 0; i < items.length(); i++) {
+                String item = items.getString(i);
+
+                if (item.startsWith("Werks_"))
+                    result.werks.add(item.substring(6));
+                else if (item.startsWith("Ingrp_"))
+                    result.ingrp.add(item.substring(11));
+                else if (item.startsWith("Beber_"))
+                    result.beber.add(item.substring(11));
             }
         } catch (Exception e) {
             e.printStackTrace();
