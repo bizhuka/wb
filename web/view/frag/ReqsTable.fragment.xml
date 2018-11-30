@@ -100,10 +100,7 @@
 
                 <ObjectStatus
                         title="{ path: 'wb>Gstrp', formatter: '.owner.toLocaleDate'  } - { path: 'wb>Gltrp', formatter: '.owner.toLocaleDate' }"
-                        text="&#xA;{ parts:[
-                                { path: 'wb>Duration' },
-                                { path: 'wb>BegTime' },
-                                { path: 'wb>EndTime' } ], formatter: '.showReqTime' }"/>
+                        text="&#xA;{ path: 'wb>Hours' }{ path: 'wb>Duration', formatter: '.showDuration' }"/>
 
                 <ObjectStatus
                         title="{ path: 'wb>FromDate', formatter: '.owner.toLocaleDateTime' } - { path: 'wb>ToDate', formatter: '.owner.toLocaleDateTime' }"

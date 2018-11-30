@@ -21,6 +21,7 @@ public class UserInfo {
     public List<String> werks;
     public List<String> ingrp;
     public List<String> beber;
+//    public int timeZoneOffset;
 
     public static UserInfo getCurrentUserInfo(ServletBase servlet) throws UserInfoException, IOException, ServletException {
         // Main result
@@ -92,6 +93,11 @@ public class UserInfo {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+//        // For JS
+//        TimeZone tz = TimeZone.getDefault();
+//        Calendar cal = GregorianCalendar.getInstance(tz);
+//        result.timeZoneOffset = tz.getOffset(cal.getTimeInMillis());
 
         return result;
     }

@@ -12,9 +12,11 @@
                       numberUnit="{ parts:[ { path: 'wb>Status' }, { path: 'wb>Id' } ], formatter: '.getStatusText' }"
                       icon="sap-icon://bar-code">
             <attributes>
-                <ObjectAttribute text="{i18n>planDates}: { path: 'wb>FromDate', formatter: '.toLocaleDate' } - { path: 'wb>ToDate', formatter: '.toLocaleDate' }"/>
+                <ObjectAttribute
+                        text="{i18n>planDates}: { path: 'wb>FromDate', formatter: '.toLocaleDate' } - { path: 'wb>ToDate', formatter: '.toLocaleDate' }"/>
 
-                <ObjectAttribute text="{i18n>changedBy}: {wb>ChangeUser} - { path: 'wb>ChangeDate', formatter: '.toLocaleDateTime' }"/>
+                <ObjectAttribute
+                        text="{i18n>changedBy}: {wb>ChangeUser} - { path: 'wb>ChangeDate', formatter: '.toLocaleDateTime' }"/>
             </attributes>
 
             <statuses>
@@ -124,7 +126,8 @@
                     </f:Form>
                 </IconTabFilter>
 
-                <IconTabFilter id="id_reqs_container" key="id_reqs_container" icon="sap-icon://multiselect-all" tooltip="{i18n>reqs}">
+                <IconTabFilter id="id_reqs_container" key="id_reqs_container" icon="sap-icon://multiselect-all"
+                               tooltip="{i18n>reqs}">
                     <OverflowToolbar design="Transparent">
                         <Title id="id_reqs_title" text="{i18n>reqs}"/>
                         <ToolbarSpacer/>
@@ -252,7 +255,7 @@
                                                 <!--</OverflowToolbar>-->
                                                 <!--</headerToolbar>-->
                                                 <columns>
-                                                    <Column width="9rem">
+                                                    <Column width="15rem">
                                                         <header>
                                                             <Label text="{i18n>gasType}"/>
                                                         </header>
@@ -297,7 +300,8 @@
                                                         <ComboBox items="{path:'wb>/GasTypes', templateShareable:false}"
                                                                   selectedKey="{fuel>GasMatnr}"
                                                                   enabled="{= ${wb>Status}===${status>/CREATED}||${wb>Status}===${status>/ARRIVED}}"
-                                                                  selectionChange="onFuelTypeChange">
+                                                                  selectionChange="onFuelTypeChange"
+                                                                  width="100%">
                                                             <core:Item key="{wb>Matnr}" text="{wb>Maktx}"/>
                                                         </ComboBox>
 

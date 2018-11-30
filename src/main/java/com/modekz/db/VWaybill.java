@@ -116,6 +116,9 @@ public class VWaybill {
     @Column(name="\"tooname\"",columnDefinition = "VARCHAR(50)")
     public String TooName = "-";
 
+    @Column(name="\"fromdatechar\"",columnDefinition = "VARCHAR(8)")
+    public String FromDateChar;
+
     public long getId() {
         return id;
     }
@@ -396,5 +399,13 @@ public class VWaybill {
 
     public void setWithNoReqs(boolean withNoReqs) {
         this.withNoReqs = withNoReqs;
+    }
+
+    public String getFromDateChar() {
+        return FromDateChar;
+    }
+
+    public void setFromDateChar(String fromDateChar) {
+        FromDateChar = fromDateChar;
     }
 }

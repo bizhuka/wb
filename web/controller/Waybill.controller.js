@@ -41,15 +41,23 @@ sap.ui.define([
 
             var textFilter = wbSearchField.getValue();
             var comboFilter = wbStatusCombo.getSelectedKey();
-            var byToo = this.byId('id_by_too_checkbox').getSelected();
+            var byToo = this.byId('id_by_too').getState();
+            var dateFilter = this.byId('id_date_filter').getDateValue();
+            if (dateFilter)
+                dateFilter = this.toSapDate(dateFilter);
 
             // Called twice
-            if (prevFilt && prevFilt.text === textFilter && prevFilt.combo === comboFilter && prevFilt.byToo === byToo)
+            if (prevFilt &&
+                prevFilt.text === textFilter &&
+                prevFilt.combo === comboFilter &&
+                prevFilt.byToo === byToo &&
+                prevFilt.dateFilter === dateFilter)
                 return;
             prevFilt = {
                 text: textFilter,
                 combo: comboFilter,
-                byToo: byToo
+                byToo: byToo,
+                dateFilter: dateFilter
             };
 
             if (textFilter && textFilter.length > 0) {
@@ -77,6 +85,9 @@ sap.ui.define([
 
             if (byToo)
                 oFilter.push(new Filter("TooName", FilterOperator.NE, '-'));
+
+            if (dateFilter)
+                oFilter.push(new Filter("FromDateChar", FilterOperator.EQ, dateFilter));
 
             var andFilter = oFilter.length > 0 ? new Filter({filters: oFilter, and: true}) : null;
 

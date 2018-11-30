@@ -27,7 +27,11 @@
                                   items="{path: '/'}">
                             <core:Item key="{key}" text="{text}"/>
                         </ComboBox>
-                        <CheckBox id="id_by_too_checkbox" text="{i18n>byContract}" select="handleSelection"/>
+                        <DatePicker id="id_date_filter" change="handleSelection" displayFormat="short" width="10rem"
+                                    tooltip="{i18n>planDates}"/>
+                        <Switch id="id_by_too"
+                                state="false"
+                                tooltip="{i18n>tooCars}" change="handleSelection"/>
                         <SearchField id="id_wb_search_field" placeholder="{i18n>findWB}" search="handleSelection"
                                      showRefreshButton="false" width="17.5rem"/>
                         <!--text="{i18n>home.sort}"-->
@@ -69,7 +73,8 @@
                         </header>
                     </Column>
                 </columns>
-                <ColumnListItem id="columnListItem" press="onLineItemPressed" type="{= ${userInfo>/WbShowOne}===true?'Navigation':'Inactive'}" vAlign="Middle"
+                <ColumnListItem id="columnListItem" press="onLineItemPressed"
+                                type="{= ${userInfo>/WbShowOne}===true?'Navigation':'Inactive'}" vAlign="Middle"
                                 highlight="{ parts:[
                                     { path: 'wb>Status' },
                                     { path: 'wb>Req_Cnt' },

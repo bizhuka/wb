@@ -239,12 +239,8 @@ sap.ui.define([
                 return this.owner.alphaOut(objnr.substr(2, 10)) + "~" + this.owner.alphaOut(objnr.substr(12, 8))
             },
 
-            showReqTime: function (duration, begTime, endTime) {
-                var ok = begTime && endTime ?
-                    begTime.getTime() !== -21600000 ||
-                    endTime.getTime() !== -21600000 : false;
-                var result = ok ? this.toShortTime(begTime) + " - " +
-                    (endTime.getTime() === -21600000 ? "24:00" : this.toShortTime(endTime)) : "";
+            showDuration: function (duration) {
+                var result = "";
 
                 // Duration in hours
                 if (parseInt(duration)) {

@@ -91,13 +91,9 @@ public class VReqHeader {
     @Parameter("ILOA_TPLNR")
     public String Tplnr;
 
-    @Column(name = "\"ntanz\"", columnDefinition = "TIME")
-    @Parameter("AFVV_NTANZ")
-    public Date BegTime;
-
-    @Column(name = "\"ntenz\"", columnDefinition = "TIME")
-    @Parameter("AFVV_NTENZ")
-    public Date EndTime;
+    @Column(name = "\"hours\"", columnDefinition = "VARCHAR(11)")
+    @Parameter("_HOURS")
+    public String Hours;
 
     @Column(name = "\"duration\"", columnDefinition = "FLOAT")
     @Parameter("AFVV_DAUNO")
@@ -343,27 +339,19 @@ public class VReqHeader {
         this.description = description;
     }
 
-    public Date getBegTime() {
-        return BegTime;
-    }
-
-    public void setBegTime(Date begTime) {
-        BegTime = begTime;
-    }
-
-    public Date getEndTime() {
-        return EndTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        EndTime = endTime;
-    }
-
     public String getFing() {
         return Fing;
     }
 
     public void setFing(String fing) {
         this.Fing = fing;
+    }
+
+    public String getHours() {
+        return Hours;
+    }
+
+    public void setHours(String hours) {
+        Hours = hours;
     }
 }

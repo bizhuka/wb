@@ -733,7 +733,7 @@ sap.ui.define([
                 });
             }
             if (gasTotalSpent > 0 && !oEvent.skipMessage) {
-                MessageToast.show(this.getBundle().getText("moreSpent", [gasTotalSpent]));
+                MessageToast.show(this.getBundle().getText("moreSpent", [Math.round(gasTotalSpent * 100) / 100]));
                 return false;
             }
             this.getModel("fuel").setProperty("/data", data);
