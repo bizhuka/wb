@@ -221,10 +221,32 @@
 
                     <f:Form editable="true">
                         <f:layout>
-                            <f:ResponsiveGridLayout
-                                    singleContainerFullSize="false"/>
+                            <f:ResponsiveGridLayout columnsL="1" columnsM="1" columnsXL="1"
+                                                    singleContainerFullSize="false"/>
                         </f:layout>
                         <f:formContainers>
+                            <f:FormContainer title="{i18n>sensors}">
+                                <f:formElements>
+                                    <f:FormElement label="{i18n>run} Δ">
+                                        <f:fields>
+                                            <Input type="Number" value="{wb>OdoDiff}"
+                                                   enabled="{= ${wb>Status}===${status>/ARRIVED}&amp;&amp;${userInfo>/WbChangeWialonData}===true}"
+                                                   valueLiveUpdate="true"
+                                                   id="id_wb_odo_diff"/>
+                                        </f:fields>
+                                    </f:FormElement>
+
+                                    <f:FormElement label="{i18n>motoHour} Δ">
+                                        <f:fields>
+                                            <Input type="Number" value="{wb>MotoHour}"
+                                                   enabled="{= ${wb>Status}===${status>/ARRIVED}&amp;&amp;${userInfo>/WbChangeWialonData}===true}"
+                                                   valueLiveUpdate="true"
+                                                   id="id_wb_moto_hour"/>
+                                        </f:fields>
+                                    </f:FormElement>
+                                </f:formElements>
+                            </f:FormContainer>
+
                             <f:FormContainer title="{i18n>gasRun}">
                                 <f:formElements>
                                     <f:FormElement label="{i18n>totalConsumption}">
@@ -260,13 +282,13 @@
                                                             <Label text="{i18n>gasType}"/>
                                                         </header>
                                                     </Column>
-                                                    <Column>
+                                                    <Column width="7rem">
                                                         <header>
                                                             <Label text="{i18n>remOut}"
                                                                    tooltip="{i18n>remOutLong}"/>
                                                         </header>
                                                     </Column>
-                                                    <Column>
+                                                    <Column width="7rem">
                                                         <header>
                                                             <Label text="{i18n>give}"/>
                                                         </header>
@@ -276,18 +298,18 @@
                                                             <Label text="{i18n>fromLgort}"/>
                                                         </header>
                                                     </Column>
-                                                    <Column>
+                                                    <Column width="7rem">
                                                         <header>
                                                             <Label text="{i18n>actual}" tooltip="{i18n>actualGiven}"/>
                                                         </header>
                                                     </Column>
-                                                    <Column>
+                                                    <Column width="7rem">
                                                         <header>
                                                             <Label text="{i18n>consumption}"
                                                                    tooltip="{i18n>consumption}"/>
                                                         </header>
                                                     </Column>
-                                                    <Column>
+                                                    <Column width="7rem">
                                                         <header>
                                                             <Label text="{i18n>remIn}"
                                                                    tooltip="{i18n>remInLong}"/>
@@ -334,28 +356,6 @@
                                                     </cells>
                                                 </ColumnListItem>
                                             </Table>
-                                        </f:fields>
-                                    </f:FormElement>
-                                </f:formElements>
-                            </f:FormContainer>
-
-                            <f:FormContainer title="{i18n>sensors}">
-                                <f:formElements>
-                                    <f:FormElement label="{i18n>run} Δ">
-                                        <f:fields>
-                                            <Input type="Number" value="{wb>OdoDiff}"
-                                                   enabled="{= ${wb>Status}===${status>/ARRIVED}&amp;&amp;${userInfo>/WbChangeWialonData}===true}"
-                                                   valueLiveUpdate="true"
-                                                   id="id_wb_odo_diff"/>
-                                        </f:fields>
-                                    </f:FormElement>
-
-                                    <f:FormElement label="{i18n>motoHour} Δ">
-                                        <f:fields>
-                                            <Input type="Number" value="{wb>MotoHour}"
-                                                   enabled="{= ${wb>Status}===${status>/ARRIVED}&amp;&amp;${userInfo>/WbChangeWialonData}===true}"
-                                                   valueLiveUpdate="true"
-                                                   id="id_wb_moto_hour"/>
                                         </f:fields>
                                     </f:FormElement>
                                 </f:formElements>

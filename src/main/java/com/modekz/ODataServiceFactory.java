@@ -40,19 +40,18 @@ public class ODataServiceFactory extends ODataJPAServiceFactory {
                 String persistenceUnitName;
                 ConnVCAP.Credentials credentials = null;
 
-                // TODO the same regardless option in VCAP_SERVICES!
-                credentials = gson.fromJson(System.getenv("WB_DB_UNIT"), ConnVCAP.Credentials.class);
+                // Read DB connection options
                 if (SystemUtils.IS_OS_WINDOWS) {
                     persistenceUnitName = "postgre-unit";
-//                    credentials = gson.fromJson(System.getenv("WB_DB_UNIT"), ConnVCAP.Credentials.class);
+                    credentials = gson.fromJson(System.getenv("WB_DB_UNIT"), ConnVCAP.Credentials.class);
                 } else {
                     persistenceUnitName = "hana-unit";
-//                    ConnVCAP vcap = gson.fromJson(System.getenv("VCAP_SERVICES"), ConnVCAP.class);
-//                    for (ConnVCAP.Hana hana : vcap.hana)
-//                        if (hana.name.startsWith("wb-")) {
-//                            credentials = hana.credentials;
-//                            break;
-//                        }
+                    ConnVCAP vcap = gson.fromJson(System.getenv("VCAP_SERVICES"), ConnVCAP.class);
+                    for (ConnVCAP.Hana hana : vcap.hana)
+                        if (hana.name.startsWith("wb-")) {
+                            credentials = hana.credentials;
+                            break;
+                        }
                 }
 
                 // From json

@@ -101,7 +101,7 @@ sap.ui.define([
             var fuel = {
                 data: []
             };
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 5; i++)
                 fuel.data.push({
                     GasMatnr: "",
                     GasBefore: 0,

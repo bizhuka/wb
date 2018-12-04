@@ -30,11 +30,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @WebServlet(urlPatterns = {"/wialon/*"})
 public class WialonServlet extends ServletBase {
     // Configuration
     private static ConnWialon connWialon;
+    private static Pattern redirectUrl = Pattern.compile("url=([^\"]*)");
 
     private static double getValue(NodeList columns, int index) {
         return Double.parseDouble(((Element) columns.item(index)).getAttribute("val"));
@@ -79,10 +82,12 @@ public class WialonServlet extends ServletBase {
                     break;
                 case 1:
                     String sBody = getMethod.getResponseBodyAsString();
-                    // TODO!!!!!!!!!!!!!!
-//                    System.out.println("-----------------");
-//                    System.out.println(sBody);
-                    urls[2] = sBody.substring(122, 142);
+                    Matcher matcher = redirectUrl.matcher(sBody);
+                    if (!matcher.find())
+                        throw new ServletException("No redirect url");
+
+                    // Get redirect url
+                    urls[2] = matcher.group(1);
                     break;
                 case 2:
                     initialState.addCookies(cookies);
@@ -223,10 +228,13 @@ public class WialonServlet extends ServletBase {
         String sFrom = request.getParameter("from");
         String sTo = request.getParameter("to");
 
-        String fullUrl = "report_templates_filter/export_to_file.html?report_template_id=19&resource_id=291&file_name=&flags=0&gen=1&file_type=xml&page_orientation=landscap&page_size=a4&pack_file=0&att_map=0&object_prop_id=0&coding=utf8&delimiter=semicolon&headers=1&ignore_basis=0&xlsx=1" +
+        String fullUrl = "report_templates_filter/export_to_file.html?file_name=&flags=0&gen=1&file_type=xml&page_orientation=landscap&page_size=a4&pack_file=0&att_map=0&object_prop_id=0&coding=utf8&delimiter=semicolon&headers=1&ignore_basis=0&xlsx=1" +
                 "&object_id=" + wialonId + "&from=" + sFrom + "&to=" + sTo +
-                "&tz_offset=134239328" +
+                "&report_template_id=" + connWialon.templateId + // 19
+                "&resource_id=" + connWialon.resourceId +        // 291
+                "&tz_offset=" + connWialon.tzOffset +            // 134239328
                 "&rand=" + (new Date()).getTime();
+
         HttpMethod method = getAsMethod(fullUrl);
         if (method == null)
             return;
