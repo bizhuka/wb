@@ -31,7 +31,7 @@ sap.ui.define([
                 url: "/count/wb",
                 texts: "statusTexts",
                 tileStatus: 10,
-                textRes: this.status.STATUS_TEXTS
+                textRes: this.status.WB_STATUS
             });
 
             this.countTile({
@@ -39,7 +39,7 @@ sap.ui.define([
                 url: "/count/req",
                 texts: "reqStatusTexts",
                 tileStatus: 100,
-                textRes: this.status.REQ_STATUS_TEXTS
+                textRes: this.status.RC_STATUS
             });
         },
 
@@ -63,7 +63,7 @@ sap.ui.define([
                     if (item.status === params.tileStatus)
                         data.count = item.cnt;
 
-                    data.tooltip += "\n" + _this.getResText(params.textRes, item.status) + " - " + item.cnt;
+                    data.tooltip += "\n" + _this.status.getStatusLangText(params.textRes, item.status) + " - " + item.cnt;
                 }
 
                 // Update ui

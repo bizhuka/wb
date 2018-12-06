@@ -50,6 +50,10 @@ public class WBRead {
     @Parameter("EQUNR_GRP")
     public List<EqunrGrp> equnrGrpList;
 
+    @Table
+    @Parameter("STATUS_TEXT")
+    public List<StatusText> statusTextList;
+
     public WBRead(String method, String where) {
         this.method = method;
         this.where = where;

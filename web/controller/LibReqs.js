@@ -276,7 +276,7 @@ sap.ui.define([
 
             getStatusReasonText: function (id) {
                 var _owner = this.owner;
-                return _owner.getResText(_owner.status.REQ_STATUS_TEXTS, id);
+                return _owner.status.getStatusLangText(_owner.status.RC_STATUS, id);
             },
 
             onWaybillPress: function (oEvent) {

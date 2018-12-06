@@ -848,7 +848,7 @@ sap.ui.define([
                 showWbColumn: true,
                 selectMode: sap.m.ListMode.MultiSelect,
                 container: changeReqsDialog.getId(),
-                statuses: _this.getResourceArray(_this.status.STATUS_TEXTS).filter(function (pair) {
+                statuses: _this.status.getStatusLangArray(_this.status.WB_STATUS).filter(function (pair) {
                     return pair.key === _this.status.NOT_CREATED || pair.key === _this.status.REJECTED;
                 }),
 

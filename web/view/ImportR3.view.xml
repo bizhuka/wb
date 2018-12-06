@@ -13,6 +13,9 @@
             <Link text="{i18n>gasType} (Sap)"
                   press="importGasType"/>
 
+            <Link text="{i18n>statusText} (Sap)"
+                  press="uploadStatusText"/>
+
             <Link text="{i18n>equnrGrp} (Sap)"
                   press="uploadEqunrGrp"/>
 

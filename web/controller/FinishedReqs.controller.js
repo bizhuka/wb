@@ -13,7 +13,7 @@ sap.ui.define([
             BaseController.prototype.onInit.apply(_this, arguments);
 
             // What status to show
-            var filtered = _this.getResourceArray(_this.status.STATUS_TEXTS).filter(function (pair) {
+            var filtered = _this.status.getStatusLangArray(_this.status.WB_STATUS).filter(function (pair) {
                 return pair.key !== _this.status.NOT_CREATED && pair.key !== _this.status.REJECTED;
             });
 

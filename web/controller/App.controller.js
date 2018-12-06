@@ -34,8 +34,9 @@ sap.ui.define([
             };
 
             // since then() has no "reject"-path attach to the MetadataFailed-Event to disable the busy indicator in case of an error
-            this.getOwnerComponent().getModel("wb").metadataLoaded().then(fnSetAppNotBusy);
-            this.getOwnerComponent().getModel("wb").attachMetadataFailed(fnSetAppNotBusy);
+            var oWbModel = this.getOwnerComponent().getModel("wb");
+            oWbModel.metadataLoaded().then(fnSetAppNotBusy);
+            oWbModel.attachMetadataFailed(fnSetAppNotBusy);
 
             // wait for response
             var userInfoModel = new JSONModel("/userInfo");

@@ -196,9 +196,7 @@ public class WialonServlet extends ServletBase {
             DbUpdateInfo info = RfcR3Import.persist(session, em, newList, new RfcR3Import.R3Clause(
                     "SELECT v FROM WlnVehicle v",
                     WlnVehicle.class,
-                    new String[]{"Gd"},
-                    null,
-                    null) {
+                    new String[]{"Gd"}) {
 
                 @Override
                 String getKey(Object object) {

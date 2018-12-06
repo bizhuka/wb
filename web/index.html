@@ -24,10 +24,24 @@
 
     <script>
         sap.ui.getCore().attachInit(function () {
-            new sap.ui.core.ComponentContainer({
-                height: "100%",
-                name: "com.modekzWaybill"
-            }).placeAt("content");
+            // Status texts are required
+            sap.ui.require(["sap/ui/model/odata/v2/ODataModel", "com/modekzWaybill/controller/LibStatus"], function (ODataModel, LibStatus) {
+                var model = new ODataModel("/odata.svc/");
+                model.read("/StatusTexts", {
+                    success: function (data) {
+                        // Init texts
+                        new LibStatus(null, data.results);
+
+                        // Show main app
+                        new sap.ui.core.ComponentContainer({
+                            height: "100%",
+                            name: "com.modekzWaybill"
+                        }).placeAt("content");
+                    }
+                });
+            });
+
+
         });
     </script>
 </head>

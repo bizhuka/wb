@@ -7,9 +7,11 @@ import com.modekz.json.UserInfo;
 import com.modekz.rfc.WBRead;
 import com.modekz.rfc.WBSetStatus;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.hibersap.session.Session;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -31,7 +33,10 @@ public class RfcR3Import extends ServletBase {
             StringBuilder sbSelect = new StringBuilder(r3Clause.dbSelect);
             if (r3Clause.where != null)
                 sbSelect.append(r3Clause.where);
-            List dbList = em.createQuery(sbSelect.toString(), r3Clause.mainClass).getResultList();
+            TypedQuery query = em.createQuery(sbSelect.toString(), r3Clause.mainClass);
+            r3Clause.prepareQuery(query);
+
+            List dbList = query.getResultList();
 
             // Send back info
             DbUpdateInfo info = new DbUpdateInfo();
@@ -49,7 +54,16 @@ public class RfcR3Import extends ServletBase {
 
                 // Insert or update
                 r3Clause.modify(em, dbItem, r3Item, info);
+
+                // Exclude from DB list
+                dbMap.remove(sKey);
             }
+            if (r3Clause.deleteOld)
+                for (Map.Entry<String, Object> entry : dbMap.entrySet()) {
+                    em.remove(entry.getValue());
+                    info.deleted++;
+                }
+
             r3Clause.modifyBatch(info);
 
             // And save
@@ -82,31 +96,27 @@ public class RfcR3Import extends ServletBase {
         Enumeration<String> parameterNames = request.getParameterNames();
         String method = request.getPathInfo().substring(1);
 
-        // Where r3Clause
-        StringBuilder sbWhere = null;
-        String where = request.getParameter("where");
+        // Whole where with all operators: >=, <= ...
+        StringBuilder sbWhere = new StringBuilder();
 
+        // Passed by param
+        String where = request.getParameter("_where");
         if (where != null)
-            sbWhere = new StringBuilder(where);
-        else
-            while (parameterNames.hasMoreElements()) {
-                String paramName = parameterNames.nextElement();
+            sbWhere.append(where);
 
-                if (paramName.charAt(0) != '_') {
-                    if (sbWhere == null)
-                        sbWhere = new StringBuilder();
-                    else
-                        sbWhere.append(" AND ");
+        // All other conditions with = operators only
+        while (parameterNames.hasMoreElements()) {
+            String paramName = parameterNames.nextElement();
 
-                    sbWhere.append(paramName).append(" = ").append(request.getParameter(paramName));
-                }
+            if (paramName.charAt(0) != '_') {
+                if (sbWhere.length() > 0)
+                    sbWhere.append(" AND ");
+
+                sbWhere.append(paramName).append(" = ").append(request.getParameter(paramName));
             }
+        }
 
-        // No where ?
-        if (sbWhere == null)
-            sbWhere = new StringBuilder();
-
-        //String login = request.getParameter("_user");
+        // Save to DB
         R3Clause r3Clause = null;
         if (request.getParameter("_persist") != null)
             try {
@@ -159,9 +169,7 @@ public class RfcR3Import extends ServletBase {
         return new R3Clause(
                 "SELECT w FROM Werk w",
                 Werk.class,
-                new String[]{"Werks"},
-                null,
-                null) {
+                new String[]{"Werks"}) {
 
             @Override
             String getKey(Object object) {
@@ -177,12 +185,15 @@ public class RfcR3Import extends ServletBase {
         return new R3Clause(
                 "SELECT d FROM Driver d WHERE d.Bukrs",
                 Driver.class,
-                new String[]{"Bukrs", "Pernr"},
-                "DR~BE",
-                getBukrsR3Clause(em, userInfo)) {
+                new String[]{"Bukrs", "Pernr"}) {
 
             PreparedStatement prepStatInsert;
             PreparedStatement prepStatUpdate;
+
+            {
+                this.r3Field = "DR~BE";
+                this.where = getBukrsR3Clause(em, userInfo);
+            }
 
             {
                 Connection connection = ODataServiceFactory.getConnection(em);
@@ -227,9 +238,12 @@ public class RfcR3Import extends ServletBase {
         return new R3Clause(
                 "SELECT e FROM Equipment e WHERE e.Swerk",
                 Equipment.class,
-                new String[]{"Equnr"},
-                "ILOA~SWERK",
-                getWerksR3Clause(userInfo)) {
+                new String[]{"Equnr"}) {
+
+            {
+                this.r3Field = "ILOA~SWERK";
+                this.where = getWerksR3Clause(userInfo);
+            }
 
             @Override
             String getKey(Object object) {
@@ -243,11 +257,20 @@ public class RfcR3Import extends ServletBase {
     @SuppressWarnings("unused")
     public R3Clause getR3ClauseSCHEDULE(UserInfo userInfo, EntityManager em) {
         return new R3Clause(
-                "SELECT s FROM Schedule s WHERE s.Werks",
+                "SELECT s FROM Schedule s WHERE s.Datum >= :fromDate AND s.Werks",
                 Schedule.class,
-                new String[]{"Werks", "Datum", "Equnr"},
-                "AFIH~IWERK",
-                getWerksR3Clause(userInfo)) {
+                new String[]{"Werks", "Datum", "Equnr"}) {
+
+            {
+                this.r3Field = "AFIH~IWERK";
+                this.where = getWerksR3Clause(userInfo);
+            }
+
+            @Override
+            void prepareQuery(TypedQuery query) {
+                // Watch @29!
+                query.setParameter("fromDate", DateUtils.addDays(new Date(), -29), TemporalType.DATE);
+            }
 
             @Override
             String getKey(Object object) {
@@ -261,11 +284,20 @@ public class RfcR3Import extends ServletBase {
     @SuppressWarnings("unused")
     public R3Clause getR3ClauseREQ_HEADER(UserInfo userInfo, EntityManager em) {
         return new R3Clause(
-                "SELECT r FROM ReqHeader r WHERE r.Iwerk",
+                "SELECT r FROM ReqHeader r WHERE r.Gstrp >= :fromDate AND r.Iwerk",
                 ReqHeader.class,
-                new String[]{"Objnr", "Waybill_Id"},
-                "AFIH~IWERK",
-                getWerksR3Clause(userInfo)) {
+                new String[]{"Objnr", "Waybill_Id"}) {
+
+            {
+                this.r3Field = "AFIH~IWERK";
+                this.where = getWerksR3Clause(userInfo);
+            }
+
+            @Override
+            void prepareQuery(TypedQuery query) {
+                // Watch @29!
+                query.setParameter("fromDate", DateUtils.addDays(new Date(), -29), TemporalType.DATE);
+            }
 
             @Override
             String getKey(Object object) {
@@ -298,9 +330,11 @@ public class RfcR3Import extends ServletBase {
         return new R3Clause(
                 "SELECT g FROM GasType g",
                 GasType.class,
-                new String[]{"Matnr"},
-                null,
-                null) {
+                new String[]{"Matnr"}) {
+
+            {
+                this.deleteOld = true;
+            }
 
             @Override
             String getKey(Object object) {
@@ -316,9 +350,7 @@ public class RfcR3Import extends ServletBase {
         return new R3Clause(
                 "SELECT l FROM Lgort l",
                 Lgort.class,
-                new String[]{"Werks", "Lgort"},
-                null,
-                null) {
+                new String[]{"Werks", "Lgort"}) {
 
             @Override
             String getKey(Object object) {
@@ -334,15 +366,37 @@ public class RfcR3Import extends ServletBase {
         return new R3Clause(
                 "SELECT p FROM EqunrGrp p",
                 EqunrGrp.class,
-                new String[]{"Ktsch"},
-                null,
-                null) {
+                new String[]{"Ktsch"}) {
+
+            {
+                this.deleteOld = true;
+            }
 
             @Override
             String getKey(Object object) {
                 EqunrGrp equnrGrp = (EqunrGrp) object;
 
                 return equnrGrp.Ktsch;
+            }
+        };
+    }
+
+    @SuppressWarnings("unused")
+    public R3Clause getR3ClauseSTATUS_TEXT(UserInfo userInfo, EntityManager em) {
+        return new R3Clause(
+                "SELECT t FROM StatusText t",
+                StatusText.class,
+                new String[]{"Stype", "Id"}) {
+
+            {
+                this.deleteOld = false; // Do not delete!
+            }
+
+            @Override
+            String getKey(Object object) {
+                StatusText statusText = (StatusText) object;
+
+                return statusText.Stype + "-" + statusText.Id;
             }
         };
     }
@@ -360,6 +414,7 @@ public class RfcR3Import extends ServletBase {
     }
 
     private String getBukrsR3Clause(EntityManager em, UserInfo userInfo) {
+        @SuppressWarnings("JpaQlInspection")
         TypedQuery<Werk> werksQuery = em.createQuery(
                 "SELECT w FROM Werk w WHERE w.Werks" + getWerksR3Clause(userInfo), Werk.class);
 
@@ -382,12 +437,11 @@ public class RfcR3Import extends ServletBase {
 
         String r3Field;
         String where;
+        boolean deleteOld = false;
 
-        R3Clause(String dbSelect, Class mainClass, String[] exclude, String r3Field, String where) {
+        R3Clause(String dbSelect, Class mainClass, String[] exclude) {
             this.dbSelect = dbSelect;
             this.mainClass = mainClass;
-            this.r3Field = r3Field;
-            this.where = where;
 
             // updating fields
             Field[] fields = mainClass.getFields();
@@ -396,6 +450,10 @@ public class RfcR3Import extends ServletBase {
             for (Field fld : fields)
                 if (ArrayUtils.indexOf(exclude, fld.getName()) < 0)
                     copyFields.add(fld);
+        }
+
+        void prepareQuery(TypedQuery query) {
+
         }
 
         abstract String getKey(Object object);

@@ -45,7 +45,7 @@ sap.ui.define([
             for (var i = 0; i < params.filters.length; i++) {
                 // Just skip nulls
                 var line = params.filters[i];
-                if(!line)
+                if (!line)
                     continue;
 
                 // Just add
@@ -128,41 +128,6 @@ sap.ui.define([
             return this.getOwnerComponent().getModel("i18n").getResourceBundle();
         },
 
-        getResourceArray: function (name) {
-            // Already prepared
-            if (this[name])
-                return this[name];
-
-            // New array
-            this[name] = [];
-            var arr = this.getBundle().getText(name).split(";");
-
-            for (var i = 0; i < arr.length; i++) {
-                var pair = arr[i].split("-");
-                this[name].push({
-                    key: parseInt(pair[0]),
-                    text: pair[1]
-                })
-            }
-
-            return this[name];
-        },
-
-        getResText: function (name, id) {
-            if (id === undefined)
-                return "-Error-";
-
-            var arr = this.getResourceArray(name);
-            for (var i = 0; i < arr.length; i++) {
-                var item = arr[i];
-                if (item.key === id)
-                    return item.text;
-            }
-
-            // No mapping
-            return "-E-" + id + "-E-";
-        },
-
         // Just use numeric index
         getStatusText: function (statusInd, waybillId) {
             if (waybillId === undefined)
@@ -172,11 +137,11 @@ sap.ui.define([
             if (parseInt(waybillId) === -1)
                 return ""; // "Not created";
 
-            return this.getResText(this.status.STATUS_TEXTS, statusInd);
+            return this.status.getStatusLangText(this.status.WB_STATUS, statusInd);
         },
 
         getDelayReasonText: function (id) {
-            return this.getResText(this.status.DELAY_TEXTS, id);
+            return this.status.getStatusLangText(this.status.DR_STATUS, id);
         },
 
         onNavBack: function () {
@@ -297,7 +262,7 @@ sap.ui.define([
             MessageToast.show(
                 bundle.getText("okDict", [params.title, json.updated, json.inserted]) +
                 (json.dbcnt ? bundle.getText("okDictR3", [json.dbcnt]) : "") +
-                (json.deleted ? bundle.getText("okDictDel", [json.dbcnt]) : ""));
+                (json.deleted ? bundle.getText("okDictDel", [json.deleted]) : ""));
 
             if (params.afterUpdate)
                 params.afterUpdate.call(this, true);

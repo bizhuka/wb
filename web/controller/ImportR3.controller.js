@@ -38,6 +38,14 @@ sap.ui.define([
             });
         },
 
+        uploadStatusText: function () {
+            this.updateDbFrom({
+                link: "/r3/STATUS_TEXT?_persist=true",
+
+                title: this.getBundle().getText("statusText")
+            });
+        },
+
         loadWlnVehicle: function () {
             this.updateDbFrom({
                 link: "/wialon/loadWlnVehicle",

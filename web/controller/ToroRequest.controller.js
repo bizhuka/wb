@@ -48,7 +48,7 @@ sap.ui.define([
             this.onDatePickChange(null);
 
             // What status to show
-            var filtered = _this.getResourceArray(_this.status.STATUS_TEXTS).filter(function (pair) {
+            var filtered = _this.status.getStatusLangArray(_this.status.WB_STATUS).filter(function (pair) {
                 return pair.key === _this.status.NOT_CREATED || pair.key === _this.status.REJECTED;
             });
 
@@ -241,8 +241,10 @@ sap.ui.define([
 
         onReqUpdate: function () {
             var _this = this;
+            // Watch @29!
             _this.updateDbFrom({
-                link: "/r3/REQ_HEADER?_persist=true",
+                link: "/r3/REQ_HEADER?_persist=true&_where="
+                + encodeURIComponent("AFKO~GSTRP >= '" + _this.toSapDate(_this.addDays(new Date(), -29)) + "'"),
 
                 title: _this.getBundle().getText("reqs"),
 
@@ -343,7 +345,7 @@ sap.ui.define([
                     _this._onObjectMatched();
                 else
                     _this.updateDbFrom({
-                        link: "/r3/SCHEDULE?_persist=true&where=" + encodeURIComponent(
+                        link: "/r3/SCHEDULE?_persist=true&_where=" + encodeURIComponent(
                             "AFKO~GSTRP <= '" + _this.toSapDate(_this.dpTo.getDateValue()) + "' AND " +
                             "AFKO~GLTRP >= '" + _this.toSapDate(_this.dpFrom.getDateValue()) + "'"),
 

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DbUpdateInfoPlus extends DbUpdateInfo {
-    public int deleted;
-
     public static final char UPDATED = 'U';
     public static final char INSERTED = 'I';
     public static final char DELETED = 'D';
