@@ -14,7 +14,7 @@ sap.ui.define([
 
             // What status to show
             var filtered = _this.status.getStatusLangArray(_this.status.WB_STATUS).filter(function (pair) {
-                return pair.key !== _this.status.NOT_CREATED && pair.key !== _this.status.REJECTED;
+                return pair.key !== _this.status.NOT_CREATED; // && pair.key !== _this.status.REJECTED;
             });
 
             new LibReqs(this, {
@@ -22,11 +22,12 @@ sap.ui.define([
                 showReason: true,
                 showActual: true,
                 statuses: filtered,
+                reqStatuses: _this.status.getStatusLangArray(_this.status.RC_STATUS).concat(_this.status.getStatusLangArray(_this.status.RR_STATUS)),
                 getFilter: function () {
                     return new Filter({
                         filters: [
-                            new Filter("Waybill_Id", FilterOperator.NE, -1), // NE NOT_CREATED
-                            new Filter("Status", FilterOperator.NE, _this.status.REJECTED)
+                            new Filter("Waybill_Id", FilterOperator.NE, _this.status.WB_ID_NULL) // NE NOT_CREATED
+                            // new Filter("Status", FilterOperator.NE, _this.status.REJECTED)
                         ],
                         and: true
                     })

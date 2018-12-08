@@ -3,7 +3,6 @@ sap.ui.define([
     'sap/ui/core/mvc/Controller',
     'com/modekzWaybill/controller/LibStatus',
     'sap/ui/core/routing/History',
-    'sap/m/MessageBox',
     'sap/m/MessageToast',
     "sap/ui/model/Filter",
     'sap/ui/model/FilterOperator',
@@ -12,7 +11,7 @@ sap.ui.define([
     'sap/m/Label',
     'sap/m/Button',
     'sap/ui/Device'
-], function (Controller, LibStatus, History, MessageBox, MessageToast, Filter, FilterOperator, Dialog, TextArea, Label, Button, Device) {
+], function (Controller, LibStatus, History, MessageToast, Filter, FilterOperator, Dialog, TextArea, Label, Button, Device) {
     "use strict";
 
     var allowedBukrs = null;
@@ -24,9 +23,18 @@ sap.ui.define([
         },
 
         showError: function (err, message) {
-            MessageBox.error(message);
-            if (err)
-                console.log(err);
+            MessageToast.show(message, {
+                duration: 3500
+            });
+
+            // Show as read message
+            try {
+                $('#content').parent().find('.sapMMessageToast').css('background', '#cc1919');
+            } finally {
+                // Show for debug?
+                if (err)
+                    console.log(err);
+            }
         },
 
         // Create new with And
@@ -134,8 +142,12 @@ sap.ui.define([
                 return "-Error-";
 
             // Do not show with empty waybill
-            if (parseInt(waybillId) === -1)
+            if (parseInt(waybillId) === this.status.WB_ID_NULL)
                 return ""; // "Not created";
+
+            // Show req status instead
+            if (parseInt(waybillId) === this.status.WB_ID_REJECTED)
+                return this.getBundle().getText("rejectReqs");
 
             return this.status.getStatusLangText(this.status.WB_STATUS, statusInd);
         },
@@ -307,7 +319,7 @@ sap.ui.define([
                         item.Waybill_Id = parseInt(item.Waybill_Id);
 
                         // Planned work
-                        if (item.Waybill_Id === -1 && item.Ilart) {
+                        if (item.Waybill_Id === _this.status.WB_ID_NULL && item.Ilart) {
                             callBack.call(_this, _this.getBundle().getText("occupiedByRepair",
                                 [_this.toLocaleDate(item.Datum), _this.alphaOut(item.Equnr), item.Ilart]));
                             return;

@@ -1,5 +1,6 @@
 package com.modekz.db;
 
+import com.modekz.db.flag.Status;
 import org.hibersap.annotations.Parameter;
 
 import javax.persistence.*;
@@ -28,7 +29,7 @@ public class Schedule {
     public String Ilart;
 
     @Column(name="\"waybill_id\"")
-    public long Waybill_Id = -1;
+    public long Waybill_Id = Status.WB_ID_NULL;
 
     public Schedule() {
 

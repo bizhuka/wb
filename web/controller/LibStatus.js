@@ -20,11 +20,15 @@ sap.ui.define([
             CLOSED: 60,
 
             // Request statuses
-            REQ_NEW: 100,
-            REQ_SET: 200,
+            RC_NEW: 100,
+            RC_SET: 200,
+
+            // Request waybill_id field
+            WB_ID_NULL: -1,
+            WB_ID_REJECTED: -2,
 
             // Delay status
-            NO_DELAY: 1000,
+            DR_NO_DELAY: 1000,
 
             WB_STATUS: "WB", // Waybill
             RC_STATUS: "RC", // Request confirm
@@ -63,9 +67,14 @@ sap.ui.define([
 
                     result.push({
                         key: parseInt(item.Id),
-                        text: item[lang]
+                        text: item[lang],
+                        messageType: item.MessageType,
+                        inTile: item.InTile === "X"
                     });
                 }
+                result.sort(function (a, b) {
+                    return a.key - b.key;
+                });
 
                 // Save and return
                 this[name] = result;
@@ -85,6 +94,14 @@ sap.ui.define([
 
                 // No mapping
                 return "-E-" + id + "-E-";
+            },
+
+            findStatus: function (name, id) {
+                var allStatus = this.getStatusLangArray(name);
+                for (var i = 0; i < allStatus.length; i++)
+                    if (allStatus[i].key === id)
+                        return allStatus[i];
+                return false;
             }
         });
     }

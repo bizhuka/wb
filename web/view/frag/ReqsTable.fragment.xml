@@ -18,6 +18,11 @@
                     <core:Item key="{ui>key}" text="{ui>text}"/>
                 </ComboBox>
 
+                <ComboBox selectionChange="onReqComboSelectionChange" visible="{ui>/showReqStatus}"
+                          items="{ui>/reqStatuses}" width="15rem">
+                    <core:Item key="{ui>key}" text="{ui>text}"/>
+                </ComboBox>
+
                 <SearchField search="onTextSearch" visible="{ui>/showSortGroup}"
                              placeholder="{i18n>findReqs}" showRefreshButton="false" width="10rem"/>
 
@@ -73,9 +78,15 @@
                 </header>
             </Column>
         </columns>
-        <ColumnListItem vAlign="Middle">
+        <ColumnListItem vAlign="Middle"
+                        highlight="{ parts:[
+                                    { path: 'wb>StatusReason' }
+                                ], formatter: '.reqRowHighlight' }">
             <cells>
                 <ObjectStatus title="{ path: 'wb>Aufnr', formatter: '.owner.alphaOut'}"
+                              active="{= ${userInfo>/WbRequestReject}===true&amp;&amp;${ui>/canReject}===true}"
+                              press="onRequestReject"
+
                               text="&#xA;{ path: 'wb>Objnr', formatter: '.getOutObjnr'}"
                               state="{
                                     path: 'wb>Priok',
@@ -94,7 +105,7 @@
                                   visible="{ui>/showWbColumn}"/>
 
                 <ObjectIdentifier title="{ path: 'wb>StatusReason', formatter: '.getStatusReasonText'}"
-                                  titleActive="{= ${userInfo>/WbCloseReqs}===true&amp;&amp;${wb>Status}!==${status>/CLOSED}}"
+                                  titleActive="{= ${userInfo>/WbCloseReqs}===true&amp;&amp;${wb>Status}!==${status>/CLOSED}&amp;&amp;${wb>Waybill_Id}>0}"
                                   titlePress="onStatusReasonPress"
                                   text="{wb>Reason}"/>
 

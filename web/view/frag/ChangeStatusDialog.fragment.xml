@@ -5,9 +5,9 @@
 
         <content>
 
-            <Label text="{i18n>actualDate}"/>
+            <Label text="{i18n>actualDate}" visible="{gui>/dateEdit}"/>
 
-            <HBox visible="{= ${gui>/origin}==='WB'}">
+            <HBox visible="{= ${gui>/origin}===${status>/DR_STATUS}}">
 
                 <DatePicker
                         change="onDateChanged"
@@ -19,19 +19,16 @@
                         value="{ path: 'gui>/toDate', type:'sap.ui.model.type.Date', formatOptions: { style: 'medium', strictParsing: true}}"/>
             </HBox>
 
-            <HBox visible="{= ${gui>/origin}==='REQ'}">
+            <HBox visible="{= ${gui>/origin}===${status>/RC_STATUS}}">
                 <DateTimePicker
                         change="onDateChanged"
+                        enabled="{gui>/dateEdit}"
                         value="{ path: 'gui>/fromDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'short', strictParsing: true}}"/>
                 <DateTimePicker
                         change="onDateChanged"
+                        enabled="{gui>/dateEdit}"
                         value="{ path: 'gui>/toDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'short', strictParsing: true}}"/>
             </HBox>
-
-            <!--<VBox visible="{= ${gui>/origin}==='REQ'}">
-                <Label text="{i18n>actualDate}"/>
-                <Input value="{gui>/motoHour}" type="Number" valueLiveUpdate="true" liveChange="checkOkEnabled"/>
-            </VBox>-->
 
             <VBox>
                 <Label text="{gui>/reasonLabel}"/>

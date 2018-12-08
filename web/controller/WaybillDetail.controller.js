@@ -421,7 +421,7 @@ sap.ui.define([
 
                     var changeStat = new LibChangeStatus(_this);
                     changeStat.openDialog({
-                        origin: 'WB',
+                        origin: _this.status.DR_STATUS,
                         title: _this.getBundle().getText("outGarage"), // Confirm WB
                         ok_text: _this.getBundle().getText("out"), // Confirm
                         text: bindingObject.Description,
@@ -464,7 +464,7 @@ sap.ui.define([
 
                     changeStat = new LibChangeStatus(_this);
                     changeStat.openDialog({
-                        origin: 'WB',
+                        origin: _this.status.DR_STATUS,
                         title: _this.getBundle().getText("cancelWb"),
                         ok_text: _this.getBundle().getText("canceling"),
                         text: bindingObject.Description,
@@ -667,8 +667,8 @@ sap.ui.define([
 
             for (var i = 0; i < items.length; i++) {
                 var item = items[i].getBindingContext("wb").getObject();
-                if (item.StatusReason === this.status.REQ_NEW ||
-                    item.StatusReason === this.status.REQ_SET) {
+                if (item.StatusReason === this.status.RC_NEW ||
+                    item.StatusReason === this.status.RC_SET) {
                     MessageToast.show(this.getBundle().getText("reqsNotConfirmed", [i + 1]));
                     return false;
                 }
@@ -862,7 +862,7 @@ sap.ui.define([
 
                         new Filter({
                             filters: [
-                                new Filter("Waybill_Id", FilterOperator.EQ, -1), // .EQ NOT_CREATED
+                                new Filter("Waybill_Id", FilterOperator.EQ, _this.status.WB_ID_NULL), // .EQ NOT_CREATED
                                 new Filter("Status", FilterOperator.EQ, _this.status.REJECTED),
                                 // Or show current WB
                                 new Filter("Waybill_Id", FilterOperator.EQ, bindingObject.Id)

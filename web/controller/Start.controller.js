@@ -30,21 +30,22 @@ sap.ui.define([
                 model: "wbTile",
                 url: "/count/wb",
                 texts: "statusTexts",
-                tileStatus: 10,
-                textRes: this.status.WB_STATUS
+                tileStatus: this.status.CREATED
             });
 
             this.countTile({
                 model: "reqTile",
                 url: "/count/req",
                 texts: "reqStatusTexts",
-                tileStatus: 100,
+                tileStatus: this.status.RC_NEW,
                 textRes: this.status.RC_STATUS
             });
         },
 
         countTile: function (params) {
             var _this = this;
+            var status = _this.status;
+
             var data = {
                 busy: true,
                 count: 0,
@@ -63,7 +64,11 @@ sap.ui.define([
                     if (item.status === params.tileStatus)
                         data.count = item.cnt;
 
-                    data.tooltip += "\n" + _this.status.getStatusLangText(params.textRes, item.status) + " - " + item.cnt;
+                    // WB or REQ
+                    var name = params.model === "wbTile" ? status.WB_STATUS : item.status < 0 ? status.RR_STATUS : status.RC_STATUS;
+                    var row = status.findStatus(name, item.status);
+                    if (row && row.inTile)
+                        data.tooltip += "\n" + row.text + " - " + item.cnt;
                 }
 
                 // Update ui

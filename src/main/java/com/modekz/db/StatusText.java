@@ -27,6 +27,22 @@ public class StatusText {
     @Parameter("RU")
     public String Ru;
 
+    @Column(name = "\"messagetype\"", columnDefinition = "VARCHAR(40)")
+    @Parameter("MESSAGE_TYPE")
+    public String MessageType;
+
+    @Column(name = "\"intile\"", columnDefinition = "VARCHAR(1)")
+    @Parameter("IN_TILE")
+    public String InTile;
+
+    public String getMessageType() {
+        return MessageType;
+    }
+
+    public void setMessageType(String messageType) {
+        MessageType = messageType;
+    }
+
     public String getStype() {
         return Stype;
     }
@@ -57,5 +73,13 @@ public class StatusText {
 
     public void setRu(String ru) {
         Ru = ru;
+    }
+
+    public String getInTile() {
+        return InTile;
+    }
+
+    public void setInTile(String inTile) {
+        InTile = inTile;
     }
 }

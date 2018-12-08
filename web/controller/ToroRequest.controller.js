@@ -56,10 +56,11 @@ sap.ui.define([
                 showWbColumn: true,
                 selectMode: sap.m.ListMode.MultiSelect,
                 statuses: filtered,
+                canReject:true,
                 getFilter: function () {
                     return new Filter({
                         filters: [
-                            new Filter("Waybill_Id", FilterOperator.EQ, -1), // .EQ NOT_CREATED
+                            new Filter("Waybill_Id", FilterOperator.EQ, _this.status.WB_ID_NULL), // .EQ NOT_CREATED
                             new Filter("Status", FilterOperator.EQ, _this.status.REJECTED)
                         ],
                         and: false
@@ -514,7 +515,7 @@ sap.ui.define([
                     var items = oData.results;
                     for (var i = 0; i < items.length; i++) {
                         var item = items[i];
-                        if (parseInt(item.Waybill_Id) === -1 || item.Status === _this.status.REJECTED)
+                        if (parseInt(item.Waybill_Id) === _this.status.WB_ID_NULL || item.Status === _this.status.REJECTED)
                             continue;
 
                         callBack.call(_this, _this.getBundle().getText("errReqsProcessed", [item.Objnr]));
@@ -572,7 +573,7 @@ sap.ui.define([
 
             var createWbDialog = new LibChangeStatus(_this);
             createWbDialog.openDialog({
-                origin: 'WB',
+                origin: _this.status.DR_STATUS,
                 title: _this.byId('id_wb_create_button').getText(),
                 ok_text: _this.getBundle().getText("create"),
                 text: '',

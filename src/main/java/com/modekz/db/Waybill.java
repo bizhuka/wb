@@ -1,7 +1,6 @@
 package com.modekz.db;
 
 import com.modekz.ODataServiceFactory;
-import com.modekz.db.flag.DelayReason;
 import com.modekz.db.flag.Status;
 import com.modekz.json.UserInfo;
 
@@ -77,7 +76,7 @@ public class Waybill {
     public double gasTopSpent;
 
     @Column(name="\"delayreason\"")
-    public int delayReason = DelayReason.NO_DELAY;
+    public int delayReason = Status.DR_NO_DELAY;
 
     // Who last changed
     @Column(name="\"changeuser\"",columnDefinition = "VARCHAR(40)")

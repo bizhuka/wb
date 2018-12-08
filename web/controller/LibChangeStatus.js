@@ -18,18 +18,23 @@ sap.ui.define([
             openDialog: function (gui) {
                 var _owner = this.owner;
                 switch (gui.origin) {
-                    case "WB":
+                    case _owner.status.DR_STATUS:
                         gui.reasons = _owner.status.getStatusLangArray(_owner.status.DR_STATUS).filter(function (pair) {
-                            return pair.key !== _owner.status.NO_DELAY;
+                            return pair.key !== _owner.status.DR_NO_DELAY;
                         });
                         gui.reasonLabel = _owner.getBundle().getText("delayReason");
                         break;
 
-                    case "REQ":
+                    case _owner.status.RC_STATUS:
                         gui.reasons = _owner.status.getStatusLangArray(_owner.status.RC_STATUS).filter(function (pair) {
-                            return pair.key !== _owner.status.REQ_NEW && pair.key !== _owner.status.REQ_SET;
+                            return pair.key !== _owner.status.RC_NEW && pair.key !== _owner.status.RC_SET;
                         });
                         gui.reasonLabel = _owner.getBundle().getText("reqsStatus");
+                        break;
+
+                    case _owner.status.RR_STATUS:
+                        gui.reasons = _owner.status.getStatusLangArray(_owner.status.RR_STATUS);
+                        gui.reasonLabel = _owner.getBundle().getText("reqsRejectStatus");
                         break;
                 }
                 // No text
@@ -41,7 +46,7 @@ sap.ui.define([
                 this.dialog.open();
 
                 // Initial dates
-                if (gui.origin === 'WB') {
+                if (gui.origin === _owner.status.DR_STATUS) {
                     this.owner.findById('id_reason_combo').setEnabled(false);
                     if (gui.fromDate)
                         this.fromTime = gui.fromDate.getTime();
@@ -63,7 +68,7 @@ sap.ui.define([
             onDateChanged: function () {
                 this.checkOkEnabled();
 
-                if (this.gui.origin === 'WB' && this.fromTime && this.toTime)
+                if (this.gui.origin === this.owner.status.DR_STATUS && this.fromTime && this.toTime)
                     this.owner.findById('id_reason_combo').setEnabled(
                         this.gui.fromDate.getTime() !== this.fromTime ||
                         this.gui.toDate.getTime() !== this.toTime
@@ -90,7 +95,7 @@ sap.ui.define([
                     }
                 };
 
-                if (this.gui.origin === 'WB') {
+                if (this.gui.origin === _this.owner.status.DR_STATUS) {
                     if (block.fromDate)
                         block.fromDate.setHours(12, 0, 0, 0);
                     if (block.toDate)
@@ -102,7 +107,7 @@ sap.ui.define([
                     return;
 
                 // Oops
-                if (!block.fromDate || !block.toDate || block.fromDate.getTime() > block.toDate.getTime()) {
+                if (this.gui.dateEdit && (!block.fromDate || !block.toDate || block.fromDate.getTime() > block.toDate.getTime())) {
                     MessageToast.show(this.owner.getBundle().getText("wrongPeriod"));
                     return;
                 }

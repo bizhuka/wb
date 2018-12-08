@@ -3,8 +3,9 @@ sap.ui.define([
         "sap/ui/model/json/JSONModel",
         "sap/ui/model/Filter",
         "sap/ui/model/FilterOperator",
-        "com/modekzWaybill/controller/LibChangeStatus"
-    ], function (BaseObject, JSONModel, Filter, FilterOperator, LibChangeStatus) {
+        "com/modekzWaybill/controller/LibChangeStatus",
+        "sap/ui/core/MessageType"
+    ], function (BaseObject, JSONModel, Filter, FilterOperator, LibChangeStatus, MessageType) {
         "use strict";
 
         return BaseObject.extend("com.modekzWaybill.controller.LibReqs", {
@@ -14,6 +15,7 @@ sap.ui.define([
             reqTable: null,
             searchField: null,
             statusCombo: null,
+            reqStatusCombo: null,
 
             prevFilt: null,
 
@@ -37,6 +39,7 @@ sap.ui.define([
 
                 // Filter by status and sort group
                 uiData.showSortGroup = uiData.showStatus = !!uiData.statuses;
+                uiData.showReqStatus = !!uiData.reqStatuses;
 
                 if (uiData.selectMode === undefined)
                     uiData.selectMode = sap.m.ListMode.None;
@@ -61,10 +64,6 @@ sap.ui.define([
                 this.uiModel = new JSONModel(uiData);
                 container.setModel(this.uiModel, "ui");
             },
-
-            // onBrowserEvent: function (oEvent) {
-            //     this._bKeyboard = oEvent.type === "keyup";
-            // },
 
             onSortPress: function (oEvent) {
                 var _this = this;
@@ -114,6 +113,11 @@ sap.ui.define([
                 this.doFilter();
             },
 
+            onReqComboSelectionChange: function (oEvent) {
+                this.reqStatusCombo = oEvent.getSource();
+                this.doFilter();
+            },
+
             onTextSearch: function (oEvent) {
                 this.searchField = oEvent.getSource();
                 this.doFilter();
@@ -134,22 +138,29 @@ sap.ui.define([
                 // Text search and combo
                 var textFilter = this.searchField ? this.searchField.getValue() : "";
                 var comboFilter = this.statusCombo ? this.statusCombo.getSelectedKey() : "";
+                var reqComboFilter = this.reqStatusCombo ? this.reqStatusCombo.getSelectedKey() : "";
 
                 // Called twice
-                if (this.prevFilt && this.prevFilt.text === textFilter && this.prevFilt.combo === comboFilter && force !== true)
+                if (this.prevFilt && this.prevFilt.text === textFilter &&
+                    this.prevFilt.combo === comboFilter && this.prevFilt.reqCombo === reqComboFilter &&
+                    force !== true)
                     return;
                 this.prevFilt = {
                     text: textFilter,
-                    combo: comboFilter
+                    combo: comboFilter,
+                    reqCombo: reqComboFilter
                 };
 
                 // Filter by status
                 if (comboFilter.length !== 0) {
                     if (parseInt(comboFilter) === this.owner.status.NOT_CREATED)
-                        arrFilter.push(new Filter("Waybill_Id", FilterOperator.EQ, -1));
+                        arrFilter.push(new Filter("Waybill_Id", FilterOperator.EQ, this.status.WB_ID_NULL));
                     else
                         arrFilter.push(new Filter("Status", FilterOperator.EQ, comboFilter));
                 }
+                if (reqComboFilter.length !== 0)
+                    arrFilter.push(new Filter("StatusReason", FilterOperator.EQ, reqComboFilter));
+
 
                 if (textFilter && textFilter.length > 0) {
                     var arr = [
@@ -265,7 +276,8 @@ sap.ui.define([
 
             waybillOut: function (waybillId) {
                 // Do not show with empty waybill
-                if (parseInt(waybillId) === -1)
+                if (parseInt(waybillId) === this.status.WB_ID_NULL ||
+                    parseInt(waybillId) === this.status.WB_ID_REJECTED)
                     return "";
                 return waybillId;
             },
@@ -276,6 +288,8 @@ sap.ui.define([
 
             getStatusReasonText: function (id) {
                 var _owner = this.owner;
+                if (parseInt(id) < 0)
+                    return _owner.status.getStatusLangText(_owner.status.RR_STATUS, id);
                 return _owner.status.getStatusLangText(_owner.status.RC_STATUS, id);
             },
 
@@ -311,7 +325,7 @@ sap.ui.define([
                 };
                 var bundle = _this.owner.getBundle();
                 changeStat.openDialog({
-                    origin: 'REQ',
+                    origin: _this.owner.status.RC_STATUS,
                     title: bundle.getText("closeReqs"),
                     ok_text: bundle.getText("confirm"),
                     text: obj.Reason ? obj.Reason : bundle.getText("done"),
@@ -326,7 +340,47 @@ sap.ui.define([
                         editFields.FromDate = block.fromDate;
                         editFields.ToDate = block.toDate;
 
-                        block.afterChecked(editFields.StatusReason !== _this.owner.status.REQ_SET);
+                        block.afterChecked(editFields.StatusReason !== _this.owner.status.RC_SET);
+                    },
+
+                    success: function () {
+                        oWbModel.update("/ReqHeaders('" + obj.Objnr + "')", editFields, {
+                            success: function () {
+                                oWbModel.refresh();
+                            },
+                            error: function (err) {
+                                _this.owner.showError(err, _this.owner.getBundle().getText("errUpdateReqs"));
+                            }
+                        })
+                    }
+                });
+            },
+
+            onRequestReject: function (oEvent) {
+                var obj = oEvent.getSource().getBindingContext("wb").getObject();
+                var changeStat = new LibChangeStatus(this.owner);
+                var _this = this;
+                var oWbModel = _this.owner.getModel("wb");
+
+                // What would be edited
+                var editFields = {
+                    Objnr: obj.Objnr,
+                    Waybill_Id: String(_this.owner.status.WB_ID_REJECTED)
+                };
+                var bundle = _this.owner.getBundle();
+                changeStat.openDialog({
+                    origin: _this.owner.status.RR_STATUS,
+                    title: bundle.getText("rejectReqs"),
+                    ok_text: bundle.getText("rejectReqs"),
+                    text: obj.Reason ? obj.Reason : "---",
+                    reason: obj.StatusReason,
+                    dateEdit: false,
+
+                    check: function (block) {
+                        editFields.Reason = block.text;
+                        editFields.StatusReason = parseInt(block.reason);
+
+                        block.afterChecked(editFields.StatusReason < 0);
                     },
 
                     success: function () {
@@ -367,8 +421,8 @@ sap.ui.define([
                     // Modify to new WAYBILL
                     var reqHeader = {
                         Objnr: item.Objnr,
-                        Waybill_Id: params.unset ? "-1" : params.waybillId,
-                        StatusReason: params.unset ? owner.status.REQ_NEW : owner.status.REQ_SET
+                        Waybill_Id: params.unset ? String(owner.status.WB_ID_NULL) : params.waybillId,
+                        StatusReason: params.unset ? owner.status.RC_NEW : owner.status.RC_SET
                     };
                     oWbModel.update("/ReqHeaders('" + item.Objnr + "')", reqHeader, {
                         success: function () {
@@ -384,6 +438,21 @@ sap.ui.define([
 
                 // Select items again
                 this.reqTable.removeSelections(true);
+            },
+
+            reqRowHighlight: function (statusReason) {
+                statusReason = parseInt(statusReason);
+                var status = this.owner.status;
+
+                // Request is rejected
+                var result = status.findStatus(
+                    statusReason < 0 ? status.RR_STATUS : status.RC_STATUS, statusReason);
+
+                // Ok show color of option
+                if (result && result.messageType)
+                    return result.messageType;
+
+                return MessageType.None;
             }
         });
     }

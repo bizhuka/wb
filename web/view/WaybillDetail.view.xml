@@ -32,7 +32,7 @@
 
                 <ObjectStatus
                         text="{i18n>delayReason}: { path: 'wb>DelayReason', formatter: '.getDelayReasonText'}"
-                        visible="{= ${wb>DelayReason}!==${status>/NO_DELAY}}"
+                        visible="{= ${wb>DelayReason}!==${status>/DR_NO_DELAY}}"
                         state="Warning"/>
 
                 <ObjectStatus
@@ -282,13 +282,13 @@
                                                             <Label text="{i18n>gasType}"/>
                                                         </header>
                                                     </Column>
-                                                    <Column width="7rem">
+                                                    <Column>
                                                         <header>
                                                             <Label text="{i18n>remOut}"
                                                                    tooltip="{i18n>remOutLong}"/>
                                                         </header>
                                                     </Column>
-                                                    <Column width="7rem">
+                                                    <Column>
                                                         <header>
                                                             <Label text="{i18n>give}"/>
                                                         </header>
@@ -298,18 +298,18 @@
                                                             <Label text="{i18n>fromLgort}"/>
                                                         </header>
                                                     </Column>
-                                                    <Column width="7rem">
+                                                    <Column>
                                                         <header>
                                                             <Label text="{i18n>actual}" tooltip="{i18n>actualGiven}"/>
                                                         </header>
                                                     </Column>
-                                                    <Column width="7rem">
+                                                    <Column>
                                                         <header>
                                                             <Label text="{i18n>consumption}"
                                                                    tooltip="{i18n>consumption}"/>
                                                         </header>
                                                     </Column>
-                                                    <Column width="7rem">
+                                                    <Column>
                                                         <header>
                                                             <Label text="{i18n>remIn}"
                                                                    tooltip="{i18n>remInLong}"/>

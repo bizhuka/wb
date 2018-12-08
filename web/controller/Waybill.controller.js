@@ -136,6 +136,9 @@ sap.ui.define([
         },
 
         getWaybillInfo: function (status, reqCnt, schCnt, histCnt, gasCnt, delayReason, tooName) {
+            var bundle = this.getBundle();
+            var libStatus = this.status;
+
             var result = {
                 status: parseInt(status),
                 reqCnt: parseInt(reqCnt),
@@ -148,7 +151,6 @@ sap.ui.define([
                 info: []
             };
 
-            var bundle = this.getBundle();
             // No GSM
             if (result.status >= this.status.IN_PROCESS && result.gasCnt === 0)
                 result.errors.push(bundle.getText("noGsm", ["GasSpent"]));
@@ -176,7 +178,7 @@ sap.ui.define([
                     result.errors.push(bundle.getText("noSchedule", ["Schedule"]));
             }
 
-            if (result.delayReason > 0)
+            if (result.delayReason !== libStatus.DR_NO_DELAY)
                 result.info.push(bundle.getText("delayReason") + " " + this.getDelayReasonText(result.delayReason));
             if (result.tooName !== '-')
                 result.info.push(bundle.getText("too") + " " + result.tooName);
@@ -194,18 +196,21 @@ sap.ui.define([
         },
 
         rowHighlight: function (status, reqCnt, schCnt, histCnt, gasCnt, delayReason, tooName) {
+            var status = this.status;
             var wbInfo = this.getWaybillInfo(status, reqCnt, schCnt, histCnt, gasCnt, delayReason, tooName);
 
             if (wbInfo.errors.length > 0)
                 return MessageType.Error;
 
-            // Cancelled
-            if (wbInfo.status === this.status.REJECTED)
-                return MessageType.Warning;
+            // Delay reason first
+            var result = status.findStatus(status.DR_STATUS, wbInfo.delayReason);
+            if (result && result.messageType)
+                return result.messageType;
 
-            // Ok closed
-            if (wbInfo.status === this.status.CLOSED)
-                return MessageType.Success;
+            // Status of WB itself
+            result = status.findStatus(status.WB_STATUS, wbInfo.status);
+            if (result && result.messageType)
+                return result.messageType;
 
             if (wbInfo.info.length > 0)
                 return MessageType.Information;

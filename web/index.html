@@ -25,7 +25,9 @@
     <script>
         sap.ui.getCore().attachInit(function () {
             // Status texts are required
-            sap.ui.require(["sap/ui/model/odata/v2/ODataModel", "com/modekzWaybill/controller/LibStatus"], function (ODataModel, LibStatus) {
+            sap.ui.require(["sap/ui/model/odata/v2/ODataModel",
+                            "com/modekzWaybill/controller/LibStatus"
+            ], function (ODataModel, LibStatus) {
                 var model = new ODataModel("/odata.svc/");
                 model.read("/StatusTexts", {
                     success: function (data) {

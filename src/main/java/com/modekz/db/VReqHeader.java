@@ -1,6 +1,6 @@
 package com.modekz.db;
 
-import com.modekz.db.flag.ReqStatusReason;
+import com.modekz.db.flag.Status;
 import com.sap.db.annotations.Immutable;
 import org.hibersap.annotations.Parameter;
 
@@ -36,7 +36,7 @@ public class VReqHeader {
     public Date Gstrp;
 
     @Column(name = "\"waybill_id\"")
-    public long Waybill_Id = -1;
+    public long Waybill_Id = Status.WB_ID_NULL;
 
     @Column(name = "\"ilart\"", columnDefinition = "VARCHAR(3)")
     @Parameter("AFIH_ILART")
@@ -107,7 +107,7 @@ public class VReqHeader {
     public String reason;
 
     @Column(name = "\"statusreason\"")
-    public int statusReason = ReqStatusReason.REQ_NEW;
+    public int statusReason = Status.RC_NEW;
     @Column(name = "\"fromdate\"", columnDefinition = "TIMESTAMP")
     public Date fromDate;
     @Column(name = "\"todate\"", columnDefinition = "TIMESTAMP")
