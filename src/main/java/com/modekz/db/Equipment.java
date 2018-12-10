@@ -78,6 +78,10 @@ public class Equipment {
     @Parameter("KLAH_CLASS")
     public String N_class;
 
+    @Column(name="\"orig_class\"",length = 15)
+    @Parameter("_ORIG_CLASS")
+    public String OrigClass;
+
     @Column(name = "\"ktschtxt\"", columnDefinition = "VARCHAR(40)")
     @Parameter("_T435T_TXT")
     public String KtschTxt;
@@ -377,5 +381,13 @@ public class Equipment {
 
     public void setKtschTxt(String ktschTxt) {
         KtschTxt = ktschTxt;
+    }
+
+    public String getOrigClass() {
+        return OrigClass;
+    }
+
+    public void setOrigClass(String origClass) {
+        OrigClass = origClass;
     }
 }

@@ -3,7 +3,6 @@ sap.ui.define([
     'sap/m/MessageToast',
     'sap/m/Label',
     'sap/m/ButtonType',
-    'sap/m/MessageBox',
     'sap/ui/core/MessageType',
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator',
@@ -11,7 +10,7 @@ sap.ui.define([
     'sap/ui/core/UIComponent',
     'com/modekzWaybill/controller/LibReqs',
     'com/modekzWaybill/controller/LibChangeStatus'
-], function (BaseController, MessageToast, Label, ButtonType, MessageBox, MessageType, Filter, FilterOperator, JSONModel, UIComponent, LibReqs, LibChangeStatus) {
+], function (BaseController, MessageToast, Label, ButtonType, MessageType, Filter, FilterOperator, JSONModel, UIComponent, LibReqs, LibChangeStatus) {
     "use strict";
 
     var C_FIX_COLUMN = 2;
@@ -56,7 +55,7 @@ sap.ui.define([
                 showWbColumn: true,
                 selectMode: sap.m.ListMode.MultiSelect,
                 statuses: filtered,
-                canReject:true,
+                canReject: true,
                 getFilter: function () {
                     return new Filter({
                         filters: [
@@ -547,7 +546,7 @@ sap.ui.define([
                 if (haveRights)
                     MessageToast.show(this.getBundle().getText("selectItems"));
                 else
-                    MessageBox.warning(this.getBundle().getText("selectItems"));
+                    _this.showError(null, this.getBundle().getText("selectItems"));
 
                 // If no car or do not have permission
                 if (!eoItem || !haveRights)

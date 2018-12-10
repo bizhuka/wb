@@ -65,10 +65,10 @@ public class RfcPrintDoc extends ServletBase {
         List<WBPrintDoc.PrintReq> reqs = new ArrayList<>();
         List<GasSpent> gasSpents = new ArrayList<>();
 
-        String N_class = null;
+        String orig_class = null;
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "select CURRENT_DATE as datum, w.\"butxt\", d.\"fio\", e.\"eqktx\", e.\"license_num\", e.\"speed_max\", e.\"pltxt\", e.\"n_class\", e.\"tooname\", e.\"typbz\", e.\"anln1\", waybill.*\n" +
+                    "select CURRENT_DATE as datum, w.\"butxt\", d.\"fio\", e.\"eqktx\", e.\"license_num\", e.\"speed_max\", e.\"pltxt\", e.\"orig_class\", e.\"tooname\", e.\"typbz\", e.\"anln1\", waybill.*\n" +
                             "from \"wb.db::pack.waybill\" as  waybill\n" +
                             "left outer join \"wb.db::pack.werk\" as w on waybill.\"werks\" = w.\"werks\"\n" +
                             "left outer join \"wb.db::pack.driver\" as d on waybill.\"bukrs\" = d.\"bukrs\" and waybill.\"driver\" = d.\"pernr\"\n" +
@@ -117,7 +117,7 @@ public class RfcPrintDoc extends ServletBase {
                         rField.set(root, r);
                 }
 
-                N_class = rs.getString("n_class");
+                orig_class = rs.getString("orig_class");
 
                 root.id = rs.getString("id");
                 root.datum = rs.getDate("datum");
@@ -190,7 +190,7 @@ public class RfcPrintDoc extends ServletBase {
         }
 
         // Pass data for template
-        WBPrintDoc printDoc = new WBPrintDoc(waybillId, N_class, docs, reqs, gasSpents);
+        WBPrintDoc printDoc = new WBPrintDoc(waybillId, orig_class, docs, reqs, gasSpents);
 
         try (Session session = ODataServiceFactory.getRfcSession().openSession()) {
             session.execute(printDoc);

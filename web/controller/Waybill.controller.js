@@ -196,19 +196,19 @@ sap.ui.define([
         },
 
         rowHighlight: function (status, reqCnt, schCnt, histCnt, gasCnt, delayReason, tooName) {
-            var status = this.status;
+            var libStatus = this.status;
             var wbInfo = this.getWaybillInfo(status, reqCnt, schCnt, histCnt, gasCnt, delayReason, tooName);
 
             if (wbInfo.errors.length > 0)
                 return MessageType.Error;
 
             // Delay reason first
-            var result = status.findStatus(status.DR_STATUS, wbInfo.delayReason);
+            var result = libStatus.findStatus(libStatus.DR_STATUS, wbInfo.delayReason);
             if (result && result.messageType)
                 return result.messageType;
 
             // Status of WB itself
-            result = status.findStatus(status.WB_STATUS, wbInfo.status);
+            result = libStatus.findStatus(libStatus.WB_STATUS, wbInfo.status);
             if (result && result.messageType)
                 return result.messageType;
 

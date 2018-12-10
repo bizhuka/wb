@@ -104,6 +104,7 @@ public class CsvUploader extends ServletBase {
                     clNum = clNum.substring(1);
 
                 // Change to group
+                eo.setOrigClass(clNum);
                 clNum = EqunrGrp.getClassNum(em, clNum);
 
                 // And set it

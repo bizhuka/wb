@@ -4,14 +4,13 @@ sap.ui.define([
     'sap/ui/core/UIComponent',
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator',
-    'sap/m/MessageBox',
     'sap/m/MessageToast',
     'com/modekzWaybill/controller/LibDriver',
     'com/modekzWaybill/controller/LibReqs',
     'com/modekzWaybill/controller/LibMessage',
     'com/modekzWaybill/controller/LibChangeStatus',
     'com/modekzWaybill/controller/LibLgort'
-], function (BaseController, JSONModel, UIComponent, Filter, FilterOperator, MessageBox, MessageToast, LibDriver, LibReqs, LibMessage, LibChangeStatus, LibLgort) {
+], function (BaseController, JSONModel, UIComponent, Filter, FilterOperator, MessageToast, LibDriver, LibReqs, LibMessage, LibChangeStatus, LibLgort) {
     "use strict";
 
     var waybillId, bindingObject;
@@ -194,6 +193,7 @@ sap.ui.define([
         },
 
         onWlnMessagePress: function (oEvent) {
+            var _this = this;
             if (!bindingObject.GarageDepDate || !bindingObject.GarageArrDate) {
                 MessageToast.show(this.getBundle().getText("errNotInGarage"));
                 return;
@@ -201,7 +201,7 @@ sap.ui.define([
 
             // Is Not Integer
             if (isNaN(parseFloat(bindingObject.WialonId)) || !isFinite(bindingObject.WialonId)) {
-                MessageToast.show(_this.getBundle().getText("errMesPointValue"));
+                MessageToast.show(this.getBundle().getText("errMesPointValue"));
                 return;
             }
 
@@ -212,7 +212,6 @@ sap.ui.define([
             // Which button was pressed
             var id = button.getId().split("-");
             id = id[id.length - 1];
-            var _this = this;
 
             var objExt = {
                 id: id,
@@ -901,6 +900,7 @@ sap.ui.define([
                     fuelModel.setProperty("/data", data);
 
                     // Update DB
+                    prevDoc.GasBefore = String(GasBefore);
                     _this.onFuelTypeChange(prevDoc)
                 },
 

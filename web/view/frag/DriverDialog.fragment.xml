@@ -44,7 +44,7 @@
                         </header>
                     </Column>
 
-                    <Column>
+                    <Column visible="false">
                         <header>
                             <Text text="{i18n>iin}"/>
                         </header>

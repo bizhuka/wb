@@ -1,14 +1,13 @@
 sap.ui.define([
     'com/modekzWaybill/controller/BaseController',
     'sap/ui/core/UIComponent',
-    'sap/m/MessageBox',
     'sap/m/MessageToast',
     'sap/m/SelectDialog',
     'sap/ui/model/json/JSONModel',
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator',
     'com/modekzWaybill/controller/LibDriver'
-], function (BaseController, UIComponent, MessageBox, MessageToast, SelectDialog, JSONModel, Filter, FilterOperator, LibDriver) {
+], function (BaseController, UIComponent, MessageToast, SelectDialog, JSONModel, Filter, FilterOperator, LibDriver) {
     "use strict";
 
     return BaseController.extend("com.modekzWaybill.controller.Start", {
