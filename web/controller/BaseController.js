@@ -219,11 +219,16 @@ sap.ui.define([
             return time.substring(0, 2) + ":" + time.substring(2, 4) + ":" + time.substring(4, 6);
         },
 
-        createFragment: function (sDialog, controller) {
-            var fragment = sap.ui.xmlfragment(sDialog, controller ? controller : this);
-            fragment.addStyleClass(this.getContentDensityClass());
-            this.getView().addDependent(fragment);
-            return fragment;
+        createFragment: function (fragment, controller) {
+            var result = sap.ui.xmlfragment(fragment, controller ? controller : this);
+
+            // For dialogs
+            if (result.addStyleClass) {
+                result.addStyleClass(this.getContentDensityClass());
+                this.getView().addDependent(result);
+            }
+
+            return result;
         },
 
         // This method can be called to determine whether the sapUiSizeCompact or sapUiSizeCozy design mode class should be set, which influences the size appearance of some controls.
@@ -261,7 +266,7 @@ sap.ui.define([
                     _this.showUpdateInfo(result, params);
                 },
                 error: function () {
-                    MessageToast.show(_this.getBundle().getText("errDict", [params.title]));
+                    _this.showError(null, _this.getBundle().getText("errDict", [params.title]));
 
                     if (params.afterUpdate)
                         params.afterUpdate.call(_this, false);

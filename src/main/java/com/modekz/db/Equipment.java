@@ -126,6 +126,10 @@ public class Equipment {
     @Parameter("EQUI_TYPBZ")
     public String Typbz;
 
+    @Column(name="\"petrolmode\"",columnDefinition = "VARCHAR(3)")
+    @Parameter("WV_PETROL_MODE")
+    public String PetrolMode;
+
     @Column(name="\"tooname\"",columnDefinition = "VARCHAR(50)")
     public String TooName = "-";
 
@@ -389,5 +393,13 @@ public class Equipment {
 
     public void setOrigClass(String origClass) {
         OrigClass = origClass;
+    }
+
+    public String getPetrolMode() {
+        return PetrolMode;
+    }
+
+    public void setPetrolMode(String petrolMode) {
+        PetrolMode = petrolMode;
     }
 }

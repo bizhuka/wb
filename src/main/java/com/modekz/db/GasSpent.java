@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Entity
-@PrimaryKey(columns = {@Column(name = "\"waybill_id\""), @Column(name = "\"pos\"")})
+@PrimaryKey(columns = {@Column(name = "\"waybill_id\""), @Column(name = "\"pttype\""), @Column(name = "\"pos\"")})
 @Table(name = "\"wb.db::pack.gasspent\"")
 public class GasSpent {
     @Id
@@ -18,11 +18,15 @@ public class GasSpent {
     public long Waybill_Id;
 
     @Id
+    @Column(name = "\"pttype\"")
+    public int PtType;
+
+    @Id
     @Column(name = "\"pos\"")
     // Relative position is crucial
     public int Pos;
 
-    @Column(name="\"gasmatnr\"",length = 18, nullable = false)
+    @Column(name = "\"gasmatnr\"", length = 18, nullable = false)
     public String GasMatnr;
 
     @Parameter("BEFORE")
@@ -37,7 +41,7 @@ public class GasSpent {
     @Column(name = "\"gasgiven\"", columnDefinition = "FLOAT")
     public BigDecimal GasGiven;
 
-    @Column(name="\"gaslgort\"",length = 4)
+    @Column(name = "\"gaslgort\"", length = 4)
     public String GasLgort;
 
     public long getWaybill_Id() {
@@ -46,6 +50,14 @@ public class GasSpent {
 
     public void setWaybill_Id(long waybill_Id) {
         Waybill_Id = waybill_Id;
+    }
+
+    public int getPtType() {
+        return PtType;
+    }
+
+    public void setPtType(int ptType) {
+        PtType = ptType;
     }
 
     public int getPos() {

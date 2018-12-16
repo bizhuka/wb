@@ -178,9 +178,21 @@ public class RfcPrintDoc extends ServletBase {
                 }
 
                 // Just fill with something
-                gasSpents = em.createQuery(
+                List<GasSpent> gasSpentList = em.createQuery(
                         "SELECT t FROM GasSpent t WHERE t.Waybill_Id = " + waybillId, GasSpent.class).getResultList();
 
+                Map<String, GasSpent> petrolMap = new HashMap<>(gasSpentList.size());
+                for (GasSpent gasSpent : gasSpentList)
+                    if (!petrolMap.containsKey(gasSpent.GasMatnr))
+                        petrolMap.put(gasSpent.GasMatnr, gasSpent);
+                    else {
+                        GasSpent prevGasSpent = petrolMap.get(gasSpent.GasMatnr);
+                        prevGasSpent.GasBefore.add(gasSpent.GasBefore);
+                        prevGasSpent.GasGive.add(gasSpent.GasGive);
+                        prevGasSpent.GasGiven.add(gasSpent.GasGiven);
+                    }
+                // Pass overalls
+                gasSpents = new ArrayList<>(petrolMap.values());
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -5,12 +5,13 @@ sap.ui.define([
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator',
     'sap/m/MessageToast',
+    'com/modekzWaybill/controller/LibPetrol',
     'com/modekzWaybill/controller/LibDriver',
     'com/modekzWaybill/controller/LibReqs',
     'com/modekzWaybill/controller/LibMessage',
     'com/modekzWaybill/controller/LibChangeStatus',
     'com/modekzWaybill/controller/LibLgort'
-], function (BaseController, JSONModel, UIComponent, Filter, FilterOperator, MessageToast, LibDriver, LibReqs, LibMessage, LibChangeStatus, LibLgort) {
+], function (BaseController, JSONModel, UIComponent, Filter, FilterOperator, MessageToast, LibPetrol, LibDriver, LibReqs, LibMessage, LibChangeStatus, LibLgort) {
     "use strict";
 
     var waybillId, bindingObject;
@@ -18,6 +19,7 @@ sap.ui.define([
     var allTabs, driverInput;
 
     return BaseController.extend("com.modekzWaybill.controller.WaybillDetail", {
+        libPetrol: null,
         libDriver: null,
         libReqs: null,
         libMessage: null,
@@ -50,10 +52,6 @@ sap.ui.define([
             if (forUpdate)
                 return "/Waybills(" + waybillId + "l)";
             return "/VWaybills(" + waybillId + "l)";
-        },
-
-        getGasSpentPath(pos) {
-            return "/GasSpents(Waybill_Id=" + waybillId + "L,Pos=" + pos + ")";
         },
 
         _onObjectMatched: function (oEvent) {
@@ -94,45 +92,22 @@ sap.ui.define([
                 this.byId('id_dr_tab').setVisible(visible);
                 this.byId('id_close_tab').setVisible(visible);
                 this.byId('id_date_tab').setVisible(visible);
-            });
 
-            // set fuel
-            var fuel = {
-                data: []
-            };
-            for (var i = 0; i < 5; i++)
-                fuel.data.push({
-                    GasMatnr: "",
-                    GasBefore: 0,
-                    GasGive: 0,
-                    GasGiven: 0,
-                    GasSpent: 0,
-                    GasAfter: 0,
-                    GasLgort: ""
-                });
-            var fuelModel = new JSONModel(fuel);
-            _this.setModel(fuelModel, "fuel");
-
-            oWbModel.read("/GasSpents", {
-                filters: [
-                    new Filter("Waybill_Id", FilterOperator.EQ, parseInt(waybillId)),
-                    new Filter("Pos", FilterOperator.BT, 0, fuel.data.length - 1)
-                ],
-
-                success: function (spents) {
-                    spents = spents.results;
-                    for (i = 0; i < spents.length; i++) {
-                        var spent = spents[i];
-                        fuel.data[spent.Pos] = spent;
+                // Prepare tabs of petrol
+                var fragPath = 'PetrolFrag.fragment.xml';
+                $.ajax({
+                    url: './view/frag/' + fragPath,
+                    dataType: 'text',
+                    success: function (textFrag) {
+                        if (!_this.libPetrol)
+                            _this.libPetrol = new LibPetrol(_this, textFrag);
+                        // Show certain tabs
+                        _this.libPetrol.showTabs(bindingObject.PetrolMode, parseInt(waybillId));
+                    },
+                    error: function () {
+                        _this.showError(null, _this.getBundle().getText("errDict", [fragPath]));
                     }
-                    fuelModel.setProperty("/data", fuel.data);
-
-                    // Recalc fields
-                    _this.onFuelChanged({
-                        skipSave: true,
-                        skipMessage: true
-                    });
-                }
+                });
             });
         },
 
@@ -243,21 +218,18 @@ sap.ui.define([
 
                         bindingObject.OdoDiff = (json.OdoDiff / 1000).toFixed(2);
                         bindingObject.MotoHour = (json.MotoHour / 3600).toFixed(2);
-                        bindingObject.GasSpent = json.GasSpent.toFixed(2);
-                        bindingObject.GasTopSpent = json.GasTopSpent.toFixed(2);
 
-                        // Not working!!!
+                        // Set in binding object
+                        bindingObject.Spent1 = json.GasSpent.toFixed(2);
+                        bindingObject.Spent2 = json.GasTopSpent.toFixed(2);
+
+                        // Set in model
                         oWbModel.setProperty(path, bindingObject);
 
-                        // TODO fix with model.setProperty
+                        // Set in UI
                         _this.byId("id_wb_odo_diff").setValue(bindingObject.OdoDiff);
                         _this.byId("id_wb_moto_hour").setValue(bindingObject.MotoHour);
-                        _this.byId("id_wb_gas_spent").setValue(bindingObject.GasSpent);
-                        _this.byId("id_wb_gas_top_spent").setValue(bindingObject.GasTopSpent);
-
-                        _this.onFuelChanged({
-                            skipSave: true
-                        });
+                        _this.libPetrol.setNewSpent(bindingObject);
                     };
                     break;
 
@@ -348,30 +320,6 @@ sap.ui.define([
             });
         },
 
-        handle_lgort_f4: function (oEvent) {
-            var _this = this;
-            var libLgort = new LibLgort(_this);
-            var input = oEvent.getSource();
-            var context = input.getBindingContext("fuel");
-
-            libLgort.lgortOpenDialog({
-                lgort: input.getValue(),
-                werks: bindingObject.Werks,
-
-                confirmLgort: function (evt) {
-                    // input.setValue();
-                    var obj = context.getObject();
-                    obj.GasLgort = evt.getParameter("listItem").getBindingContext("wb").getObject().Lgort;
-                    _this.getModel("fuel").setProperty(context.getPath(), obj);
-
-                    // Save to DB
-                    _this.onFuelChanged({
-                        skipMessage: true
-                    });
-                }
-            });
-        },
-
         on_set_status: function (oEvt) {
             var button = oEvt.getSource();
             var id = button.getId().split("-");
@@ -393,19 +341,15 @@ sap.ui.define([
                     }
 
                     if (parseInt(bindingObject.Gas_Cnt) === 0) {
-                        this.showError(null, this.getBundle().getText("noGas"));
+                        this.showError(null, this.getBundle().getText("noGasPos", [""]));
                         allTabs.setSelectedKey("id_close_tab");
                         return;
                     }
-                    // Check gas again
-                    var fuelRows = _this.getModel("fuel").getProperty("/data");
-                    for (var i = 0; i < fuelRows.length; i++) {
-                        var row = fuelRows[i];
-                        if (row.GasMatnr && parseFloat(row.GasGive) <= 0) {
-                            this.showError(null, this.getBundle().getText("noGas"));
-                            return;
-                        }
-                    }
+                    // Check amount og gas
+                    _this.libPetrol.onDataChange({
+                        skipSave: true,
+                        checkGive: true
+                    });
 
                     if (parseInt(bindingObject.Req_Cnt) === 0) {
                         if (bindingObject.WithNoReqs)
@@ -498,7 +442,7 @@ sap.ui.define([
 
                     var bindObj = oWbModel.getProperty(_this.getBindingPath());
                     var odoEmpty = (!parseFloat(bindObj.OdoDiff) && !parseFloat(bindObj.MotoHour));
-                    var fuelEmpty = !parseFloat(bindObj.GasSpent);
+                    var fuelEmpty = !parseFloat(bindObj.Spent1);
                     if (odoEmpty || fuelEmpty) {
                         this.showError(null, this.getBundle().getText("errEnterSensors"));
                         return;
@@ -515,7 +459,7 @@ sap.ui.define([
                     if (!this.checkReqsStatus())
                         return;
 
-                    fuelRows = _this.onFuelChanged({
+                    var fuelRows = _this.libPetrol.onDataChange({
                         skipSave: true
                     });
                     // Fuel not ok
@@ -529,7 +473,7 @@ sap.ui.define([
                     }
 
                     var spents = [];
-                    for (i = 0; i < fuelRows.length; i++)
+                    for (var i = 0; i < fuelRows.length; i++)
                         if (fuelRows[i].GasMatnr)
                             spents.push({
                                 matnr: fuelRows[i].GasMatnr,
@@ -676,122 +620,6 @@ sap.ui.define([
             return true;
         },
 
-        onFuelChanged: function (oEvent) {
-            var _this = this;
-            var oWbModel = _this.getModel("wb");
-            var bindObj = oWbModel.getProperty(this.getBindingPath());
-
-            // From wialon
-            var gasTotalSpent = parseFloat(bindObj.GasSpent ? bindObj.GasSpent : "0");
-
-            // No need
-            var data = this.getModel("fuel").getProperty("/data");
-            if (data.length === 0)
-                return false;
-
-            for (var i = 0; i < data.length; i++) {
-                var row = data[i];
-
-                // Blank equals 0
-                row.GasGiven = row.GasGiven ? row.GasGiven : "0";
-                var totalBefore = parseFloat(row.GasBefore) + parseFloat(row.GasGiven);
-
-                gasTotalSpent -= totalBefore;
-                if (gasTotalSpent > 0) {
-                    data[i].GasSpent = String(totalBefore);
-                    data[i].GasAfter = String(0);
-                } else {
-                    data[i].GasSpent = String(totalBefore + gasTotalSpent);
-                    data[i].GasAfter = String(-gasTotalSpent);
-                    gasTotalSpent = 0;
-                }
-
-                // Modify items in DB
-                if (!row.GasMatnr || oEvent.skipSave)
-                    continue;
-
-                // Check Lgort
-                if (!data[i].GasLgort && !oEvent.skipMessage) {
-                    MessageToast.show(_this.getBundle().getText("noLgort", [i + 1]));
-                    return false;
-                }
-
-                // Only this fields
-                var updFields = {
-                    GasMatnr: row.GasMatnr,
-                    GasBefore: String(row.GasBefore),
-                    GasGive: String(row.GasGive),
-                    GasGiven: String(row.GasGiven),
-                    GasLgort: String(row.GasLgort)
-                };
-
-                oWbModel.update(_this.getGasSpentPath(i), updFields, {
-                    error: function (err) {
-                        _this.showError(err, _this.getBundle().getText("errGasUpdate"));
-                    }
-                });
-            }
-            if (gasTotalSpent > 0 && !oEvent.skipMessage) {
-                MessageToast.show(this.getBundle().getText("moreSpent", [Math.round(gasTotalSpent * 100) / 100]));
-                return false;
-            }
-            this.getModel("fuel").setProperty("/data", data);
-            return data;
-        },
-
-        on_save_dates: function () {
-            var _this = this;
-            var oWbModel = _this.getModel("wb");
-            // From view
-            bindingObject = oWbModel.getProperty(_this.getBindingPath());
-
-            oWbModel.update(_this.getBindingPath(true), {
-                CreateDate: bindingObject.CreateDate,
-                ConfirmDate: bindingObject.ConfirmDate,
-                GarageDepDate: bindingObject.GarageDepDate,
-                GarageArrDate: bindingObject.GarageArrDate,
-                CloseDate: bindingObject.CloseDate
-            }, {
-                success: function () {
-                    MessageToast.show(_this.getBundle().getText("dateTimeUpdated"));
-                }
-            });
-        },
-
-        onFuelTypeChange: function (param) {
-            var newObject = param;
-
-            if (param.getSource) {
-                var comboGasType = param.getSource();
-                var gasMatnr = comboGasType.getSelectedKey();
-
-                // Which pos
-                var id = comboGasType.getId().split("-");
-                id = id[id.length - 1];
-                newObject = {
-                    Pos: parseInt(id),
-                    GasMatnr: gasMatnr
-                };
-            }
-            newObject.Waybill_Id = String(waybillId); // As string!
-
-            try {
-                if (newObject.GasMatnr === "")
-                    this.getModel("wb").remove(this.getGasSpentPath(id));
-                else
-                    this.getModel("wb").create("/GasSpents", newObject);
-            } catch (e) {
-                console.log(e)
-            }
-
-            this.onFuelChanged({
-                skipSave: true
-            });
-
-            // Read from DB
-            this.readBindingObject();
-        },
-
         on_add_reqs: function () {
             var _this = this;
             var oWbModel = _this.getModel("wb");
@@ -874,6 +702,25 @@ sap.ui.define([
             changeReqsDialog.open();
         },
 
+        on_save_dates: function () {
+            var _this = this;
+            var oWbModel = _this.getModel("wb");
+            // From view
+            bindingObject = oWbModel.getProperty(_this.getBindingPath());
+
+            oWbModel.update(_this.getBindingPath(true), {
+                CreateDate: bindingObject.CreateDate,
+                ConfirmDate: bindingObject.ConfirmDate,
+                GarageDepDate: bindingObject.GarageDepDate,
+                GarageArrDate: bindingObject.GarageArrDate,
+                CloseDate: bindingObject.CloseDate
+            }, {
+                success: function () {
+                    MessageToast.show(_this.getBundle().getText("dateTimeUpdated"));
+                }
+            });
+        },
+
         onGetPrevGasInfo: function (oEvent) {
             var _this = this;
             var button = oEvent.getSource();
@@ -883,25 +730,10 @@ sap.ui.define([
                 url: '/././select/prevGas?equnr=' + bindingObject.Equnr,
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
-                success: function (prevDoc) {
+                success: function (petrols) {
                     button.setEnabled(true);
 
-                    if (!prevDoc.GasMatnr)
-                        return;
-
-                    var fuelModel = _this.getModel("fuel");
-
-                    // Set data
-                    var data = fuelModel.getProperty("/data");
-                    data[0].GasMatnr = prevDoc.GasMatnr;
-                    data[0].GasBefore = prevDoc.GasBefore;
-
-                    // Refresh
-                    fuelModel.setProperty("/data", data);
-
-                    // Update DB
-                    prevDoc.GasBefore = String(GasBefore);
-                    _this.onFuelTypeChange(prevDoc)
+                    _this.libPetrol.setPrevSpent(petrols);
                 },
 
                 error: function (err) {

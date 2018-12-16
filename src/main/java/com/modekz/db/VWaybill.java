@@ -61,11 +61,17 @@ public class VWaybill {
     @Column(name="\"motohour\"")
     public double motoHour;
 
-    @Column(name="\"gasspent\"")
-    public double gasSpent;
+    @Column(name="\"spent1\"")
+    public double spent1;
 
-    @Column(name="\"gastopspent\"")
-    public double gasTopSpent;
+    @Column(name="\"spent2\"")
+    public double spent2;
+
+    @Column(name="\"spent4\"")
+    public double spent4;
+
+    @Column(name="\"petrolmode\"",columnDefinition = "VARCHAR(3)")
+    public String PetrolMode;
 
     @Column(name="\"delayreason\"")
     public int delayReason = Status.DR_NO_DELAY;
@@ -304,12 +310,28 @@ public class VWaybill {
         this.odoDiff = odoDiff;
     }
 
-    public double getGasSpent() {
-        return gasSpent;
+    public double getSpent1() {
+        return spent1;
     }
 
-    public void setGasSpent(double gasSpent) {
-        this.gasSpent = gasSpent;
+    public void setSpent1(double spent1) {
+        this.spent1 = spent1;
+    }
+
+    public double getSpent2() {
+        return spent2;
+    }
+
+    public void setSpent2(double spent2) {
+        this.spent2 = spent2;
+    }
+
+    public double getSpent4() {
+        return spent4;
+    }
+
+    public void setSpent4(double spent4) {
+        this.spent4 = spent4;
     }
 
     public long getHist_Cnt() {
@@ -368,14 +390,6 @@ public class VWaybill {
         this.changeDate = changeDate;
     }
 
-    public double getGasTopSpent() {
-        return gasTopSpent;
-    }
-
-    public void setGasTopSpent(double gasTopSpent) {
-        this.gasTopSpent = gasTopSpent;
-    }
-
     public String getDocum() {
         return docum;
     }
@@ -406,5 +420,13 @@ public class VWaybill {
 
     public void setFromDateChar(String fromDateChar) {
         FromDateChar = fromDateChar;
+    }
+
+    public String getPetrolMode() {
+        return PetrolMode;
+    }
+
+    public void setPetrolMode(String petrolMode) {
+        PetrolMode = petrolMode;
     }
 }

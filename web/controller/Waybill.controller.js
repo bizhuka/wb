@@ -153,7 +153,7 @@ sap.ui.define([
 
             // No GSM
             if (result.status >= this.status.IN_PROCESS && result.gasCnt === 0)
-                result.errors.push(bundle.getText("noGsm", ["GasSpent"]));
+                result.errors.push(bundle.getText("noGasPos", ["GasSpent"]));
 
             switch (result.status) {
                 case this.status.REJECTED:

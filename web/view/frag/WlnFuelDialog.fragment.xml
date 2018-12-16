@@ -14,8 +14,7 @@
                     autoAdjustHeight="false"
                     personalizationPress="attachPersonalizationPress"
                     contentChange="attachContentChange"
-                    title="{i18n>gas}"
-                    width="100%">
+                    title="{i18n>gas}">
                 <commons:content>
                     <commons:ChartContainerContent
                             icon="sap-icon://line-chart"

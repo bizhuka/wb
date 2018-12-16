@@ -123,10 +123,14 @@ public class ReqHeader {
             em = ODataServiceFactory.getEmf().createEntityManager();
             em.getTransaction().begin();
 
-            // Insert for history
-            em.merge(new ReqHistory(Waybill_Id, Objnr));
+            Waybill waybill = em.find(Waybill.class, this.Waybill_Id);
 
-            em.getTransaction().commit();
+            // Only if is cancelled
+            if (waybill.status < Status.ARRIVED) {
+                // Insert for history
+                em.merge(new ReqHistory(Waybill_Id, Objnr));
+                em.getTransaction().commit();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

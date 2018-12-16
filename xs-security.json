@@ -41,7 +41,8 @@
     { "name": "$XSAPPNAME.WbShowFinishedReqs", "description": "Просмотр обработанных заявок" },
     { "name": "$XSAPPNAME.WbShowList", "description": "Просмотр списка ПЛ" },
     { "name": "$XSAPPNAME.WbShowNewReqs", "description": "Просмотр Заявок TORO" },
-    { "name": "$XSAPPNAME.WbShowOne", "description": "Просмотр отдельного ПЛ" }
+    { "name": "$XSAPPNAME.WbShowOne", "description": "Просмотр отдельного ПЛ" },
+    { "name": "$XSAPPNAME.WbDispatcherManual", "description": "Рабочая инструкция диспетчера" }
   ],
   "role-templates": [
     { "name": "WbAdmin", "description": "Администратор программы", "scope-references": [ "$XSAPPNAME.WbAdmin" ] },
@@ -73,6 +74,7 @@
     { "name": "WbShowFinishedReqs", "description": "Просмотр обработанных заявок", "scope-references": [ "$XSAPPNAME.WbShowFinishedReqs" ] },
     { "name": "WbShowList", "description": "Просмотр списка ПЛ", "scope-references": [ "$XSAPPNAME.WbShowList" ] },
     { "name": "WbShowNewReqs", "description": "Просмотр Заявок TORO", "scope-references": [ "$XSAPPNAME.WbShowNewReqs" ] },
-    { "name": "WbShowOne", "description": "Просмотр отдельного ПЛ", "scope-references": [ "$XSAPPNAME.WbShowOne" ] }
+    { "name": "WbShowOne", "description": "Просмотр отдельного ПЛ", "scope-references": [ "$XSAPPNAME.WbShowOne" ] },
+    { "name": "WbDispatcherManual", "description": "Рабочая инструкция диспетчера", "scope-references": [ "$XSAPPNAME.WbDispatcherManual" ] }
   ]
 }
