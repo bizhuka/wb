@@ -511,8 +511,9 @@ sap.ui.define([
                             // From sensors
                             obj.OdoDiff = bindObj.OdoDiff;
                             obj.MotoHour = bindObj.MotoHour;
-                            obj.GasSpent = bindObj.GasSpent;
-                            obj.GasTopSpent = bindObj.GasTopSpent;
+                            obj.Spent1 = bindObj.Spent1;
+                            obj.Spent2 = bindObj.Spent2;
+                            obj.Spent4 = bindObj.Spent4;
                             obj.Docum = doc.docum;
                             obj.Aufnr = doc.aufnr;
                             _this.setNewStatus(obj);

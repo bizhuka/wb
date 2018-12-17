@@ -264,7 +264,7 @@ public class WialonServlet extends ServletBase {
                     indexMotoHour = i;
                 else if (columnName.contains("ДАРТ") && columnName.contains("ППУА)"))
                     indexTopFuel = i;
-                else if ((columnName.contains("ДАРТ") && columnName.contains("ТС)")) || columnName.equals("Потрачено по ДИРТ"))
+                else if ((columnName.contains("ДАРТ") && columnName.contains("ТС)")) || columnName.equals("Потрачено по ДАРТ"))
                     indexFuel = i;
             }
 
