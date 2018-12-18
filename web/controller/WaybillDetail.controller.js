@@ -216,12 +216,22 @@ sap.ui.define([
                         var path = _this.getBindingPath();
                         bindingObject = oWbModel.getProperty(path);
 
-                        bindingObject.OdoDiff = (json.OdoDiff / 1000).toFixed(2);
-                        bindingObject.MotoHour = (json.MotoHour / 3600).toFixed(2);
+                        // In meters
+                        json.OdoDiff /= 1000;
+                        // In seconds
+                        json.MotoHour /= 3600;
+
+                        // Only 2 digits
+                        _this.libPetrol.round2Digits(json, ["OdoDiff", "MotoHour", "Spent1", "Spent2", "Spent4"]);
 
                         // Set in binding object
-                        bindingObject.Spent1 = json.GasSpent.toFixed(2);
-                        bindingObject.Spent2 = json.GasTopSpent.toFixed(2);
+                        bindingObject.OdoDiff = json.OdoDiff;
+                        bindingObject.MotoHour = json.MotoHour;
+                        bindingObject.Spent1 = json.Spent1;
+                        bindingObject.Spent2 = json.Spent2;
+                        if (json.Spent4 > 0)
+                            bindingObject.Spent4 = json.Spent4;
+
 
                         // Set in model
                         oWbModel.setProperty(path, bindingObject);

@@ -119,6 +119,8 @@ sap.ui.define([
                             var spent = spents[i];
                             var ptType = _this.mapPtTypes[spent.PtType];
 
+                            // Only 2 digits
+                            _this.round2Digits(spent, ["GasBefore", "GasGive", "GasGiven", "GasSpent", "GasAfter"]);
                             ptType.data[spent.Pos] = spent;
                         }
 
@@ -130,6 +132,15 @@ sap.ui.define([
                         });
                     }
                 });
+            },
+
+            round2Digits: function (obj, flds) {
+                // dest = dest || obj;
+                for (var i = 0; i < flds.length; i++) {
+                    var fld = flds[i];
+                    if (obj.hasOwnProperty(fld)) // && (typeof obj[fld] === 'number')
+                        obj[fld] = parseFloat(obj[fld]).toFixed(2);
+                }
             },
 
             handle_lgort_f4: function (oEvent) {
@@ -183,30 +194,32 @@ sap.ui.define([
                         continue;
 
                     // No need
-                    var data = ptType.model.getProperty("/data");
+                    var data = ptType.data;
                     if (data.length === 0)
                         continue;
 
                     // From wialon
                     var fldName = "Spent" + ptType.id;
-                    var gasTotalSpent = parseFloat(bindObj[fldName] ? bindObj[fldName] : "0");
+                    var gasTotalSpent = parseFloat(bindObj[fldName] ? bindObj[fldName] : 0);
 
                     for (var i = 0; i < data.length; i++) {
                         var row = data[i];
 
                         // Blank equals 0
-                        row.GasGiven = row.GasGiven ? row.GasGiven : "0";
+                        row.GasGiven = row.GasGiven ? row.GasGiven : 0;
                         var totalBefore = parseFloat(row.GasBefore) + parseFloat(row.GasGiven);
 
                         gasTotalSpent -= totalBefore;
                         if (gasTotalSpent > 0) {
-                            data[i].GasSpent = String(totalBefore);
-                            data[i].GasAfter = String(0);
+                            data[i].GasSpent = totalBefore;
+                            data[i].GasAfter = 0;
                         } else {
-                            data[i].GasSpent = String(totalBefore + gasTotalSpent);
-                            data[i].GasAfter = String(-gasTotalSpent);
+                            data[i].GasSpent = totalBefore + gasTotalSpent;
+                            data[i].GasAfter = -gasTotalSpent;
                             gasTotalSpent = 0;
                         }
+                        // Only 2 digits
+                        _this.round2Digits(data[i], ["GasBefore", "GasGive", "GasGiven", "GasSpent", "GasAfter"]);
 
                         // Modify items in DB
                         if (!row.GasMatnr || oEvent.skipSave)
@@ -343,13 +356,14 @@ sap.ui.define([
 
             // Waybill
             setNewSpent: function (bindingObject) {
-                for (var p = 0; p < this.arrPtTypes.length; p++) {
-                    var ptType = this.arrPtTypes[p];
-
-                    var spent = bindingObject["Spent" + ptType.id];
-                    if (spent !== undefined)
-                        this.owner.byId('id_input_spent').setValue(spent);
-                }
+                // // Set in UI - No need
+                // for (var p = 0; p < this.arrPtTypes.length; p++) {
+                //     var ptType = this.arrPtTypes[p];
+                //
+                //     var spent = bindingObject["Spent" + ptType.id];
+                //     if (spent !== undefined)
+                //         this.owner.findById('id_input_spent'+ ptType.id).setValue(spent);
+                // }
 
                 this.onDataChange({
                     skipSave: true

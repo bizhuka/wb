@@ -248,7 +248,7 @@ public class WialonServlet extends ServletBase {
             stream.close();
 
             // Read info about columns
-            int indexOdo = -1, indexMotoHour = -1, indexTopFuel = -1, indexFuel = -1;
+            int indexOdo = -1, indexMotoHour = -1, indexTopFuel = -1, indexFuel = -1, indexBoothFuel = -1;
 
             NodeList headers = document.getDocumentElement().getElementsByTagName("header");
             Element header = (Element) headers.item(0);
@@ -262,6 +262,8 @@ public class WialonServlet extends ServletBase {
                     indexOdo = i;
                 else if (columnName.equals("Моточасы"))
                     indexMotoHour = i;
+                else if (columnName.equals("Будка") || columnName.equals("Booth"))
+                    indexBoothFuel = i;
                 else if (columnName.contains("ДАРТ") && columnName.contains("ППУА)"))
                     indexTopFuel = i;
                 else if ((columnName.contains("ДАРТ") && columnName.contains("ТС)")) || columnName.equals("Потрачено по ДАРТ"))
@@ -282,11 +284,14 @@ public class WialonServlet extends ServletBase {
                 if (indexMotoHour != -1)
                     wlnSpent.MotoHour += getValue(columns, indexMotoHour);
 
-                if (indexTopFuel != -1)
-                    wlnSpent.GasTopSpent += getValue(columns, indexTopFuel);
-
                 if (indexFuel != -1)
-                    wlnSpent.GasSpent += getValue(columns, indexFuel);
+                    wlnSpent.Spent1 += getValue(columns, indexFuel);
+
+                if (indexTopFuel != -1)
+                    wlnSpent.Spent2 += getValue(columns, indexTopFuel);
+
+                if (indexBoothFuel != -1)
+                    wlnSpent.Spent4 += getValue(columns, indexBoothFuel);
             }
         } catch (Exception e) {
             e.printStackTrace();
