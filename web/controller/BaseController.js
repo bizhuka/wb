@@ -261,7 +261,7 @@ sap.ui.define([
             $.ajax({
                 dataType: "json",
                 url: params.link,
-                timeout: params.timeout ? params.timeout : 7000, // 7 seconds by default
+                timeout: params.timeout ? params.timeout : 15000, // 15 seconds by default
                 success: function (result) {
                     _this.showUpdateInfo(result, params);
                 },
