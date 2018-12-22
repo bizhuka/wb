@@ -27,16 +27,16 @@ sap.ui.define([
             var iOriginalBusyDelay = _this.getView().getBusyIndicatorDelay();
             var counter = 0;
             var fnSetAppNotBusy = function (result) {
-                if (++counter >= 2) {
+                if (++counter >= 1) {
                     oViewModel.setProperty("/busy", false);
                     oViewModel.setProperty("/delay", iOriginalBusyDelay);
                 }
             };
 
-            // since then() has no "reject"-path attach to the MetadataFailed-Event to disable the busy indicator in case of an error
-            var oWbModel = this.getOwnerComponent().getModel("wb");
-            oWbModel.metadataLoaded().then(fnSetAppNotBusy);
-            oWbModel.attachMetadataFailed(fnSetAppNotBusy);
+            // // since then() has no "reject"-path attach to the MetadataFailed-Event to disable the busy indicator in case of an error
+            // var oWbModel = this.getOwnerComponent().getModel("wb");
+            // oWbModel.metadataLoaded().then(fnSetAppNotBusy);
+            // oWbModel.attachMetadataFailed(fnSetAppNotBusy);
 
             // wait for response
             var userInfoModel = new JSONModel("/userInfo");

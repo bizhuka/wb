@@ -1,7 +1,6 @@
 /*global history */
 sap.ui.define([
     'sap/ui/core/mvc/Controller',
-    'com/modekzWaybill/controller/LibStatus',
     'sap/ui/core/routing/History',
     'sap/m/MessageToast',
     "sap/ui/model/Filter",
@@ -10,8 +9,9 @@ sap.ui.define([
     'sap/m/TextArea',
     'sap/m/Label',
     'sap/m/Button',
-    'sap/ui/Device'
-], function (Controller, LibStatus, History, MessageToast, Filter, FilterOperator, Dialog, TextArea, Label, Button, Device) {
+    'sap/ui/Device',
+    'com/modekzWaybill/jsCode/status'
+], function (Controller, History, MessageToast, Filter, FilterOperator, Dialog, TextArea, Label, Button, Device, LibStatus) {
     "use strict";
 
     var allowedBukrs = null;

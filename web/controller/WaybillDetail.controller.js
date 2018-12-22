@@ -5,13 +5,12 @@ sap.ui.define([
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator',
     'sap/m/MessageToast',
-    'com/modekzWaybill/controller/LibPetrol',
     'com/modekzWaybill/controller/LibDriver',
     'com/modekzWaybill/controller/LibReqs',
     'com/modekzWaybill/controller/LibMessage',
     'com/modekzWaybill/controller/LibChangeStatus',
-    'com/modekzWaybill/controller/LibLgort'
-], function (BaseController, JSONModel, UIComponent, Filter, FilterOperator, MessageToast, LibPetrol, LibDriver, LibReqs, LibMessage, LibChangeStatus, LibLgort) {
+    'com/modekzWaybill/jsCode/petrol'
+], function (BaseController, JSONModel, UIComponent, Filter, FilterOperator, MessageToast, LibDriver, LibReqs, LibMessage, LibChangeStatus, LibPetrol) {
     "use strict";
 
     var waybillId, bindingObject;
@@ -32,6 +31,7 @@ sap.ui.define([
 
             this.libDriver = new LibDriver(this);
             this.libMessage = new LibMessage(this);
+            this.libPetrol = new LibPetrol(this);
 
             this.libReqs = new LibReqs(this, {
                 showActual: true,
@@ -94,20 +94,7 @@ sap.ui.define([
                 this.byId('id_date_tab').setVisible(visible);
 
                 // Prepare tabs of petrol
-                var fragPath = 'PetrolFrag.fragment.xml';
-                $.ajax({
-                    url: './view/frag/' + fragPath,
-                    dataType: 'text',
-                    success: function (textFrag) {
-                        if (!_this.libPetrol)
-                            _this.libPetrol = new LibPetrol(_this, textFrag);
-                        // Show certain tabs
-                        _this.libPetrol.showTabs(bindingObject.PetrolMode, parseInt(waybillId));
-                    },
-                    error: function () {
-                        _this.showError(null, _this.getBundle().getText("errDict", [fragPath]));
-                    }
-                });
+                _this.libPetrol.showTabs(bindingObject.PetrolMode, parseInt(waybillId));
             });
         },
 

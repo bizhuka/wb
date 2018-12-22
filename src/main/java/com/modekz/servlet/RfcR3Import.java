@@ -17,7 +17,9 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -70,7 +72,7 @@ public class RfcR3Import extends ServletBase {
             em.getTransaction().commit();
 
             // If ok send back
-            r3Clause.sendBack(session, newList);
+            r3Clause.afterWrite(session, newList);
 
             return info;
         } catch (Exception e) {
@@ -307,7 +309,7 @@ public class RfcR3Import extends ServletBase {
             }
 
             @Override
-            void sendBack(Session session, List newList) {
+            void afterWrite(Session session, List newList) {
                 List<WBSetStatus.Objnr> objnrs = new ArrayList<>(newList.size());
 
                 Set<String> uniqueObjnrs = new HashSet<>(newList.size());
@@ -467,7 +469,7 @@ public class RfcR3Import extends ServletBase {
             }
         }
 
-        void sendBack(Session session, List newList) {
+        void afterWrite(Session session, List newList) throws FileNotFoundException, UnsupportedEncodingException {
 
         }
 

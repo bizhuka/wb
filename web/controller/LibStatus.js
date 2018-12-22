@@ -4,8 +4,11 @@ sap.ui.define([
     ], function (BaseObject, JSONModel) {
         "use strict";
 
-        // Static data
+        // Fill from java
         var allTexts = null;
+
+        // For speed
+        var cache = {};
 
         return BaseObject.extend("com.modekzWaybill.controller.LibStatus", {
             owner: null,
@@ -35,23 +38,15 @@ sap.ui.define([
             RR_STATUS: "RR", // Request reject
             DR_STATUS: "DR", // Delay reason
 
-            constructor: function (owner, statTexts) {
-                if (owner) {
-                    owner.getView().setModel(new JSONModel(this), "status");
-                    this.owner = owner;
-                    return;
-                }
-
-                // Called as static constructor
-                if (!statTexts)
-                    return;
-                allTexts = statTexts;
+            constructor: function (owner) {
+                owner.getView().setModel(new JSONModel(this), "status");
+                this.owner = owner;
             },
 
             getStatusLangArray: function (name) {
                 // Already prepared
-                if (this[name])
-                    return this[name];
+                if (cache[name])
+                    return cache[name];
 
                 // Return as an array
                 var result = [];
@@ -77,7 +72,7 @@ sap.ui.define([
                 });
 
                 // Save and return
-                this[name] = result;
+                cache[name] = result;
                 return result;
             },
 

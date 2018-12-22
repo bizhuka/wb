@@ -22,7 +22,7 @@ public class EqunrGrp {
     @Parameter("GRP")
     public String Grp;
 
-    static Map<String, String> getGroupMaps(EntityManager em) {
+    private static Map<String, String> getGroupMaps(EntityManager em) {
         if (grpMap != null)
             return grpMap;
 

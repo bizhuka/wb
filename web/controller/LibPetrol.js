@@ -7,6 +7,9 @@ sap.ui.define([
     ], function (BaseObject, JSONModel, Filter, FilterOperator, LibLgort) {
         "use strict";
 
+        // Fill from java
+        var textFrag = null;
+
         return BaseObject.extend("com.modekzWaybill.controller.LibPetrol", {
             owner: null,
 
@@ -42,7 +45,7 @@ sap.ui.define([
             arrPtTypes: [],
             mapPtTypes: {},
 
-            constructor: function (owner, textFrag) {
+            constructor: function (owner) {
                 var _this = this;
                 _this.owner = owner;
 

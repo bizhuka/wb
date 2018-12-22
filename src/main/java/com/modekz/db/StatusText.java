@@ -5,7 +5,9 @@ import org.hibersap.annotations.Parameter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.Table;
+import java.util.List;
 
 @Entity
 @Table(name = "\"wb.db::pack.statustext\"")
@@ -34,6 +36,10 @@ public class StatusText {
     @Column(name = "\"intile\"", columnDefinition = "VARCHAR(1)")
     @Parameter("IN_TILE")
     public String InTile;
+
+    public static List<StatusText> getStatusList(EntityManager em){
+        return  em.createQuery("SELECT s FROM StatusText s", StatusText.class).getResultList();
+    }
 
     public String getMessageType() {
         return MessageType;

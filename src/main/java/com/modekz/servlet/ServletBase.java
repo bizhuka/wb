@@ -35,7 +35,7 @@ public class ServletBase extends HttpServlet {
         callByName(request.getPathInfo().substring(1), request, response);
     }
 
-    private void callByName(String name, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    protected void callByName(String name, HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
             Method method = this.getClass().getMethod(name, HttpServletRequest.class, HttpServletResponse.class);
             method.invoke(this, request, response);

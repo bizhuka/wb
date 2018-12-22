@@ -1,7 +1,7 @@
 sap.ui.define([
         'sap/ui/base/Object',
         'sap/ui/model/json/JSONModel',
-        'com/modekzWaybill/js/ol'
+        'com/modekzWaybill/jsLib/ol'
     ], function (BaseObject, JSONModel, olLib) {
         "use strict";
 
@@ -58,6 +58,9 @@ sap.ui.define([
 
             wln_show_map_init() {
                 var _this = this;
+
+                // Load fo map
+                $('head').append('<link rel="stylesheet" type="text/css" href="../css/ol.css">');
 
                 if (_this.mapDialog == null)
                     _this.mapDialog = this.owner.createFragment("com.modekzWaybill.view.frag.WlnMapDialog", {
