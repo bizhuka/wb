@@ -44,10 +44,18 @@ sap.ui.define([
 
             arrPtTypes: [],
             mapPtTypes: {},
+            updateHandler: {},
 
             constructor: function (owner) {
                 var _this = this;
                 _this.owner = owner;
+
+                // Show error
+                _this.updateHandler = {
+                    error: function (err) {
+                        owner.showError(err, owner.getBundle().getText("errGasUpdate"));
+                    }
+                };
 
                 // IconTabBar
                 var petrolContainer = owner.byId("id_petrol_container");
@@ -250,12 +258,7 @@ sap.ui.define([
                             GasLgort: row.GasLgort === null ? undefined : String(row.GasLgort)
                         };
 
-                        oWbModel.update(_this.getGasSpentPath(ptType.id, i), updFields, {
-                            error: function (err) {
-                                hasErrors = true;
-                                owner.showError(err, owner.getBundle().getText("errGasUpdate"));
-                            }
-                        });
+                        oWbModel.update(_this.getGasSpentPath(ptType.id, i), updFields, _this.updateHandler);
                     }
 
                     if (gasTotalSpent > 0 && !oEvent.skipMessage) {
@@ -340,15 +343,16 @@ sap.ui.define([
                 }
                 newObject.Waybill_Id = String(this.waybillId); // As string!
 
-                try {
-                    if (newObject.GasMatnr === "")
-                        owner.getModel("wb").remove(this.getGasSpentPath(newObject.PtType, id));
-                    else
-                        owner.getModel("wb").create("/GasSpents", newObject);
-                } catch (e) {
-                    console.log(e)
-                }
 
+                if (newObject.GasMatnr === "")
+                    owner.getModel("wb").remove(this.getGasSpentPath(newObject.PtType, id), _this.updateHandler);
+                else {
+                    newObject.GasBefore = "0";
+                    newObject.GasGive = "0";
+                    newObject.GasGiven = "0";
+                    newObject.GasLgort = "";
+                    owner.getModel("wb").create("/GasSpents", newObject, _this.updateHandler);
+                }
                 _this.onDataChange({
                     skipSave: true
                 });

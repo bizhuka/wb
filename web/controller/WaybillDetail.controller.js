@@ -550,7 +550,13 @@ sap.ui.define([
             this.menu.openBy(oEvent.getSource());
         },
 
-        do_wb_print: function () {
+        do_wb_download: function () {
+            this.do_wb_print({
+                download: true
+            });
+        },
+
+        do_wb_print: function (oEvent) {
             var po = this.menu.getModel("po").getProperty("/list");
             // Original copy
             var po2 = this.menu.getModel("po2").getProperty("/list");
@@ -586,7 +592,7 @@ sap.ui.define([
             var docUrl = this.absolutePath(this.navToPost(params, true));
 
             // Just load for localhost
-            if (docUrl.lastIndexOf('http://localhost', 0) !== 0)
+            if (!oEvent.download) // docUrl.lastIndexOf('http://localhost', 0) !== 0
                 docUrl = "https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(docUrl);
 
             // And show in browser
