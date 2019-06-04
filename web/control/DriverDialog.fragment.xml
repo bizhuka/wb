@@ -29,7 +29,8 @@
                    growing="true" growingScrollToLoad="true"
                    mode="SingleSelectMaster" modeAnimationOn="false"
                    noDataText="{i18n>noData}" items="{wb>/VDrivers}"
-                   selectionChange="onSelectionChange">
+                   selectionChange="onSelectionChange"
+                   sticky="ColumnHeaders,HeaderToolbar">
 
                 <columns>
                     <Column>

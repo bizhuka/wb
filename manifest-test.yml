@@ -1,0 +1,13 @@
+---
+applications:
+
+- name: wb-emba2-test
+  host: wb-emba2-test
+  memory: 1500M
+  path: out/artifacts/linux/linux.war
+#  services:
+#    - wb-xsuaa
+#  env:
+#    SAP_JWT_TRUST_ACL: '[{"clientid" : "*", "identityzone" : "*"}]'
+#    WIALON_OPT: '{"host": "", "user": "", "password": "", "templateId":, "resourceId": , "tzOffset": }'
+#    WB_RFC_DEST: '{"client":"","user":"","passwd":"","lang":"","ashost":"","sysnr":"","saprouter":""}'

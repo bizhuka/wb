@@ -59,6 +59,7 @@ public class RfcPrintDoc extends ServletBase {
 
         // Only 1 parameter
         long waybillId = Long.parseLong(request.getParameter("id"));
+        long setFile = Long.parseLong(request.getParameter("d"));
 
         Connection connection = ODataServiceFactory.getConnection(em);
         List<WBPrintDoc.PrintDoc> docs = new ArrayList<>();
@@ -208,7 +209,8 @@ public class RfcPrintDoc extends ServletBase {
             session.execute(printDoc);
 
             // Specify the filename
-            sendFile(response, printDoc.data, printDoc.contentType, printDoc.filename);
+            sendFile(response, printDoc.data, printDoc.contentType,
+                    setFile == 1 ? printDoc.filename : null);
         }
     }
 }

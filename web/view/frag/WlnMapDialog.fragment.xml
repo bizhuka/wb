@@ -47,7 +47,8 @@
 
             <Table growing="true"
                    growingScrollToLoad="true"
-                   noDataText="{i18n>noData}" items="{wialon>/messages}">
+                   noDataText="{i18n>noData}" items="{wialon>/messages}"
+                   sticky="ColumnHeaders,HeaderToolbar">
                 <columns>
                     <Column demandPopin="true" hAlign="Left">
                         <header>

@@ -121,8 +121,14 @@ public class VWaybill {
     @Column(name="\"tooname\"",columnDefinition = "VARCHAR(50)")
     public String TooName = "-";
 
-    @Column(name="\"fromdatechar\"",columnDefinition = "VARCHAR(8)")
-    public String FromDateChar;
+    @Column(name="\"anln1\"",length = 12)
+    public String Anln1;
+
+    @Column(name = "\"ktschtxt\"", columnDefinition = "VARCHAR(40)")
+    public String KtschTxt;
+
+    @Column(name="\"imei\"",columnDefinition = "VARCHAR(40)")
+    public String Imei;
 
     public long getId() {
         return id;
@@ -414,19 +420,35 @@ public class VWaybill {
         this.withNoReqs = withNoReqs;
     }
 
-    public String getFromDateChar() {
-        return FromDateChar;
-    }
-
-    public void setFromDateChar(String fromDateChar) {
-        FromDateChar = fromDateChar;
-    }
-
     public String getPetrolMode() {
         return PetrolMode;
     }
 
     public void setPetrolMode(String petrolMode) {
         PetrolMode = petrolMode;
+    }
+
+    public String getAnln1() {
+        return Anln1;
+    }
+
+    public void setAnln1(String anln1) {
+        Anln1 = anln1;
+    }
+
+    public String getKtschTxt() {
+        return KtschTxt;
+    }
+
+    public void setKtschTxt(String ktschTxt) {
+        KtschTxt = ktschTxt;
+    }
+
+    public String getImei() {
+        return Imei;
+    }
+
+    public void setImei(String imei) {
+        Imei = imei;
     }
 }

@@ -123,6 +123,18 @@ public class VReqHeader {
     @Column(name = "\"status\"")
     public int status;
 
+    @Column(name="\"gstrpchar\"",columnDefinition = "VARCHAR(8)")
+    public String GstrpChar;
+
+    @Column(name="\"gltrpchar\"",columnDefinition = "VARCHAR(8)")
+    public String GltrpChar;
+
+    @Column(name = "\"statusreason_kz\"", columnDefinition = "VARCHAR(40)")
+    public String statusreason_kz;
+
+    @Column(name = "\"statusreason_ru\"", columnDefinition = "VARCHAR(40)")
+    public String statusreason_ru;
+
     public String getAufnr() {
         return Aufnr;
     }
@@ -353,5 +365,37 @@ public class VReqHeader {
 
     public void setHours(String hours) {
         Hours = hours;
+    }
+
+    public String getGstrpChar() {
+        return GstrpChar;
+    }
+
+    public void setGstrpChar(String gstrpChar) {
+        GstrpChar = gstrpChar;
+    }
+
+    public String getGltrpChar() {
+        return GltrpChar;
+    }
+
+    public void setGltrpChar(String gltrpChar) {
+        GltrpChar = gltrpChar;
+    }
+
+    public String getStatusreason_kz() {
+        return statusreason_kz;
+    }
+
+    public void setStatusreason_kz(String statusreason_kz) {
+        this.statusreason_kz = statusreason_kz;
+    }
+
+    public String getStatusreason_ru() {
+        return statusreason_ru;
+    }
+
+    public void setStatusreason_ru(String statusreason_ru) {
+        this.statusreason_ru = statusreason_ru;
     }
 }

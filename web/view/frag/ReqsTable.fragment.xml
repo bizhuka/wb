@@ -8,7 +8,8 @@
                                                            descending:true
                                                 }
 					                        }"
-           width="auto" enableBusyIndicator="true" mode="{ui>/selectMode}" selectionChange="onReqListSelectionChange">
+           width="auto" enableBusyIndicator="true" mode="{ui>/selectMode}" selectionChange="onReqListSelectionChange"
+           sticky="ColumnHeaders,HeaderToolbar">
 
         <headerToolbar>
             <OverflowToolbar visible="{= ${ui>/showStatus} === true || ${ui>/showSortGroup} === true }">
@@ -23,13 +24,26 @@
                     <core:Item key="{ui>key}" text="{ui>text}"/>
                 </ComboBox>
 
+                <DatePicker visible="{ui>/showStatus}" change="handleFromDateChange" displayFormat="short" width="7rem" tooltip="{i18n>planDates}"/>
+                <DatePicker visible="{ui>/showStatus}" change="handleToDateChange" displayFormat="short" width="7rem" tooltip="{i18n>planDates}"/>
+
+
                 <SearchField search="onTextSearch" visible="{ui>/showSortGroup}"
                              placeholder="{i18n>findReqs}" showRefreshButton="false" width="10rem"/>
+
+                <ComboBox selectionChange="onWerksComboSelectionChange"
+                          visible="{= ${ui>/showStatus} &amp;&amp; ${userInfo>/werks}.length > 1}"
+                          items="{userInfo>/werks}" width="5rem">
+                    <core:Item key="{userInfo>}" text="{userInfo>}"/>
+                </ComboBox>
 
                 <Button press="onSortPress" visible="{ui>/showSortGroup}"
                         icon="sap-icon://sort"/>
                 <Button press="onGroupPress" visible="{ui>/showSortGroup}"
                         icon="sap-icon://group-2"/>
+
+                <ToolbarSpacer />
+                <Button icon="sap-icon://excel-attachment" press="onExcelExport" visible="{ui>/showReqStatus}"/>
             </OverflowToolbar>
         </headerToolbar>
 
@@ -83,7 +97,7 @@
                                     { path: 'wb>StatusReason' }
                                 ], formatter: '.reqRowHighlight' }">
             <cells>
-                <ObjectStatus title="{ path: 'wb>Aufnr', formatter: '.owner.alphaOut'}"
+                <ObjectStatus title="{ path: 'wb>Aufnr', formatter: '.owner.alphaOut'} - ({wb>Iwerk})"
                               active="{= ${userInfo>/WbRequestReject}===true&amp;&amp;${ui>/canReject}===true}"
                               press="onRequestReject"
 
@@ -120,7 +134,8 @@
 
                 <ObjectStatus title="{wb>Innam}:&#xA;{wb>Fing}" text="&#xA;{wb>Pltxt}" visible="{ui>/showOptColumn}"/>
                 <ObjectIdentifier title="{wb>Ltxa1}" text="{wb>Ilatx}"/>
-                <ObjectStatus title="{wb>KtschTxt}" text="&#xA;{wb>Stand}" visible="{ui>/showOptColumn}" tooltip="{wb>Ktsch}"/>
+                <ObjectStatus title="{wb>KtschTxt}" text="&#xA;{wb>Stand}" visible="{ui>/showOptColumn}"
+                              tooltip="{wb>Ktsch}"/>
             </cells>
         </ColumnListItem>
     </Table>

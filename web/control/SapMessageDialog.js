@@ -2,10 +2,10 @@ sap.ui.define([
         'sap/ui/base/Object',
         'sap/ui/model/json/JSONModel',
         'sap/ui/core/MessageType'
-    ], function (BaseObject, JSONModel, MessageType) {
+    ], function (Object, JSONModel, MessageType) {
         "use strict";
 
-        return BaseObject.extend("com.modekzWaybill.controller.LibMessage", {
+        return Object.extend("com.modekzWaybill.control.SapMessageDialog", {
             owner: null,
             messageDialog: null,
 
@@ -13,10 +13,10 @@ sap.ui.define([
                 this.owner = owner;
             },
 
-            messageOpenDialog(data) {
+            openMessageDialog: function (data) {
                 var _this = this;
                 if (!_this.messageDialog)
-                    _this.messageDialog = this.owner.createFragment("com.modekzWaybill.view.frag.MessageDialog", this);
+                    _this.messageDialog = this.owner.createFragment("com.modekzWaybill.control.SapMessageDialog", this);
 
                 var result = true;
                 for (var i = 0; i < data.length; i++)

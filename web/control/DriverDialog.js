@@ -2,10 +2,10 @@ sap.ui.define([
         'sap/ui/base/Object',
         'sap/ui/model/Filter',
         'sap/ui/model/FilterOperator'
-    ], function (BaseObject, Filter, FilterOperator) {
+    ], function (Object, Filter, FilterOperator) {
         "use strict";
 
-        return BaseObject.extend("com.modekzWaybill.controller.LibDriver", {
+        return Object.extend("com.modekzWaybill.control.DriverDialog", {
             owner: null,
             driverDialog: null,
             params: null,
@@ -15,13 +15,13 @@ sap.ui.define([
                 this.owner = owner;
             },
 
-            driverOpenDialog: function (params) {
+            openDriverDialog: function (params) {
                 var _this = this;
                 _this.params = params;
 
                 // Init
                 if (!_this.driverDialog) {
-                    _this.driverDialog = this.owner.createFragment("com.modekzWaybill.view.frag.DriverDialog", this);
+                    _this.driverDialog = this.owner.createFragment("com.modekzWaybill.control.DriverDialog", this);
 
                     // sap.m.Table
                     _this.table = _this.owner.findById("id_driver_table");

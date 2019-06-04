@@ -5,19 +5,15 @@ sap.ui.define([
     'sap/m/SelectDialog',
     'sap/ui/model/json/JSONModel',
     'sap/ui/model/Filter',
-    'sap/ui/model/FilterOperator',
-    'com/modekzWaybill/controller/LibDriver'
-], function (BaseController, UIComponent, MessageToast, SelectDialog, JSONModel, Filter, FilterOperator, LibDriver) {
+    'sap/ui/model/FilterOperator'
+], function (BaseController, UIComponent, MessageToast, SelectDialog, JSONModel, Filter, FilterOperator) {
     "use strict";
 
     return BaseController.extend("com.modekzWaybill.controller.Start", {
-        libDriver: null,
 
         onInit: function () {
             // call base init
             BaseController.prototype.onInit.apply(this, arguments);
-
-            this.libDriver = new LibDriver(this);
 
             UIComponent.getRouterFor(this).getRoute("main").attachPatternMatched(this._onObjectMatched, this);
         },
@@ -103,26 +99,33 @@ sap.ui.define([
 
         setDriverValidDate: function () {
             var _this = this;
-            this.libDriver.driverOpenDialog({
-                bindPath: "wb>/Drivers",
 
-                text: "",
+            // Load async
+            sap.ui.require(["com/modekzWaybill/control/DriverDialog"], function (DriverDialog) {
+                if (!_this._driverDialog)
+                    _this._driverDialog = new DriverDialog(_this);
 
-                confirmMethod: function (oEvent) {
-                    var context = oEvent.getParameter("listItem").getBindingContext("wb");
-                    var oDriver = context.getObject();
+                _this._driverDialog.openDriverDialog({
+                    bindPath: "wb>/Drivers",
 
-                    _this.getModel("wb").update(context.getPath(), {
-                        ValidDate: new Date(1)
-                    }, {
-                        success: function () {
-                            MessageToast.show(_this.getBundle().getText("okDriverUpdate", [oDriver.Fio, oDriver.Bukrs]));
-                        },
-                        error: function (err) {
-                            _this.showError(err, _this.getBundle().getText("errUpdate"));
-                        }
-                    });
-                }
+                    text: "",
+
+                    confirmMethod: function (oEvent) {
+                        var context = oEvent.getParameter("listItem").getBindingContext("wb");
+                        var oDriver = context.getObject();
+
+                        _this.getModel("wb").update(context.getPath(), {
+                            ValidDate: new Date(1)
+                        }, {
+                            success: function () {
+                                MessageToast.show(_this.getBundle().getText("okDriverUpdate", [oDriver.Fio, oDriver.Bukrs]));
+                            },
+                            error: function (err) {
+                                _this.showError(err, _this.getBundle().getText("errUpdate"));
+                            }
+                        });
+                    }
+                });
             });
         },
 
@@ -195,43 +198,41 @@ sap.ui.define([
             }
 
             // Many docs
-            var dialog = new SelectDialog({
-                contentWidth: "50%",
+            if (!_this._manualsDialog) {
+                _this._manualsDialog = new SelectDialog({
+                    contentWidth: "50%",
 
-                items: {
-                    path: "/",
-                    template: new sap.m.StandardListItem({
-                        title: "{name}"
-                    })
-                },
+                    items: {
+                        path: "/",
+                        template: new sap.m.StandardListItem({
+                            title: "{name}"
+                        })
+                    },
 
-                afterClose: function () {
-                    dialog.destroy();
-                },
+                    search: function (oEvent) {
+                        var sValue = oEvent.getParameter("value");
+                        var oBinding = oEvent.getSource().getBinding("items");
+                        oBinding.filter(new Filter("name", FilterOperator.Contains, sValue));
+                    },
 
-                search: function (oEvent) {
-                    var sValue = oEvent.getParameter("value");
-                    var oBinding = oEvent.getSource().getBinding("items");
-                    oBinding.filter(new Filter("name", FilterOperator.Contains, sValue));
-                },
+                    confirm: function (oEvent) {
+                        var aContexts = oEvent.getParameter("selectedContexts");
+                        if (!aContexts || !aContexts.length)
+                            return;
 
-                confirm: function (oEvent) {
-                    var aContexts = oEvent.getParameter("selectedContexts");
-                    if (!aContexts || !aContexts.length)
-                        return;
+                        _this.navToPost({
+                            url: "/print/template?",
+                            objid: aContexts[0].getObject().name,
+                            contentType: "application/pdf"
+                        })
+                    }
+                });
+                _this._manualsDialog.setModel(new JSONModel(manuals));
 
-                    _this.navToPost({
-                        url: "/print/template?",
-                        objid: aContexts[0].getObject().name,
-                        contentType: "application/pdf"
-                    })
-                }
-            });
-            dialog.setModel(new JSONModel(manuals));
+                _this._manualsDialog.addStyleClass(this.getContentDensityClass());
+            }
 
-            dialog.addStyleClass(this.getContentDensityClass());
-            dialog.open();
-
+            _this._manualsDialog.open();
         },
 
         eoValidation: function () {
@@ -307,6 +308,92 @@ sap.ui.define([
                 oWbModel.update("/Equipments('" + item.Equnr + "')", editObj);
             }
             oWbModel.refresh();
+        },
+
+        onShowRepairDialog: function () {
+            var _this = this;
+
+            // No need
+            var items = _this.findById('id_eo_table').getSelectedItems();
+            if (items.length === 0) {
+                MessageToast.show(this.getBundle().getText("selectRows"));
+                return;
+            }
+
+            // create dialog
+            if (!_this._repairDialog) {
+                var jsonModel = new JSONModel('/json/repairReason.json');
+
+                _this._repairDialog = new SelectDialog({
+                    contentWidth: "50%",
+
+                    items: {
+                        path: "/",
+                        template: new sap.m.StandardListItem({
+                            title: "{text_kz}",
+                            description: "{text_ru}",
+                            info: "{code}"
+                        })
+                    },
+
+                    search: function (oEvent) {
+                        var sValue = oEvent.getParameter("value");
+                        var oBinding = oEvent.getSource().getBinding("items");
+                        oBinding.filter(
+                            new Filter({
+                                filters: [
+                                    new Filter("text_kz", FilterOperator.Contains, sValue),
+                                    new Filter("text_ru", FilterOperator.Contains, sValue)],
+                                and: false
+                            }));
+                    },
+
+                    confirm: function (oEvent) {
+                        var aContexts = oEvent.getParameter("selectedContexts");
+                        if (!aContexts || !aContexts.length)
+                            return;
+
+                        var repairCode = aContexts[0].getObject().code;
+                        var oWbModel = _this.getModel("wb");
+
+                        // Update 1 by one
+                        var eoList = _this.findById('id_eo_table');
+                        items = eoList.getSelectedItems();
+                        for (var i = 0; i < items.length; i++) {
+                            var item = items[i].getBindingContext("wb").getObject();
+
+                            // What to insert
+                            var oRepair = {
+                                Datum: new Date(),
+                                Werks : item.Swerk,
+                                Equnr : item.Equnr,
+                                Ilart: repairCode
+                            };
+                            oRepair.Datum.setHours(12, 0, 0, 0);
+
+                            (function(oSchedule){
+                                oWbModel.create('/Schedules', oSchedule, {
+                                    success: function (ret) {
+                                        MessageToast.show(_this.getBundle().getText("okCreateItem", [oSchedule.Equnr]));
+                                    },
+
+                                    error: function (err) {
+                                        _this.showError(err, _this.getBundle().getText("errCreateItem", [oSchedule.Equnr]));
+                                    }
+                                });
+                            })(oRepair);
+                        }
+
+                        // Hide prev selection
+                        oWbModel.refresh();
+                        eoList.removeSelections(true);
+                    }
+                });
+                _this._repairDialog.setModel(jsonModel);
+
+                _this._repairDialog.addStyleClass(this.getContentDensityClass());
+            }
+            _this._repairDialog.open();
         }
     });
 });

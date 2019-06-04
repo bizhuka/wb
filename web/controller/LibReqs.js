@@ -16,6 +16,7 @@ sap.ui.define([
             searchField: null,
             statusCombo: null,
             reqStatusCombo: null,
+            werksStatusCombo: null,
 
             prevFilt: null,
 
@@ -118,6 +119,21 @@ sap.ui.define([
                 this.doFilter();
             },
 
+            onWerksComboSelectionChange: function (oEvent) {
+                this.werksStatusCombo = oEvent.getSource();
+                this.doFilter();
+            },
+
+            handleFromDateChange: function (oEvent) {
+                this.fromDate = oEvent.getSource();
+                this.doFilter();
+            },
+
+            handleToDateChange: function (oEvent) {
+                this.toDate = oEvent.getSource();
+                this.doFilter();
+            },
+
             onTextSearch: function (oEvent) {
                 this.searchField = oEvent.getSource();
                 this.doFilter();
@@ -139,16 +155,26 @@ sap.ui.define([
                 var textFilter = this.searchField ? this.searchField.getValue() : "";
                 var comboFilter = this.statusCombo ? this.statusCombo.getSelectedKey() : "";
                 var reqComboFilter = this.reqStatusCombo ? this.reqStatusCombo.getSelectedKey() : "";
+                var werksComboFilter = this.werksStatusCombo ? this.werksStatusCombo.getSelectedKey() : "";
+                var fromDate = this.fromDate ? this.owner.toSapDate(this.fromDate.getDateValue()) : "";
+                var toDate = this.toDate ? this.owner.toSapDate(this.toDate.getDateValue()) : "";
 
                 // Called twice
                 if (this.prevFilt && this.prevFilt.text === textFilter &&
-                    this.prevFilt.combo === comboFilter && this.prevFilt.reqCombo === reqComboFilter &&
+                    this.prevFilt.combo === comboFilter &&
+                    this.prevFilt.reqCombo === reqComboFilter &&
+                    this.prevFilt.werksCombo === werksComboFilter &&
+                    this.prevFilt.fromDate === fromDate &&
+                    this.prevFilt.toDate === toDate &&
                     force !== true)
                     return;
                 this.prevFilt = {
                     text: textFilter,
                     combo: comboFilter,
-                    reqCombo: reqComboFilter
+                    reqCombo: reqComboFilter,
+                    werksCombo: werksComboFilter,
+                    fromDate: fromDate,
+                    toDate: toDate
                 };
 
                 // Filter by status
@@ -161,6 +187,15 @@ sap.ui.define([
                 if (reqComboFilter.length !== 0)
                     arrFilter.push(new Filter("StatusReason", FilterOperator.EQ, reqComboFilter));
 
+                // By werks
+                if (werksComboFilter.length !== 0)
+                    arrFilter.push(new Filter("Iwerk", FilterOperator.EQ, werksComboFilter));
+
+                // Dates
+                if (fromDate)
+                    arrFilter.push(new Filter("GltrpChar", FilterOperator.GE, fromDate));
+                if (toDate)
+                    arrFilter.push(new Filter("GstrpChar", FilterOperator.LE, toDate));
 
                 if (textFilter && textFilter.length > 0) {
                     var arr = [
@@ -329,9 +364,9 @@ sap.ui.define([
                     title: bundle.getText("closeReqs"),
                     ok_text: bundle.getText("confirm"),
                     text: obj.Reason ? obj.Reason : bundle.getText("done"),
-                    reason: obj.StatusReason,
-                    fromDate: obj.FromDate ? obj.FromDate : obj.Gstrp,
-                    toDate: obj.ToDate ? obj.ToDate : obj.Gltrp,
+                    reason: obj.StatusReason === this.owner.status.RC_SET ? this.owner.status.RC_DONE : obj.StatusReason,
+                    fromDate: obj.FromDate ? obj.FromDate :  new Date(obj.Gstrp.getTime() + 8 * 3600 * 1000), // 8 hours
+                    toDate: obj.ToDate ? obj.ToDate : new Date(obj.Gltrp.getTime() + 20 * 3600 * 1000), // 20 hours
                     dateEdit: true,
 
                     check: function (block) {
@@ -453,6 +488,10 @@ sap.ui.define([
                     return result.messageType;
 
                 return MessageType.None;
+            },
+
+            onExcelExport: function () {
+                this.owner.doExcelExport(this.reqTable, "/json/excel/v_reqheader.json");
             }
         });
     }

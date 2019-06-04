@@ -95,6 +95,7 @@ public class GenerateEntity extends ServletBase {
             // And return
             response.setContentType("text/html; charset=utf-8");
             response.getWriter().print(sb.toString().substring(4) + lastColumnMark);
+            response.getWriter().print("<br>Insert to Web-IDE!");
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {

@@ -5,14 +5,14 @@
     <IconTabFilter icon="{petrol>/icon}" tooltip="">
         <OverflowToolbar design="Transparent">
             <Input type="Number" width="10rem" visible="{petrol>/inputEnabled}"
-                   enabled="{= ${wb>Status}===${status>/ARRIVED}&amp;&amp;(${userInfo>/WbChangeWialonData}===true||${petrol>/noSource}===true)}"
+                   enabled="{ parts:[ { path: 'wb>Status' }, { path: 'wb>CreateDate' }, { path: 'userInfo>/WbChangeWialonData' }, { path: 'userInfo>/WbChangeWialonDataClose' }, { path: 'petrol>/noSource' } ], formatter: '.spentIsEnabled' }"
                    liveChange="onDataChange"
                    valueLiveUpdate="true"
                    value="{{SPENT_PATH}}"
                    id="{{SPENT_ID}}"/>
             <Title text="{petrol>/title}"/>
         </OverflowToolbar>
-        <Table items="{petrol>/data}">
+        <Table items="{petrol>/data}" sticky="ColumnHeaders,HeaderToolbar">
             <columns>
                 <Column width="15rem">
                     <header>

@@ -2,15 +2,14 @@ sap.ui.define([
         'sap/ui/base/Object',
         'sap/ui/model/json/JSONModel',
         'sap/ui/model/Filter',
-        'sap/ui/model/FilterOperator',
-        'com/modekzWaybill/controller/LibLgort'
-    ], function (BaseObject, JSONModel, Filter, FilterOperator, LibLgort) {
+        'sap/ui/model/FilterOperator'
+    ], function (Object, JSONModel, Filter, FilterOperator) {
         "use strict";
 
         // Fill from java
         var textFrag = null;
 
-        return BaseObject.extend("com.modekzWaybill.controller.LibPetrol", {
+        return Object.extend("com.modekzWaybill.controller.LibPetrol", {
             owner: null,
 
             PT_MAIN: {
@@ -157,31 +156,50 @@ sap.ui.define([
             handle_lgort_f4: function (oEvent) {
                 var _this = this;
                 var owner = _this.owner;
-                var libLgort = new LibLgort(owner);
-                var input = oEvent.getSource();
-                var context = input.getBindingContext("petrol");
 
-                // Get current object
-                var oWbModel = owner.getModel("wb");
-                var bindObj = oWbModel.getProperty(owner.getBindingPath());
+                // Load async
+                sap.ui.require(["com/modekzWaybill/control/LgortDialog"], function (LgortDialog) {
+                    if (!_this._lgortDialog)
+                        _this._lgortDialog = new LgortDialog(owner);
 
-                libLgort.lgortOpenDialog({
-                    lgort: input.getValue(),
-                    werks: bindObj.Werks,
+                    var input = oEvent.getSource();
+                    var context = input.getBindingContext("petrol");
 
-                    confirmLgort: function (evt) {
-                        // input.setValue();
-                        var obj = context.getObject();
-                        obj.GasLgort = evt.getParameter("listItem").getBindingContext("wb").getObject().Lgort;
-                        var ptTypeId = _this.getControlPtType(input);
-                        _this.mapPtTypes[ptTypeId].model.setProperty(context.getPath(), obj);
+                    // Get current object
+                    var oWbModel = owner.getModel("wb");
+                    var bindObj = oWbModel.getProperty(owner.getBindingPath());
 
-                        // Save to DB
-                        _this.onDataChange({
-                            skipMessage: true
-                        });
-                    }
+                    _this._lgortDialog.openLgortDialog({
+                        lgort: input.getValue(),
+                        werks: bindObj.Werks,
+
+                        confirmLgort: function (evt) {
+                            // input.setValue();
+                            var obj = context.getObject();
+                            obj.GasLgort = evt.getParameter("listItem").getBindingContext("wb").getObject().Lgort;
+                            var ptTypeId = _this.getControlPtType(input);
+                            _this.mapPtTypes[ptTypeId].model.setProperty(context.getPath(), obj);
+
+                            // Save to DB
+                            _this.onDataChange({
+                                skipMessage: true
+                            });
+                        }
+                    });
                 });
+            },
+
+            spentIsEnabled: function (Status, CreateDate, WbChangeWialonData, WbChangeWialonDataClose, noSource) {
+                // enabled="{= ( ${wb>Status}===${status>/ARRIVED}&amp;&amp;(${userInfo>/WbChangeWialonData}===true||${petrol>/noSource}===true) ) ||
+                // ( ${wb>Status}===${status>/CLOSED} &amp;&amp; ${userInfo>/WbChangeWialonDataClose}===true) }"
+                var bSameMonth = false;
+                if(CreateDate){
+                    var now = new Date();
+                    bSameMonth  = now.getFullYear() === CreateDate.getFullYear() && now.getMonth() === CreateDate.getMonth();
+                }
+
+                return (Status === this.owner.status.ARRIVED && (WbChangeWialonData === true || noSource === true)) ||
+                    (Status === this.owner.status.CLOSED && WbChangeWialonDataClose === true && bSameMonth)
             },
 
             onDataChange: function (oEvent) {

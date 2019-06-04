@@ -1,0 +1,18 @@
+---
+applications:
+
+- name: wb-analytics
+  host: wb-analytics
+  memory: 512M
+  buildpack: sap_java_buildpack
+  path: analytics/java-xsahaa.war
+  env:
+    TARGET_RUNTIME: tomee
+    SAP_JWT_TRUST_ACL: '[{"clientid":"sb-wb-analytics", "identityzone": "*"}]'
+    JBP_CONFIG_RESOURCE_CONFIGURATION: "['tomee/webapps/ROOT/WEB-INF/resources.xml': {'xsahaa-hdi-container':'wb-hdidb-S0018143539-workspacefu4cHTQvy3fZaA8N3GL9'}]"
+  provides:
+    - name: wb-analytics
+      properties:
+        url: ${default-url}
+  services:
+    - wb-xsuaa

@@ -42,29 +42,34 @@ sap.ui.define([
             var textFilter = wbSearchField.getValue();
             var comboFilter = wbStatusCombo.getSelectedKey();
             var byToo = this.byId('id_by_too').getState();
-            var dateFilter = this.byId('id_date_filter').getDateValue();
-            if (dateFilter)
-                dateFilter = this.toSapDate(dateFilter);
+
+            var fromDate = this.byId('id_date_from').getDateValue();
+            var toDate = this.byId('id_date_to').getDateValue();
+            var werksFilter  = this.byId('id_werks_filter').getSelectedKey();
 
             // Called twice
             if (prevFilt &&
                 prevFilt.text === textFilter &&
                 prevFilt.combo === comboFilter &&
                 prevFilt.byToo === byToo &&
-                prevFilt.dateFilter === dateFilter)
+                prevFilt.fromDate === fromDate &&
+                prevFilt.toDate === toDate &&
+                prevFilt.werksFilter === werksFilter)
                 return;
             prevFilt = {
                 text: textFilter,
                 combo: comboFilter,
                 byToo: byToo,
-                dateFilter: dateFilter
+                fromDate: fromDate,
+                toDate: toDate,
+                werksFilter: werksFilter
             };
 
             if (textFilter && textFilter.length > 0) {
                 var arr = [
+                    // new Filter("Fio", FilterOperator.Contains, textFilter),
+                    // new Filter("Driver", FilterOperator.Contains, textFilter),
                     new Filter("Description", FilterOperator.Contains, textFilter),
-                    new Filter("Fio", FilterOperator.Contains, textFilter),
-                    new Filter("Driver", FilterOperator.Contains, textFilter),
                     new Filter("Equnr", FilterOperator.Contains, textFilter),
                     new Filter("Eqktx", FilterOperator.Contains, textFilter),
                     new Filter("TooName", FilterOperator.Contains, textFilter),
@@ -83,11 +88,19 @@ sap.ui.define([
             if (comboFilter.length !== 0)
                 oFilter.push(new Filter("Status", FilterOperator.EQ, comboFilter));
 
-            if (byToo)
-                oFilter.push(new Filter("TooName", FilterOperator.NE, '-'));
+            // Show only TOO
+            oFilter.push(new Filter("TooName", byToo ? FilterOperator.NE : FilterOperator.EQ, '-'));
 
-            if (dateFilter)
-                oFilter.push(new Filter("FromDateChar", FilterOperator.EQ, dateFilter));
+            // Show only one werks data
+            if(werksFilter)
+                oFilter.push(new Filter("Werks", FilterOperator.EQ, werksFilter));
+
+            // ToDate ?
+            if (fromDate)
+                oFilter.push(new Filter("CreateDate", FilterOperator.GE, fromDate));
+            // FromDate ?
+            if (toDate)
+                oFilter.push(new Filter("CreateDate", FilterOperator.LE, toDate));
 
             var andFilter = oFilter.length > 0 ? new Filter({filters: oFilter, and: true}) : null;
 
@@ -133,6 +146,19 @@ sap.ui.define([
             wbStatusCombo.setValue("");
 
             this.onUpdateStartedTable();
+        },
+
+        onExcelExport: function () {
+            this.doExcelExport(wayBillTable, "/json/excel/v_waybill.json");
+        },
+
+        onExcelExportGas: function () {
+            this.doExcelExport(wayBillTable, "/json/excel/v_gasspent.json", [
+                {
+                    from: "VWaybills?",
+                    to: "VGasSpents?"
+                }
+            ]);
         },
 
         getWaybillInfo: function (status, reqCnt, schCnt, histCnt, gasCnt, delayReason, tooName) {

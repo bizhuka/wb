@@ -1,7 +1,7 @@
 sap.ui.define([
         'sap/ui/base/Object',
         'sap/ui/model/json/JSONModel'
-    ], function (BaseObject, JSONModel) {
+    ], function (Object, JSONModel) {
         "use strict";
 
         // Fill from java
@@ -10,7 +10,7 @@ sap.ui.define([
         // For speed
         var cache = {};
 
-        return BaseObject.extend("com.modekzWaybill.controller.LibStatus", {
+        return Object.extend("com.modekzWaybill.controller.LibStatus", {
             owner: null,
 
             // Waybill statuses
@@ -25,6 +25,7 @@ sap.ui.define([
             // Request statuses
             RC_NEW: 100,
             RC_SET: 200,
+            RC_DONE: 300,
 
             // Request waybill_id field
             WB_ID_NULL: -1,

@@ -115,7 +115,7 @@ public class ReqHeader {
 
     @PreUpdate
     public void persist() {
-        if (this.Waybill_Id == Status.WB_ID_NULL)
+        if (this.Waybill_Id == Status.WB_ID_NULL || this.Waybill_Id == Status.WB_ID_REJECTED)
             return;
 
         EntityManager em = null;
@@ -132,6 +132,10 @@ public class ReqHeader {
                 em.getTransaction().commit();
             }
         } catch (Exception e) {
+            System.err.println("-----ReqHeader-persist--------");
+            System.err.println(this.Waybill_Id);
+            System.err.println(this.Objnr);
+            System.err.println(this.Aufnr);
             e.printStackTrace();
         } finally {
             if (em != null)

@@ -17,6 +17,7 @@ sap.ui.define([
 
             openDialog: function (gui) {
                 var _owner = this.owner;
+
                 switch (gui.origin) {
                     case _owner.status.DR_STATUS:
                         gui.reasons = _owner.status.getStatusLangArray(_owner.status.DR_STATUS).filter(function (pair) {

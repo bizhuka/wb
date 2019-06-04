@@ -31,10 +31,11 @@
             <Table id="id_eo_table"
                    growing="true" growingScrollToLoad="true"
                    mode="MultiSelect" modeAnimationOn="false"
-                   noDataText="{i18n>noData}" items="{wb>/Equipments}">
+                   noDataText="{i18n>noData}" items="{wb>/Equipments}"
+                   sticky="ColumnHeaders,HeaderToolbar">
 
                 <columns>
-                    <Column width="5em">
+                    <Column width="6rem">
                         <Label text="{i18n>plateNum}"/>
                     </Column>
                     <Column>
@@ -94,6 +95,7 @@
         <buttons>
             <Button tooltip="{i18n>noDriver}" icon="sap-icon://employee-rejections" press="setNoDriverDate"/>
             <!--<Button tooltip="{i18n>accident}" enabled="false" icon="sap-icon://collision"/>-->
+            <Button icon="sap-icon://vehicle-repair" press="onShowRepairDialog"/>
             <Button icon="sap-icon://accept" text="{i18n>cancel}" press="onEoCloseDialog"/>
         </buttons>
     </Dialog>

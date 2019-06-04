@@ -92,19 +92,24 @@
 
 
                 </semantic:content>
-                <SearchField id="id_eo_search" search="onUpdateStartedSchedule" showRefreshButton="true" width="17.5rem"/>
-                <HBox>
-                    <DatePicker id="dpFrom" change="onDatePickChange"/>
-                    <DatePicker id="dpTo" change="onDatePickChange"/>
-                </HBox>
+
                 <Table id="id_eo_schedule"
                        mode="SingleSelect"
                        items="{ path: 'wb>/Equipments', length: 1000 }"
                        updateStarted="onUpdateStartedSchedule"
                        selectionChange="onEquipSelected"
-                       growing="false" growingScrollToLoad="false">
+                       growing="false" growingScrollToLoad="false"
+                       sticky="ColumnHeaders,HeaderToolbar">
+                    <headerToolbar>
+                        <OverflowToolbar>
+                            <DatePicker id="dpFrom" change="onDatePickChange" displayFormat="short" width="7rem"/>
+                            <DatePicker id="dpTo" change="onDatePickChange" displayFormat="short" width="7rem"/>
+                            <SearchField id="id_eo_search" search="onUpdateStartedSchedule" showRefreshButton="true"
+                                         width="17.5rem"/>
+                        </OverflowToolbar>
+                    </headerToolbar>
                     <columns>
-                        <Column width="5em">
+                        <Column width="6rem">
                             <Label text="{i18n>plateNum}"/>
                         </Column>
                         <Column>

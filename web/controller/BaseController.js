@@ -10,8 +10,9 @@ sap.ui.define([
     'sap/m/Label',
     'sap/m/Button',
     'sap/ui/Device',
+    'sap/ui/model/json/JSONModel',
     'com/modekzWaybill/jsCode/status'
-], function (Controller, History, MessageToast, Filter, FilterOperator, Dialog, TextArea, Label, Button, Device, LibStatus) {
+], function (Controller, History, MessageToast, Filter, FilterOperator, Dialog, TextArea, Label, Button, Device, JSONModel, LibStatus) {
     "use strict";
 
     var allowedBukrs = null;
@@ -389,7 +390,63 @@ sap.ui.define([
                 ],
                 and: false
             })
+        },
+
+        absolutePath: function (href) {
+            if (!this.link)
+                this.link = document.createElement("a");
+
+            this.link.href = href;
+            return this.link.href;
+        },
+
+        doExcelExport: function (table, columnFile, replaceBlock) {
+            var oRowBinding = table.getBinding("items");
+            var oModel = oRowBinding.getModel();
+            var oModelInterface = oModel.getInterface();
+
+            var jsonModel = new JSONModel(columnFile);
+            jsonModel.attachRequestCompleted(function () {
+                var columns = jsonModel.getProperty("/columns");
+                var locale = navigator.language === 'ru' ? 'ru' : 'kz';
+
+                for (var i = 0; i < columns.length; i++) {
+                    var column = columns[i];
+                    columns[i].label = locale === 'ru' ? column.label_ru : column.label_kz;
+                    columns[i].property = column.property.replace('{locale}', locale);
+                }
+
+                // Load async
+                sap.ui.require(["sap/ui/export/Spreadsheet"], function (Spreadsheet) {
+                    var oSettings = {
+                        workbook: {
+                            columns: columns
+                        },
+                        dataSource: {
+                            type: "odata",
+                            dataUrl: oRowBinding.getDownloadUrl ? oRowBinding.getDownloadUrl() : null,
+                            serviceUrl: oModelInterface.sServiceUrl,
+                            headers: oModelInterface.getHeaders ? oModelInterface.getHeaders() : null,
+                            count: oRowBinding.getLength ? oRowBinding.getLength() : null,
+                            useBatch: oModelInterface.bUseBatch,
+                            sizeLimit: oModelInterface.iSizeLimit
+                        }
+                    };
+                    if (oSettings.dataSource.dataUrl && replaceBlock)
+                        for (var i = 0; i < replaceBlock.length; i++) {
+                            var block = replaceBlock[i];
+                            oSettings.dataSource.dataUrl = oSettings.dataSource.dataUrl.replace(block.from, block.to);
+                        }
+
+                    var oSheet = new Spreadsheet(oSettings);
+                    oSheet.build().finally(function () {
+                        oSheet.destroy();
+                    });
+                });
+            });
         }
+
+        //,
     });
 
 });

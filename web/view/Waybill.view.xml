@@ -17,7 +17,8 @@
                                                            descending:true
                                                 }
 					                        }"
-                   updateStarted="onUpdateStartedTable" width="auto" enableBusyIndicator="true">
+                   updateStarted="onUpdateStartedTable" width="auto" enableBusyIndicator="true"
+                   sticky="ColumnHeaders,HeaderToolbar">
                 <!--, sorter: {path: 'NUM', descending: false}-->
                 <headerToolbar>
                     <OverflowToolbar>
@@ -27,18 +28,28 @@
                                   items="{path: '/'}">
                             <core:Item key="{key}" text="{text}"/>
                         </ComboBox>
-                        <DatePicker id="id_date_filter" change="handleSelection" displayFormat="short" width="10rem"
-                                    tooltip="{i18n>planDates}"/>
+                        <DatePicker id="id_date_from" change="handleSelection" displayFormat="short" width="7rem" tooltip="{i18n>createDate}"/>
+                        <DatePicker id="id_date_to" change="handleSelection" displayFormat="short" width="7rem" tooltip="{i18n>createDate}"/>
                         <Switch id="id_by_too"
                                 state="false"
                                 tooltip="{i18n>tooCars}" change="handleSelection"/>
                         <SearchField id="id_wb_search_field" placeholder="{i18n>findWB}" search="handleSelection"
                                      showRefreshButton="false" width="17.5rem"/>
+                        <ComboBox id="id_werks_filter"
+                                  selectionChange="handleSelection"
+                                  visible="{= ${ui>/showStatus} &amp;&amp; ${userInfo>/werks}.length > 1}"
+                                  items="{userInfo>/werks}" width="5rem">
+                            <core:Item key="{userInfo>}" text="{userInfo>}"/>
+                        </ComboBox>
                         <!--text="{i18n>home.sort}"-->
                         <OverflowToolbarButton icon="sap-icon://sort" press="onSortPressed"
                                                tooltip="{i18n>sort}"/>
                         <OverflowToolbarButton icon="sap-icon://refresh" press="onResetPressed"
                                                tooltip="{i18n>clearFiltration}"/>
+
+                        <ToolbarSpacer />
+                        <Button icon="sap-icon://excel-attachment" press="onExcelExport"/>
+                        <Button icon="sap-icon://mileage" press="onExcelExportGas"/>
                     </OverflowToolbar>
                 </headerToolbar>
                 <columns>

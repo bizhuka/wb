@@ -1,0 +1,28 @@
+---
+applications:
+
+- name: wb-emba2
+  host: wb-emba2
+  memory: 1500M
+  path: out/artifacts/linux/linux.war
+#  services:
+#    - wb-db
+#    - wb-xsuaa
+#  env:
+#    SAP_JWT_TRUST_ACL: '[{"clientid" : "*", "identityzone" : "*"}]'
+#    WIALON_OPT: '{"host": "", "user": "", "password": "", "templateId":, "resourceId": , "tzOffset": }'
+#    WB_RFC_DEST: '{"client":"","user":"","passwd":"","lang":"","ashost":"","sysnr":"","saprouter":""}'
+#- name: wb-router
+#  host: wb-router
+#  memory: 128M
+#  path: router
+#  services:
+#    - wb-xsuaa
+#  env:
+#    TENANT_HOST_PATTERN: '^(.*).cfapps.eu10.hana.ondemand.com'
+#    CORS: '[{"uriPattern": "^/sap/bc/ina/(.*)$", "allowedOrigin": [{"host":"erp-service.eu1.sapanalytics.cloud", "protocol":"https"}], "allowedMethods": ["GET", "POST", "HEAD", "OPTIONS"], "allowedHeaders": ["Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers", "Authorization", "X-Sap-Cid", "X-Csrf-Token"], "exposeHeaders": ["Accept", "Authorization", "X-Requested-With", "X-Sap-Cid", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "X-Csrf-Token", "Content-Type"]}]'
+#    destinations: >
+#        [
+#          {"name":"wb-emba2", "url":"https://wb-emba2.cfapps.eu10.hana.ondemand.com", "forwardAuthToken": true },
+#          {"name":"wb-analytics", "url":"https://wb-analytics.cfapps.eu10.hana.ondemand.com", "forwardAuthToken": true }
+#        ]

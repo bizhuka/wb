@@ -10,7 +10,8 @@
         </customHeader>
 
         <content>
-            <Table items="{po>/list}" width="17rem">
+            <Table items="{po>/list}" width="17rem"
+                   sticky="ColumnHeaders,HeaderToolbar">
                 <columns>
                     <Column>
                         <header>

@@ -5,12 +5,10 @@ sap.ui.define([
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator',
     'sap/m/MessageToast',
-    'com/modekzWaybill/controller/LibDriver',
     'com/modekzWaybill/controller/LibReqs',
-    'com/modekzWaybill/controller/LibMessage',
     'com/modekzWaybill/controller/LibChangeStatus',
     'com/modekzWaybill/jsCode/petrol'
-], function (BaseController, JSONModel, UIComponent, Filter, FilterOperator, MessageToast, LibDriver, LibReqs, LibMessage, LibChangeStatus, LibPetrol) {
+], function (BaseController, JSONModel, UIComponent, Filter, FilterOperator, MessageToast, LibReqs, LibChangeStatus, LibPetrol) {
     "use strict";
 
     var waybillId, bindingObject;
@@ -19,9 +17,7 @@ sap.ui.define([
 
     return BaseController.extend("com.modekzWaybill.controller.WaybillDetail", {
         libPetrol: null,
-        libDriver: null,
         libReqs: null,
-        libMessage: null,
         reqsFilter: null,
 
         onInit: function () {
@@ -29,8 +25,6 @@ sap.ui.define([
             var _this = this;
             BaseController.prototype.onInit.apply(_this, arguments);
 
-            this.libDriver = new LibDriver(this);
-            this.libMessage = new LibMessage(this);
             this.libPetrol = new LibPetrol(this);
 
             this.libReqs = new LibReqs(this, {
@@ -82,9 +76,30 @@ sap.ui.define([
                 // update driver tab
                 _this.updateDriverTab();
 
-                // Use 1 Bukrs
-                _this.libDriver.filterDrivers("", bindingObject.Bukrs, function (okFilter) {
-                    driverInput.getBinding("suggestionItems").filter(okFilter)
+                // Load async
+                sap.ui.require(["com/modekzWaybill/control/DriverDialog"], function (DriverDialog) {
+                    if (!_this._driverDialog)
+                        _this._driverDialog = new DriverDialog(_this);
+
+                    // An now set F4 handler
+                    driverInput.attachValueHelpRequest(function () {
+                        _this._driverDialog.openDriverDialog({
+                            bindPath: "wb>/VDrivers",
+
+                            text: driverInput.getValue(),
+
+                            bindBukrs: bindingObject.Bukrs,
+
+                            confirmMethod: function (oEvent) {
+                                _this.handle_dr_f4Selected(oEvent);
+                            }
+                        });
+                    });
+
+                    // Use 1 Bukrs only
+                    _this._driverDialog.filterDrivers("", bindingObject.Bukrs, function (okFilter) {
+                        driverInput.getBinding("suggestionItems").filter(okFilter);
+                    });
                 });
 
                 // Hide or show tabs
@@ -302,21 +317,6 @@ sap.ui.define([
             });
         },
 
-        handle_dr_f4: function () {
-            var _this = this;
-            this.libDriver.driverOpenDialog({
-                bindPath: "wb>/VDrivers",
-
-                text: driverInput.getValue(),
-
-                bindBukrs: bindingObject.Bukrs,
-
-                confirmMethod: function (oEvent) {
-                    _this.handle_dr_f4Selected(oEvent)
-                }
-            });
-        },
-
         on_set_status: function (oEvt) {
             var button = oEvt.getSource();
             var id = button.getId().split("-");
@@ -498,22 +498,28 @@ sap.ui.define([
                         success: function (doc) {
                             button.setEnabled(true);
 
-                            // Check for errors
-                            if (!_this.libMessage.messageOpenDialog(doc.messages))
-                                return;
+                            // Load async
+                            sap.ui.require(["com/modekzWaybill/control/SapMessageDialog"], function (SapMessageDialog) {
+                                if (!_this._sapMessageDialog)
+                                    _this._sapMessageDialog = new SapMessageDialog(_this);
 
-                            // Set new date
-                            obj.CloseDate = new Date(1);
-                            obj.Status = _this.status.CLOSED;
-                            // From sensors
-                            obj.OdoDiff = bindObj.OdoDiff;
-                            obj.MotoHour = bindObj.MotoHour;
-                            obj.Spent1 = bindObj.Spent1;
-                            obj.Spent2 = bindObj.Spent2;
-                            obj.Spent4 = bindObj.Spent4;
-                            obj.Docum = doc.docum;
-                            obj.Aufnr = doc.aufnr;
-                            _this.setNewStatus(obj);
+                                // Check for errors
+                                if (!_this._sapMessageDialog.openMessageDialog(doc.messages))
+                                    return;
+
+                                // Set new date
+                                obj.CloseDate = new Date(1);
+                                obj.Status = _this.status.CLOSED;
+                                // From sensors
+                                obj.OdoDiff = bindObj.OdoDiff;
+                                obj.MotoHour = bindObj.MotoHour;
+                                obj.Spent1 = bindObj.Spent1;
+                                obj.Spent2 = bindObj.Spent2;
+                                obj.Spent4 = bindObj.Spent4;
+                                obj.Docum = doc.docum;
+                                obj.Aufnr = doc.aufnr;
+                                _this.setNewStatus(obj);
+                            });
                         },
 
                         error: function (err) {
@@ -565,7 +571,8 @@ sap.ui.define([
             var params = {
                 url: "/././print/doc?",
                 id: bindingObject.Id,
-                n: ""
+                n: "",
+                d: oEvent.download ? 1 : 0
             };
 
             // Create short url (do not pass default values)
@@ -592,19 +599,11 @@ sap.ui.define([
             var docUrl = this.absolutePath(this.navToPost(params, true));
 
             // Just load for localhost
-            if (!oEvent.download) // docUrl.lastIndexOf('http://localhost', 0) !== 0
+            if (!oEvent.download && bindingObject.TooName === '-') // docUrl.lastIndexOf('http://localhost', 0) !== 0
                 docUrl = "https://view.officeapps.live.com/op/view.aspx?src=" + encodeURIComponent(docUrl);
 
             // And show in browser
             window.location = docUrl;
-        },
-
-        absolutePath: function (href) {
-            if (!this.link)
-                this.link = document.createElement("a");
-
-            this.link.href = href;
-            return this.link.href;
         },
 
         checkReqsStatus: function () {

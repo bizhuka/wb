@@ -154,12 +154,13 @@
                                 <f:formElements>
                                     <f:FormElement label="{i18n>pernr}">
                                         <f:fields>
+
+                                            <!--valueHelpRequest="handle_dr_f4"-->
                                             <Input id="id_driver_input"
                                                    type="Number"
                                                    value="{ path: 'wb>Pernr', formatter: '.alphaOut' }"
 
                                                    showValueHelp="true"
-                                                   valueHelpRequest="handle_dr_f4"
 
                                                    showSuggestion="true"
                                                    suggestionItems="{wb>/VDrivers}"
@@ -171,7 +172,7 @@
                                             </Input>
                                         </f:fields>
                                     </f:FormElement>
-                                    <f:FormElement label="{i18n>fio}">
+                                    <f:FormElement label="{i18n>fio}" visible="false">
                                         <f:fields>
                                             <Text text="{wb>Fio}"/>
                                         </f:fields>
