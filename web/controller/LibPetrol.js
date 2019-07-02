@@ -156,13 +156,13 @@ sap.ui.define([
             handle_lgort_f4: function (oEvent) {
                 var _this = this;
                 var owner = _this.owner;
+                var input = oEvent.getSource();
 
                 // Load async
                 sap.ui.require(["com/modekzWaybill/control/LgortDialog"], function (LgortDialog) {
                     if (!_this._lgortDialog)
                         _this._lgortDialog = new LgortDialog(owner);
 
-                    var input = oEvent.getSource();
                     var context = input.getBindingContext("petrol");
 
                     // Get current object
