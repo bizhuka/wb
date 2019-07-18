@@ -3,6 +3,7 @@ sap.ui.define([
     'sap/m/MessageToast',
     'sap/m/Label',
     'sap/m/ButtonType',
+    'sap/m/SelectDialog',
     'sap/ui/core/MessageType',
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator',
@@ -10,10 +11,11 @@ sap.ui.define([
     'sap/ui/core/UIComponent',
     'com/modekzWaybill/controller/LibReqs',
     'com/modekzWaybill/controller/LibChangeStatus'
-], function (BaseController, MessageToast, Label, ButtonType, MessageType, Filter, FilterOperator, JSONModel, UIComponent, LibReqs, LibChangeStatus) {
+], function (BaseController, MessageToast, Label, ButtonType, SelectDialog, MessageType, Filter, FilterOperator, JSONModel, UIComponent, LibReqs, LibChangeStatus) {
     "use strict";
 
     var C_FIX_COLUMN = 2;
+    var C_EMPTY_TEXT = '---';
 
     var eoFilterInfo = {
         classFilter: null,
@@ -174,22 +176,23 @@ sap.ui.define([
                         return;
 
                     var items = _this.tbSchedule.getItems();
+                    var columnCount = _this.tbSchedule.getColumns().length;
 
                     // Without time!
                     var dFrom = _this.dpFrom.getDateValue();
                     dFrom.setHours(0, 0, 0, 0);
 
-                    var showOne = _this.getModel("userInfo").getProperty("/WbShowOne") === true;
+                    var wbShowOne = _this.getModel("userInfo").getProperty("/WbShowOne") === true;
+                    var wbMechanic = _this.getModel("userInfo").getProperty("/WbMechanic") === true;
 
                     for (var i = 0; i < items.length; i++) {
                         var cells = items[i].getCells();
-                        // Empty cells
-                        for (var c = C_FIX_COLUMN; c < schedules.length; c++) {
+
+                        // Clear cells
+                        for (var c = C_FIX_COLUMN; c < columnCount; c++) {
                             var link = cells[c];
-                            if (link) {
-                                link.setText("-");
-                                link.setEnabled(false);
-                            }
+                            link.setText(C_EMPTY_TEXT);
+                            link.setEnabled(_this.checkWithDate(new Date(link.getTarget()), wbMechanic));
                         }
 
                         var equnr = items[i].getBindingContext("wb").getObject().Equnr;
@@ -202,7 +205,11 @@ sap.ui.define([
                                 link = cells[daysOff];
                                 if (link && daysOff > (C_FIX_COLUMN - 1)) {
                                     link.setText(schedule.Ilart ? schedule.Ilart : schedule.Waybill_Id);
-                                    link.setEnabled(!schedule.Ilart && showOne);
+
+                                    var isEnabled = (parseInt(schedule.Waybill_Id) > 0 && wbShowOne) ||
+                                        link.getEnabled(); // (_this.checkWithDate(new Date(link.getTarget()), wbMechanic) // schedule.Datum
+
+                                    link.setEnabled(isEnabled);
                                 }
                             }
                         }
@@ -265,6 +272,9 @@ sap.ui.define([
         },
 
         onDatePickChange: function (oEvent) {
+            // Current controller
+            var _this = this;
+
             var dFrom = this.dpFrom.getDateValue();
             var dTo = this.dpTo.getDateValue();
 
@@ -301,14 +311,45 @@ sap.ui.define([
                 var text = this.toLocaleDate(dFrom);
                 this.tbSchedule.addColumn(new sap.m.Column({header: new Label({text: text})}));
 
-                // Cell
-                arrCells.push(new sap.m.Link({
-                    text: "-",
-                    enabled: false,
-                    press: function () {
-                        _this.onWaybillPress(parseInt(this.getText()))
+                // Save in target field
+                var columnDate = new Date(dFrom.getTime());
+                columnDate.setHours(12, 0, 0, 0);
+
+                // Create link
+                var link = new sap.m.Link({
+                    text: C_EMPTY_TEXT,
+
+                    target: _this.toSqlDateTime(columnDate),
+
+                    enabled: _this.checkWithDate(columnDate, "{= ${userInfo>/WbMechanic}===true}"),
+
+                    press: function (oEvent) {
+                        var src = oEvent.getSource();
+
+                        // Is waybill
+                        var waybillId = parseInt(src.getText());
+                        if (waybillId) {
+                            _this.onWaybillPress(waybillId);
+                            return;
+                        }
+
+                        // For mechanic
+                        var item = src.getBindingContext("wb").getObject();
+
+                        // Previous item
+                        var oRepair = {
+                            Datum: new Date(src.getTarget()),
+                            Werks: item.Swerk,
+                            Equnr: item.Equnr,
+                            Ilart: src.getText()
+                        };
+
+                        _this.onShowRepairDialog(oRepair);
                     }
-                }));
+                });
+
+                // Add cell
+                arrCells.push(link);
 
                 dFrom.setDate(dFrom.getDate() + 1);
             }
@@ -333,9 +374,6 @@ sap.ui.define([
                 template: oTemplate,
                 filters: eoFilterInfo.wholeFilterPrev
             });
-
-            // Read from R3
-            var _this = this;
 
             // Check rights
             var userModel = new JSONModel("/./userInfo");
@@ -607,7 +645,7 @@ sap.ui.define([
                 success: function () {
                     oWbModel.create('/Waybills', oWaybill, {
                         success: function (ret) {
-                            MessageToast.show(_this.getBundle().getText("okCreateItem", [ret.Id]));
+                            MessageToast.show(_this.getBundle().getText("okCreateItem", [ret.Id, '', '', '']));
 
                             _this.libReqs.setWaybillId(selectedReqs, {
                                 waybillId: ret.Id
@@ -622,6 +660,94 @@ sap.ui.define([
                     }); // oData create new waybill
                 } // success text dialog
             }); // Text dialog callback
+        },
+
+        checkWithDate: function (date, enabled) {
+            // Without time!
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Is mechanic ?
+            return date.getTime() >= today.getTime() ? enabled : false;
+        },
+
+        onShowRepairDialog: function (oRepair) {
+            var _this = this;
+
+            // No rights for action
+            var wbMechanic = _this.getModel("userInfo").getProperty("/WbMechanic") === true;
+            if(!wbMechanic)
+                return;
+
+            // create dialog
+            if (!_this._repairDialog) {
+                _this._repairDialog = new SelectDialog({
+                    contentWidth: "50%",
+
+                    items: {
+                        path: "/",
+                        template: new sap.m.StandardListItem({
+                            title: "{text_kz}",
+                            description: "{text_ru}",
+                            info: "{code}",
+                            highlight: "{= ${code}.length > 0 ? 'Success' : 'Error'}"
+                        })
+                    },
+
+                    search: function (oEvent) {
+                        var sValue = oEvent.getParameter("value");
+                        var oBinding = oEvent.getSource().getBinding("items");
+                        oBinding.filter(
+                            new Filter({
+                                filters: [
+                                    new Filter("text_kz", FilterOperator.Contains, sValue),
+                                    new Filter("text_ru", FilterOperator.Contains, sValue)],
+                                and: false
+                            }));
+                    },
+
+                    confirm: function (oEvent) {
+                        var aContexts = oEvent.getParameter("selectedContexts");
+                        if (!aContexts || !aContexts.length)
+                            return;
+
+                        var schedule = _this._repairDialog._oRepair;
+                        schedule.Ilart = aContexts[0].getObject().code;
+                        var oWbModel = _this.getModel("wb");
+
+                        // Error handler
+                        var newItem = !!schedule.Ilart;// TODO
+                        var textParams = [schedule.Ilart, ' - ' + _this.alphaOut(schedule.Equnr), ' - ' + _this.toLocaleDate(schedule.Datum), ' - ' + schedule.Werks];
+                        var handler = {
+                            success: function () {
+                                MessageToast.show(_this.getBundle().getText(newItem ? "okCreateItem" : "okRemoveItem", textParams));
+                                oWbModel.refresh();
+                            },
+
+                            error: function (err) {
+                                _this.showError(err, _this.getBundle().getText("errCreateItem", textParams));
+                            }
+                        };
+
+                        if (newItem)
+                            oWbModel.create('/Schedules', schedule, handler);
+                        else
+                            oWbModel.remove("/Schedules(Datum=datetime'" +
+                                encodeURIComponent(_this.toSqlDateTime(schedule.Datum)) + "',Equnr='" +
+                                schedule.Equnr + "',Werks='" +
+                                schedule.Werks + "')", handler);
+                    }
+                });
+
+                _this._repairDialog.addStyleClass(this.getContentDensityClass());
+            }
+            _this._repairDialog._oRepair = oRepair;
+
+            // Add item or delete ?
+            var jsonModel = new JSONModel('/json/repairReason' + (oRepair.Ilart === C_EMPTY_TEXT ? '' : 'Del') + '.json');
+            _this._repairDialog.setModel(jsonModel);
+
+            _this._repairDialog.open();
         }
     });
 });

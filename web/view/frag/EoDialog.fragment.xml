@@ -53,9 +53,9 @@
                     <Column>
                         <Label text="{i18n>techSpace}"/>
                     </Column>
-                    <Column width="9rem">
-                        <Label text="{i18n>noDriverDate}"/>
-                    </Column>
+                    <!--<Column width="9rem">-->
+                        <!--<Label text="{i18n>noDriverDate}"/>-->
+                    <!--</Column>-->
                 </columns>
 
                 <ColumnListItem>
@@ -84,18 +84,18 @@
                         <Label text="{wb>Pltxt}" tooltip="{wb>Pltxt}"/>
                     </cells>
 
-                    <cells>
-                        <Label text="{ path: 'wb>NoDriverDate', formatter: '.toLocaleDateTime' }"/>
-                    </cells>
+                    <!--<cells>-->
+                        <!--<Label text="{ path: 'wb>NoDriverDate', formatter: '.toLocaleDateTime' }"/>-->
+                    <!--</cells>-->
                 </ColumnListItem>
             </Table>
         </content>
 
 
         <buttons>
-            <Button tooltip="{i18n>noDriver}" icon="sap-icon://employee-rejections" press="setNoDriverDate"/>
+            <!--<Button tooltip="{i18n>noDriver}" icon="sap-icon://employee-rejections" press="setNoDriverDate"/>-->
             <!--<Button tooltip="{i18n>accident}" enabled="false" icon="sap-icon://collision"/>-->
-            <Button icon="sap-icon://vehicle-repair" press="onShowRepairDialog"/>
+            <!--<Button icon="sap-icon://vehicle-repair" press="onShowRepairDialog"/>-->
             <Button icon="sap-icon://accept" text="{i18n>cancel}" press="onEoCloseDialog"/>
         </buttons>
     </Dialog>

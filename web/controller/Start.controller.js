@@ -2,11 +2,10 @@ sap.ui.define([
     'com/modekzWaybill/controller/BaseController',
     'sap/ui/core/UIComponent',
     'sap/m/MessageToast',
-    'sap/m/SelectDialog',
     'sap/ui/model/json/JSONModel',
     'sap/ui/model/Filter',
     'sap/ui/model/FilterOperator'
-], function (BaseController, UIComponent, MessageToast, SelectDialog, JSONModel, Filter, FilterOperator) {
+], function (BaseController, UIComponent, MessageToast, JSONModel, Filter, FilterOperator) {
     "use strict";
 
     return BaseController.extend("com.modekzWaybill.controller.Start", {
@@ -288,112 +287,26 @@ sap.ui.define([
                     callback.call(this, _this.makeAndFilter(okFilter, new Filter("TooName", FilterOperator.EQ, '-')));
                 }
             });
-        },
-
-        setNoDriverDate: function () {
-            var items = this.findById('id_eo_table').getSelectedItems();
-            if (items.length === 0) {
-                MessageToast.show(this.getBundle().getText("selectRows"));
-                return;
-            }
-
-            var oWbModel = this.getModel("wb");
-            var editObj = {
-                NoDriverDate: new Date(1)
-            };
-
-            // Update 1 by one
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i].getBindingContext("wb").getObject();
-                oWbModel.update("/Equipments('" + item.Equnr + "')", editObj);
-            }
-            oWbModel.refresh();
-        },
-
-        onShowRepairDialog: function () {
-            var _this = this;
-
-            // No need
-            var items = _this.findById('id_eo_table').getSelectedItems();
-            if (items.length === 0) {
-                MessageToast.show(this.getBundle().getText("selectRows"));
-                return;
-            }
-
-            // create dialog
-            if (!_this._repairDialog) {
-                var jsonModel = new JSONModel('/json/repairReason.json');
-
-                _this._repairDialog = new SelectDialog({
-                    contentWidth: "50%",
-
-                    items: {
-                        path: "/",
-                        template: new sap.m.StandardListItem({
-                            title: "{text_kz}",
-                            description: "{text_ru}",
-                            info: "{code}"
-                        })
-                    },
-
-                    search: function (oEvent) {
-                        var sValue = oEvent.getParameter("value");
-                        var oBinding = oEvent.getSource().getBinding("items");
-                        oBinding.filter(
-                            new Filter({
-                                filters: [
-                                    new Filter("text_kz", FilterOperator.Contains, sValue),
-                                    new Filter("text_ru", FilterOperator.Contains, sValue)],
-                                and: false
-                            }));
-                    },
-
-                    confirm: function (oEvent) {
-                        var aContexts = oEvent.getParameter("selectedContexts");
-                        if (!aContexts || !aContexts.length)
-                            return;
-
-                        var repairCode = aContexts[0].getObject().code;
-                        var oWbModel = _this.getModel("wb");
-
-                        // Update 1 by one
-                        var eoList = _this.findById('id_eo_table');
-                        items = eoList.getSelectedItems();
-                        for (var i = 0; i < items.length; i++) {
-                            var item = items[i].getBindingContext("wb").getObject();
-
-                            // What to insert
-                            var oRepair = {
-                                Datum: new Date(),
-                                Werks : item.Swerk,
-                                Equnr : item.Equnr,
-                                Ilart: repairCode
-                            };
-                            oRepair.Datum.setHours(12, 0, 0, 0);
-
-                            (function(oSchedule){
-                                oWbModel.create('/Schedules', oSchedule, {
-                                    success: function (ret) {
-                                        MessageToast.show(_this.getBundle().getText("okCreateItem", [oSchedule.Equnr]));
-                                    },
-
-                                    error: function (err) {
-                                        _this.showError(err, _this.getBundle().getText("errCreateItem", [oSchedule.Equnr]));
-                                    }
-                                });
-                            })(oRepair);
-                        }
-
-                        // Hide prev selection
-                        oWbModel.refresh();
-                        eoList.removeSelections(true);
-                    }
-                });
-                _this._repairDialog.setModel(jsonModel);
-
-                _this._repairDialog.addStyleClass(this.getContentDensityClass());
-            }
-            _this._repairDialog.open();
         }
+
+        // setNoDriverDate: function () {
+        //     var items = this.findById('id_eo_table').getSelectedItems();
+        //     if (items.length === 0) {
+        //         MessageToast.show(this.getBundle().getText("selectRows"));
+        //         return;
+        //     }
+        //
+        //     var oWbModel = this.getModel("wb");
+        //     var editObj = {
+        //         NoDriverDate: new Date(1)
+        //     };
+        //
+        //     // Update 1 by one
+        //     for (var i = 0; i < items.length; i++) {
+        //         var item = items[i].getBindingContext("wb").getObject();
+        //         oWbModel.update("/Equipments('" + item.Equnr + "')", editObj);
+        //     }
+        //     oWbModel.refresh();
+        // },
     });
 });

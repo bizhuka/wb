@@ -205,6 +205,23 @@ sap.ui.define([
             }) : "";
         },
 
+        toSqlDateTime: function (date) {
+            return date.getUTCFullYear() +
+                '-' + this.pad(date.getUTCMonth() + 1) +
+                '-' + this.pad(date.getUTCDate()) +
+                'T' + this.pad(date.getUTCHours()) +
+                ':' + this.pad(date.getUTCMinutes()) +
+                ':' + this.pad(date.getUTCSeconds());
+            //'.' + (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) + 'Z';
+        },
+
+        pad: function (number) {
+            if (number < 10) {
+                return '0' + number;
+            }
+            return number;
+        },
+
         alphaOut: function (inStr) {
             return inStr ? inStr.replace(/^0+/, '') : inStr; //"";
         },
