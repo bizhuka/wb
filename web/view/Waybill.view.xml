@@ -32,7 +32,11 @@
                         <DatePicker id="id_date_to" change="handleSelection" displayFormat="short" width="7rem" tooltip="{i18n>createDate}"/>
                         <Switch id="id_by_too"
                                 state="false"
-                                tooltip="{i18n>tooCars}" change="handleSelection"/>
+                                change="handleSelection"
+                                tooltip="{i18n>tooCars}"
+                                customTextOn="{i18n>too}"
+                                customTextOff="{i18n>too}"
+                                width="10rem"/>
                         <SearchField id="id_wb_search_field" placeholder="{i18n>findWB}" search="handleSelection"
                                      showRefreshButton="false" width="17.5rem"/>
                         <ComboBox id="id_werks_filter"

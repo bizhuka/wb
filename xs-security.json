@@ -52,7 +52,7 @@
     { "name": "WbCancel", "description": "Отменить ПЛ", "scope-references": [ "$XSAPPNAME.WbCancel" ] },
     { "name": "WbChangeDate", "description": "Изменение даты", "scope-references": [ "$XSAPPNAME.WbChangeDate" ] },
     { "name": "WbChangeWialonData", "description": "Менять данные Wialon", "scope-references": [ "$XSAPPNAME.WbChangeWialonData" ] },
-    { "name": "WbChangeWialonDataClose", "description": "Менять данные Wialon", "scope-references": [ "$XSAPPNAME.WbChangeWialonDataClose" ] },
+    { "name": "WbChangeWialonDataClose", "description": "Менять закрытые ПЛ", "scope-references": [ "$XSAPPNAME.WbChangeWialonDataClose" ] },
     { "name": "WbClose", "description": "Закрытие ПЛ", "scope-references": [ "$XSAPPNAME.WbClose" ] },
     { "name": "WbCloseReqs", "description": "Закрытие заявки", "scope-references": [ "$XSAPPNAME.WbCloseReqs" ] },
     { "name": "WbCreateNew", "description": "Создание ПЛ", "scope-references": [ "$XSAPPNAME.WbCreateNew" ] },

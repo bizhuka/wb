@@ -37,7 +37,7 @@ public class CsvUploader extends ServletBase {
             em.getTransaction().begin();
             Connection connection = ODataServiceFactory.getConnection(em);
 
-            PreparedStatement prepStatUpdate = connection.prepareStatement("UPDATE \"wb.db::pack.driver\" SET \"barcode\" = ? WHERE \"stcd3\" = ?");
+            PreparedStatement prepStatUpdate = connection.prepareStatement("UPDATE \"wb.dbt::pack.driver\" SET \"barcode\" = ? WHERE \"stcd3\" = ?");
 
             // All content
             for (DbUpdateInfoPlus.Item item : info.items) {
@@ -132,8 +132,8 @@ public class CsvUploader extends ServletBase {
 //            em.getTransaction().begin();
 //
 //            Connection connection = ODataServiceFactory.getConnection(em);
-//            PreparedStatement prepStatInsert = connection.prepareStatement("INSERT INTO \"wb.db::pack.grouprole\" (\"grprole\", \"indrole\") VALUES(?,?);");
-//            PreparedStatement prepStatDelete = connection.prepareStatement("DELETE FROM \"wb.db::pack.grouprole\" WHERE \"grprole\" = ? and \"indrole\" = ?");
+//            PreparedStatement prepStatInsert = connection.prepareStatement("INSERT INTO \"wb.dbt::pack.grouprole\" (\"grprole\", \"indrole\") VALUES(?,?);");
+//            PreparedStatement prepStatDelete = connection.prepareStatement("DELETE FROM \"wb.dbt::pack.grouprole\" WHERE \"grprole\" = ? and \"indrole\" = ?");
 //
 //            // All items
 //            List<GroupRole> grpRoles = GroupRole.getAllGroupRoles();

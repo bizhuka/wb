@@ -3,20 +3,19 @@ package com.modekz.db;
 import org.eclipse.persistence.annotations.PrimaryKey;
 import org.hibersap.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "\"wb.db::pack.statustext\"")
+@Table(name = "\"wb.dbt::pack.statustext\"")
 @PrimaryKey(columns = {@Column(name = "\"stype\"", length = 2), @Column(name = "\"id\"")})
 public class StatusText {
+    @Id
     @Column(name = "\"stype\"")
     @Parameter("STATUS_TYPE")
     public String Stype;
 
+    @Id
     @Column(name = "\"id\"")
     @Parameter("STATUS_ID")
     public int Id;

@@ -20,12 +20,20 @@ sap.ui.define([
     var eoFilterInfo = {
         classFilter: null,
         classFilterPrev: null,
+
         textFilter: null,
+
+        werksComboFilter: null, // ComboBox value
+
+        // All previous
         wholeFilterPrev: null
     };
 
     var fromDate;
     var toDate;
+
+    // ComboBox control
+    var _WerksStatusCombo;
 
     return BaseController.extend("com.modekzWaybill.controller.ToroRequest", {
 
@@ -54,7 +62,7 @@ sap.ui.define([
             });
 
             this.libReqs = new LibReqs(this, {
-                showWbColumn: true,
+                showWbColumn: false,
                 selectMode: sap.m.ListMode.MultiSelect,
                 statuses: filtered,
                 canReject: true,
@@ -66,6 +74,12 @@ sap.ui.define([
                         ],
                         and: false
                     })
+                },
+
+                // Filter changed ?
+                fireWerksComboChanged: function (werksStatusCombo) {
+                    _WerksStatusCombo = werksStatusCombo;
+                    _this.onUpdateStartedSchedule();
                 }
             });
 
@@ -199,7 +213,7 @@ sap.ui.define([
 
                         for (var s = 0; s < schedules.length; s++) {
                             var schedule = schedules[s];
-                            if (schedule.Equnr === equnr) {
+                            if (schedule.Equnr === equnr && _this.toSapDate(dFrom) <= _this.toSapDate(schedule.Datum)) {
                                 var daysOff = _this.diffInDays(schedule.Datum, dFrom) + C_FIX_COLUMN;
 
                                 link = cells[daysOff];
@@ -221,11 +235,17 @@ sap.ui.define([
         onUpdateStartedSchedule: function () {
             var _this = this;
             var textFilter = _this.byId('id_eo_search').getValue();
+            var werksComboFilter = _WerksStatusCombo ? _WerksStatusCombo.getSelectedKey() : "";
 
-            if (eoFilterInfo.classFilterPrev === eoFilterInfo.classFilter && eoFilterInfo.textFilter === textFilter)
+            if (eoFilterInfo.classFilterPrev === eoFilterInfo.classFilter &&
+                eoFilterInfo.textFilter === textFilter &&
+                eoFilterInfo.werksComboFilter === werksComboFilter)
                 return;
+
+            // Save info
             eoFilterInfo.classFilterPrev = eoFilterInfo.classFilter;
             eoFilterInfo.textFilter = textFilter;
+            eoFilterInfo.werksComboFilter = werksComboFilter;
 
             this.filterBy({
                 filters: [
@@ -238,9 +258,18 @@ sap.ui.define([
                 ],
 
                 ok: function (okFilter) {
-                    eoFilterInfo.wholeFilterPrev = textFilter ?
+                    var filter = textFilter ?
                         _this.makeAndFilter(okFilter, _this.getEoTextFilter(textFilter)) :
                         okFilter;
+
+                    // Do not show marked EO
+                    filter = _this.makeAndFilter(filter, new Filter("Expelled", FilterOperator.NE, "X"));
+
+                    // From ComboBox
+                    if (werksComboFilter)
+                        filter = _this.makeAndFilter(filter, new Filter("Swerk", FilterOperator.EQ, werksComboFilter));
+
+                    eoFilterInfo.wholeFilterPrev = filter;
                     this.tbSchedule.getBinding("items").filter(eoFilterInfo.wholeFilterPrev);
                 }
             });
@@ -248,10 +277,11 @@ sap.ui.define([
 
         onReqUpdate: function () {
             var _this = this;
-            // Watch @29!
+            var now = new Date();
             _this.updateDbFrom({
-                link: "/r3/REQ_HEADER?_persist=true&_where="
-                + encodeURIComponent("AFKO~GSTRP >= '" + _this.toSapDate(_this.addDays(new Date(), -29)) + "'"),
+                link: "/r3/REQ_HEADER?_persist=true" +
+                "&TO_DATE=" + _this.toSqlDate(_this.addDays(now, -29)) +
+                "&FROM_DATE=" + _this.toSqlDate(now),
 
                 title: _this.getBundle().getText("reqs"),
 
@@ -306,10 +336,16 @@ sap.ui.define([
                 this.tbSchedule.removeColumn(i);
 
             // Create new cells & columns this.tbSchedule.destroyColumns();
+            var todayText = this.toLocaleDate(new Date());
             while (dFrom < dTo) {
                 // Column
                 var text = this.toLocaleDate(dFrom);
-                this.tbSchedule.addColumn(new sap.m.Column({header: new Label({text: text})}));
+                this.tbSchedule.addColumn(new sap.m.Column({
+                    header: new Label({
+                        text: text,
+                        required: todayText === text
+                    })
+                }));
 
                 // Save in target field
                 var columnDate = new Date(dFrom.getTime());
@@ -337,14 +373,14 @@ sap.ui.define([
                         var item = src.getBindingContext("wb").getObject();
 
                         // Previous item
-                        var oRepair = {
+                        var oSchedule = {
                             Datum: new Date(src.getTarget()),
                             Werks: item.Swerk,
                             Equnr: item.Equnr,
                             Ilart: src.getText()
                         };
 
-                        _this.onShowRepairDialog(oRepair);
+                        _this.onShowRepairDialog([oSchedule], oSchedule.Ilart === C_EMPTY_TEXT);
                     }
                 });
 
@@ -383,9 +419,9 @@ sap.ui.define([
                     _this._onObjectMatched();
                 else
                     _this.updateDbFrom({
-                        link: "/r3/SCHEDULE?_persist=true&_where=" + encodeURIComponent(
-                            "AFKO~GSTRP <= '" + _this.toSapDate(_this.dpTo.getDateValue()) + "' AND " +
-                            "AFKO~GLTRP >= '" + _this.toSapDate(_this.dpFrom.getDateValue()) + "'"),
+                        link: "/r3/SCHEDULE?_persist=true" +
+                        "&TO_DATE=" + _this.toSqlDate(_this.dpTo.getDateValue()) +
+                        "&FROM_DATE=" + _this.toSqlDate(_this.dpFrom.getDateValue()),
 
                         title: _this.getBundle().getText("journal"),
 
@@ -482,6 +518,9 @@ sap.ui.define([
         },
 
         onEquipSelected: function () {
+            // Hide or show schedule buttons
+            this.setScheduleButtons({});
+
             var createButton = this.byId('id_wb_create_button');
             var eoItem = this.tbSchedule.getSelectedItem();
             var selectedReqs = this.libReqs.reqTable.getSelectedContexts(true);
@@ -505,6 +544,58 @@ sap.ui.define([
                 createButton.setText(this.getBundle().getText("createWb") + addText);
             }
             createButton.setType(withNoReqs ? ButtonType.Reject : ButtonType.Default);
+        },
+
+        setScheduleButtons: function (params) {
+            var addButton = this.byId('id_add_schedule');
+            var delButton = this.byId('id_del_schedule');
+
+            // Hide by default
+            addButton.setVisible(false);
+            delButton.setVisible(false);
+
+            // Done
+            if (params.JUST_HIDE)
+                return;
+
+            var items = this.tbSchedule.getSelectedItems();
+            var userInfo = this.getModel("userInfo");
+
+            // No need
+            if (!items || items.length === 0 || !userInfo.getProperty("/WbMechanic"))
+                return;
+
+            // // Find today
+            var columns = this.tbSchedule.getColumns();
+            var index = false;
+
+            // Find today column index
+            for (var i = C_FIX_COLUMN; i < columns.length; i++) {
+                if (columns[i].getHeader().getRequired()) {
+                    index = i;
+                    break;
+                }
+            }
+
+            // Today not visible
+            if (!index)
+                return;
+
+            var showAdd = false;
+            var showDel = false;
+            for (i = 0; i < items.length; i++) {
+                var link = items[i].getCells()[index];
+                var text = link.getText();
+
+                if (text === C_EMPTY_TEXT)
+                    showAdd = true;
+                else
+                    showDel = true;
+            }
+
+            // Show or hide
+            addButton.setVisible(showAdd && !showDel);
+            delButton.setVisible(showDel && !showAdd);
         },
 
         checkEoFilter: function () {
@@ -671,12 +762,35 @@ sap.ui.define([
             return date.getTime() >= today.getTime() ? enabled : false;
         },
 
-        onShowRepairDialog: function (oRepair) {
+        onMassRepair: function (bAdd) {
+            // Items to process
+            var _this = this;
+            var items = _this.tbSchedule.getSelectedItems();
+
+            var today = new Date();
+            today.setHours(12, 0, 0, 0);
+            var oSchedules = [];
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i].getBindingContext("wb").getObject();
+
+                // What to insert
+                oSchedules.push({
+                    Datum: today,
+                    Werks: item.Swerk,
+                    Equnr: item.Equnr // Ilart:
+                });
+            }
+
+            // And show dialog
+            _this.onShowRepairDialog(oSchedules, bAdd);
+        },
+
+        onShowRepairDialog: function (oSchedules, bAdd) {
             var _this = this;
 
             // No rights for action
             var wbMechanic = _this.getModel("userInfo").getProperty("/WbMechanic") === true;
-            if(!wbMechanic)
+            if (!wbMechanic)
                 return;
 
             // create dialog
@@ -711,43 +825,56 @@ sap.ui.define([
                         if (!aContexts || !aContexts.length)
                             return;
 
-                        var schedule = _this._repairDialog._oRepair;
-                        schedule.Ilart = aContexts[0].getObject().code;
-                        var oWbModel = _this.getModel("wb");
+                        var schedules = _this._repairDialog._oSchedules;
+                        var code = aContexts[0].getObject().code;
+                        for (var i = 0; i < schedules.length; i++) {
+                            var schedule = schedules[i];
+                            schedule.Ilart = code;
+                            _this.updateSchedule(schedule);
+                        }
 
-                        // Error handler
-                        var newItem = !!schedule.Ilart;// TODO
-                        var textParams = [schedule.Ilart, ' - ' + _this.alphaOut(schedule.Equnr), ' - ' + _this.toLocaleDate(schedule.Datum), ' - ' + schedule.Werks];
-                        var handler = {
-                            success: function () {
-                                MessageToast.show(_this.getBundle().getText(newItem ? "okCreateItem" : "okRemoveItem", textParams));
-                                oWbModel.refresh();
-                            },
-
-                            error: function (err) {
-                                _this.showError(err, _this.getBundle().getText("errCreateItem", textParams));
-                            }
-                        };
-
-                        if (newItem)
-                            oWbModel.create('/Schedules', schedule, handler);
-                        else
-                            oWbModel.remove("/Schedules(Datum=datetime'" +
-                                encodeURIComponent(_this.toSqlDateTime(schedule.Datum)) + "',Equnr='" +
-                                schedule.Equnr + "',Werks='" +
-                                schedule.Werks + "')", handler);
+                        // Hide selection
+                        _this.tbSchedule.removeSelections(true);
+                        _this.setScheduleButtons({JUST_HIDE: true});
                     }
                 });
 
                 _this._repairDialog.addStyleClass(this.getContentDensityClass());
             }
-            _this._repairDialog._oRepair = oRepair;
+            _this._repairDialog._oSchedules = oSchedules;
 
             // Add item or delete ?
-            var jsonModel = new JSONModel('/json/repairReason' + (oRepair.Ilart === C_EMPTY_TEXT ? '' : 'Del') + '.json');
+            var jsonModel = new JSONModel('/json/repairReason' + (bAdd ? '' : 'Del') + '.json');
             _this._repairDialog.setModel(jsonModel);
 
             _this._repairDialog.open();
+        },
+
+        updateSchedule: function (schedule) {
+            var _this = this;
+            var oWbModel = _this.getModel("wb");
+            var bAdd = !!schedule.Ilart;
+
+            // Error handler
+            var textParams = [schedule.Ilart, ' - ' + _this.alphaOut(schedule.Equnr), ' - ' + _this.toLocaleDate(schedule.Datum), ' - ' + schedule.Werks];
+            var handler = {
+                success: function () {
+                    MessageToast.show(_this.getBundle().getText(bAdd ? "okCreateItem" : "okRemoveItem", textParams));
+                    oWbModel.refresh();
+                },
+
+                error: function (err) {
+                    _this.showError(err, _this.getBundle().getText("errCreateItem", textParams));
+                }
+            };
+
+            if (bAdd)
+                oWbModel.create('/Schedules', schedule, handler);
+            else
+                oWbModel.remove("/Schedules(Datum=datetime'" +
+                    encodeURIComponent(_this.toSqlDateTime(schedule.Datum)) + "',Equnr='" +
+                    schedule.Equnr + "',Werks='" +
+                    schedule.Werks + "')", handler);
         }
     });
 });

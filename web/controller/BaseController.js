@@ -215,6 +215,10 @@ sap.ui.define([
             //'.' + (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) + 'Z';
         },
 
+        toSqlDate: function (date) {
+            return this.toSqlDateTime(date).substr(0, 10);
+        },
+
         pad: function (number) {
             if (number < 10) {
                 return '0' + number;

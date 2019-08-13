@@ -70,10 +70,10 @@ public class RfcPrintDoc extends ServletBase {
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "select CURRENT_DATE as datum, w.\"butxt\", d.\"fio\", e.\"eqktx\", e.\"license_num\", e.\"speed_max\", e.\"pltxt\", e.\"orig_class\", e.\"tooname\", e.\"typbz\", e.\"anln1\", waybill.*\n" +
-                            "from \"wb.db::pack.waybill\" as  waybill\n" +
-                            "left outer join \"wb.db::pack.werk\" as w on waybill.\"werks\" = w.\"werks\"\n" +
-                            "left outer join \"wb.db::pack.driver\" as d on waybill.\"bukrs\" = d.\"bukrs\" and waybill.\"driver\" = d.\"pernr\"\n" +
-                            "left outer join \"wb.db::pack.equipment\" as e on waybill.\"equnr\" = e.\"equnr\"\n" +
+                            "from \"wb.dbt::pack.waybill\" as  waybill\n" +
+                            "left outer join \"wb.dbt::pack.werk\" as w on waybill.\"werks\" = w.\"werks\"\n" +
+                            "left outer join \"wb.dbt::pack.driver\" as d on waybill.\"bukrs\" = d.\"bukrs\" and waybill.\"driver\" = d.\"pernr\"\n" +
+                            "left outer join \"wb.dbt::pack.equipment\" as e on waybill.\"equnr\" = e.\"equnr\"\n" +
                             "where waybill.\"id\" = ?");
             statement.setLong(1, waybillId);
             ResultSet rs = statement.executeQuery();
@@ -146,7 +146,7 @@ public class RfcPrintDoc extends ServletBase {
 
             // Requests
             if (root != null) {
-                statement = connection.prepareStatement("select * from \"wb.db::pack.reqheader\" where \"waybill_id\" = ?");
+                statement = connection.prepareStatement("select * from \"wb.dbt::pack.reqheader\" where \"waybill_id\" = ?");
                 statement.setLong(1, waybillId);
                 rs = statement.executeQuery();
                 int num = 0;

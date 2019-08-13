@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @BapiStructure
 @PrimaryKey(columns = {@Column(name = "\"werks\"", length = 4), @Column(name = "\"lgort\"", length = 4)})
-@Table(name = "\"wb.db::pack.lgort\"")
+@Table(name = "\"wb.dbt::pack.lgort\"")
 public class Lgort {
     @Id
     @Column(name = "\"werks\"", length = 4)

@@ -94,7 +94,7 @@
                 </semantic:content>
 
                 <Table id="id_eo_schedule"
-                       mode="SingleSelect"
+                       mode="{= ${userInfo>/WbMechanic}===true?'MultiSelect':'SingleSelect'}"
                        items="{ path: 'wb>/Equipments', length: 1000 }"
                        updateStarted="onUpdateStartedSchedule"
                        selectionChange="onEquipSelected"
@@ -133,6 +133,8 @@
                 <!--Saving to DB-->
                 <semantic:customFooterContent>
                     <Button id="id_wb_create_button" press="onCreateWaybill" visible="false"/>
+                    <Button id="id_add_schedule" icon="sap-icon://vehicle-repair" visible="false" type="Accept" press="onMassRepair(true)"/>
+                    <Button id="id_del_schedule" icon="sap-icon://vehicle-repair" visible="false" type="Reject" press="onMassRepair(false)"/>
                 </semantic:customFooterContent>
 
             </semantic:DetailPage>

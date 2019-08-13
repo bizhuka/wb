@@ -193,13 +193,53 @@ sap.ui.define([
                 // enabled="{= ( ${wb>Status}===${status>/ARRIVED}&amp;&amp;(${userInfo>/WbChangeWialonData}===true||${petrol>/noSource}===true) ) ||
                 // ( ${wb>Status}===${status>/CLOSED} &amp;&amp; ${userInfo>/WbChangeWialonDataClose}===true) }"
                 var bSameMonth = false;
-                if(CreateDate){
+                if (CreateDate) {
                     var now = new Date();
-                    bSameMonth  = now.getFullYear() === CreateDate.getFullYear() && now.getMonth() === CreateDate.getMonth();
+                    bSameMonth = now.getFullYear() === CreateDate.getFullYear() && now.getMonth() === CreateDate.getMonth();
                 }
 
                 return (Status === this.owner.status.ARRIVED && (WbChangeWialonData === true || noSource === true)) ||
                     (Status === this.owner.status.CLOSED && WbChangeWialonDataClose === true && bSameMonth)
+            },
+
+            inputIsEnabled: function (inputEnabled, GasMatnr, Status, CreateDate, WbChangeWialonData, WbChangeWialonDataClose, controlName) {
+                if (!inputEnabled)
+                    return false;
+
+                // Do not check for comboBox
+                if (controlName !== '_GasMatnr' && GasMatnr.length === 0)
+                    return false;
+
+                var result = false;
+                switch (controlName) {
+                    case '_GasMatnr':
+                        result = (Status === this.owner.status.CREATED || Status === this.owner.status.ARRIVED) && WbChangeWialonData;
+                        break;
+
+                    case '_GasBefore':
+                        result = (Status === this.owner.status.CREATED) && WbChangeWialonData;
+                        break;
+
+                    case '_GasLgort':
+                        result = (Status === this.owner.status.CREATED || Status === this.owner.status.ARRIVED) && WbChangeWialonData;
+                        break;
+
+                    case '_GasGiven':
+                        result = (Status === this.owner.status.ARRIVED) && WbChangeWialonData;
+                        break;
+                }
+
+                // Second attempt to open field to change
+                if (!result) {
+                    var bSameMonth = false;
+                    if (CreateDate) {
+                        var now = new Date();
+                        bSameMonth = now.getFullYear() === CreateDate.getFullYear() && now.getMonth() === CreateDate.getMonth();
+                    }
+                    result = Status === this.owner.status.CLOSED && WbChangeWialonDataClose === true && bSameMonth;
+                }
+
+                return result;
             },
 
             onDataChange: function (oEvent) {

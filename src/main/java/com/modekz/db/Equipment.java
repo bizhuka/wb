@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "\"wb.db::pack.equipment\"")
+@Table(name = "\"wb.dbt::pack.equipment\"")
 public class Equipment {
     @Column(name="\"baujj\"",length = 4)
     @Parameter("EQUI_BAUJJ")
@@ -41,6 +41,10 @@ public class Equipment {
     @Column(name="\"equnr\"",length = 18)
     @Parameter("EQUI_EQUNR")
     public String Equnr;
+
+    @Column(name="\"expelled\"",length = 1)
+    @Parameter("_MARK")
+    public String Expelled;
 
     @Column(name="\"fleet_num\"",length = 18)
     @Parameter("FLEET_FLEET_NUM")
@@ -401,5 +405,13 @@ public class Equipment {
 
     public void setPetrolMode(String petrolMode) {
         PetrolMode = petrolMode;
+    }
+
+    public String getExpelled() {
+        return Expelled;
+    }
+
+    public void setExpelled(String expelled) {
+        Expelled = expelled;
     }
 }

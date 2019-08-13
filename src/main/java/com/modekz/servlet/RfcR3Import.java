@@ -6,12 +6,11 @@ import com.modekz.json.DbUpdateInfo;
 import com.modekz.json.UserInfo;
 import com.modekz.rfc.WBRead;
 import com.modekz.rfc.WBSetStatus;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.hibersap.annotations.Parameter;
 import org.hibersap.session.Session;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TemporalType;
+import javax.persistence.Id;
 import javax.persistence.TypedQuery;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,22 +21,17 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @WebServlet(urlPatterns = {"/r3/*"})
 public class RfcR3Import extends ServletBase {
 
-    static DbUpdateInfo persist(Session session, EntityManager em, List newList, R3Clause r3Clause) {
+    static DbUpdateInfo persist(HttpServletRequest request, Session session, EntityManager em, List newList, R3Clause r3Clause) {
         try {
-            StringBuilder sbSelect = new StringBuilder(r3Clause.dbSelect);
-            if (r3Clause.where != null)
-                sbSelect.append(r3Clause.where);
-            TypedQuery query = em.createQuery(sbSelect.toString(), r3Clause.mainClass);
-            r3Clause.prepareQuery(query);
-
+            String strQuery = r3Clause.getQuery(request, newList);
+            TypedQuery query = em.createQuery(strQuery, r3Clause.mainClass);
             List dbList = query.getResultList();
 
             // Send back info
@@ -98,50 +92,26 @@ public class RfcR3Import extends ServletBase {
         Enumeration<String> parameterNames = request.getParameterNames();
         String method = request.getPathInfo().substring(1);
 
-        // Whole where with all operators: >=, <= ...
-        StringBuilder sbWhere = new StringBuilder();
+        // Save to DB
+        R3Clause r3Clause;
+        String where;
+        try {
+            // Get current user
+            UserInfo userInfo = UserInfo.getCurrentUserInfo(this);
 
-        // Passed by param
-        String where = request.getParameter("_where");
-        if (where != null)
-            sbWhere.append(where);
+            // Find method
+            Method meth = RfcR3Import.class.getMethod("getR3Clause" + method,
+                    UserInfo.class, EntityManager.class);
 
-        // All other conditions with = operators only
-        while (parameterNames.hasMoreElements()) {
-            String paramName = parameterNames.nextElement();
-
-            if (paramName.charAt(0) != '_') {
-                if (sbWhere.length() > 0)
-                    sbWhere.append(" AND ");
-
-                sbWhere.append(paramName).append(" = ").append(request.getParameter(paramName));
-            }
+            r3Clause = (R3Clause) meth.invoke(this, userInfo, em);
+            where = r3Clause.getQuery(request, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServletException(e.getMessage());
         }
 
-        // Save to DB
-        R3Clause r3Clause = null;
-        if (request.getParameter("_persist") != null)
-            try {
-                // Get current user
-                UserInfo userInfo = UserInfo.getCurrentUserInfo(this);
-
-                // Find method
-                Method meth = RfcR3Import.class.getMethod("getR3Clause" + method,
-                        UserInfo.class, EntityManager.class);
-
-                r3Clause = (R3Clause) meth.invoke(this, userInfo, em);
-                if (r3Clause.where != null) {
-                    if (sbWhere.length() > 0)
-                        sbWhere.append(" AND ");
-                    sbWhere.append(r3Clause.r3Field).append(r3Clause.where);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new ServletException(e.getMessage());
-            }
-
         // Pass method and filter
-        WBRead wbRead = new WBRead(method, sbWhere.toString());
+        WBRead wbRead = new WBRead(method, where);
         try (Session session = ODataServiceFactory.getRfcSession().openSession()) {
             session.execute(wbRead);
 
@@ -152,7 +122,7 @@ public class RfcR3Import extends ServletBase {
                 List newList = (List) field.get(wbRead);
 
                 // Write to DB
-                DbUpdateInfo info = persist(session, em, newList, r3Clause);
+                DbUpdateInfo info = persist(request, session, em, newList, r3Clause);
 
                 // Show info
                 writeJson(response, info);
@@ -168,10 +138,15 @@ public class RfcR3Import extends ServletBase {
 
     @SuppressWarnings("unused")
     public R3Clause getR3ClauseWERK(UserInfo userInfo, EntityManager em) {
-        return new R3Clause(
-                "SELECT w FROM Werk w",
-                Werk.class,
-                new String[]{"Werks"}) {
+        return new R3Clause(Werk.class) {
+
+            @Override
+            String getQuery(HttpServletRequest request, List r3List) {
+                if (r3List == null) // R3 where
+                    return "";
+
+                return "SELECT w FROM Werk w";
+            }
 
             @Override
             String getKey(Object object) {
@@ -184,23 +159,16 @@ public class RfcR3Import extends ServletBase {
 
     @SuppressWarnings("unused")
     public R3Clause getR3ClauseDRIVER(UserInfo userInfo, EntityManager em) throws SQLException {
-        return new R3Clause(
-                "SELECT d FROM Driver d WHERE d.Bukrs",
-                Driver.class,
-                new String[]{"Bukrs", "Pernr"}) {
+        return new R3Clause(Driver.class) {
 
-            PreparedStatement prepStatInsert;
-            PreparedStatement prepStatUpdate;
+            @Override
+            String getQuery(HttpServletRequest request, List r3List) {
+                String whereBukrs = getBukrsR3Clause(em, userInfo);
 
-            {
-                this.r3Field = "DR~BE";
-                this.where = getBukrsR3Clause(em, userInfo);
-            }
+                if (r3List == null) // R3 where
+                    return "DR~BE " + whereBukrs;
 
-            {
-                Connection connection = ODataServiceFactory.getConnection(em);
-                prepStatInsert = connection.prepareStatement("INSERT INTO \"wb.db::pack.driver\" (\"datbeg\", \"fio\", \"podr\", \"post\", \"stcd3\", \"bukrs\", \"pernr\") VALUES(?,?,?,?,?,?,?);");
-                prepStatUpdate = connection.prepareStatement("UPDATE \"wb.db::pack.driver\" SET \"datbeg\" = ?, \"fio\" = ?, \"podr\" = ?, \"post\" = ?, \"stcd3\" = ? WHERE \"bukrs\" = ? and \"pernr\" = ?");
+                return "SELECT d FROM Driver d WHERE d.Bukrs" + whereBukrs;
             }
 
             @Override
@@ -209,42 +177,20 @@ public class RfcR3Import extends ServletBase {
 
                 return driver.Bukrs + driver.Pernr;
             }
-
-            @Override
-            void modify(EntityManager em, Object dbItem, Object r3Item, DbUpdateInfo info) throws SQLException {
-                PreparedStatement prepStat = dbItem == null ? prepStatInsert : prepStatUpdate;
-
-                Driver driver = (Driver) r3Item;
-                prepStat.setDate(1, new java.sql.Date(driver.Datbeg.getTime()));
-                prepStat.setString(2, driver.Fio);
-                prepStat.setString(3, driver.Podr);
-                prepStat.setString(4, driver.Post);
-                prepStat.setString(5, driver.Stcd3);
-
-                prepStat.setString(6, driver.Bukrs);
-                prepStat.setString(7, driver.Pernr);
-
-                prepStat.addBatch();
-            }
-
-            @Override
-            void modifyBatch(DbUpdateInfo info) throws SQLException {
-                info.inserted += DbUpdateInfo.countModified(prepStatInsert.executeBatch());
-                info.updated += DbUpdateInfo.countModified(prepStatUpdate.executeBatch());
-            }
         };
     }
 
     @SuppressWarnings("unused")
     public R3Clause getR3ClauseEQUIPMENT(UserInfo userInfo, EntityManager em) {
-        return new R3Clause(
-                "SELECT e FROM Equipment e WHERE e.Swerk",
-                Equipment.class,
-                new String[]{"Equnr"}) {
+        return new R3Clause(Equipment.class) {
+            @Override
+            String getQuery(HttpServletRequest request, List r3List) {
+                String whereWerks = getWerksR3Clause(userInfo);
 
-            {
-                this.r3Field = "ILOA~SWERK";
-                this.where = getWerksR3Clause(userInfo);
+                if (r3List == null) // R3 where
+                    return "ILOA~SWERK " + whereWerks;
+
+                return "SELECT e FROM Equipment e WHERE e.Swerk " + whereWerks;
             }
 
             @Override
@@ -258,20 +204,33 @@ public class RfcR3Import extends ServletBase {
 
     @SuppressWarnings("unused")
     public R3Clause getR3ClauseSCHEDULE(UserInfo userInfo, EntityManager em) {
-        return new R3Clause(
-                "SELECT s FROM Schedule s WHERE s.Datum >= :fromDate AND s.Werks",
-                Schedule.class,
-                new String[]{"Werks", "Datum", "Equnr"}) {
-
-            {
-                this.r3Field = "AFIH~IWERK";
-                this.where = getWerksR3Clause(userInfo);
-            }
-
+        return new R3Clause(Schedule.class) {
             @Override
-            void prepareQuery(TypedQuery query) {
-                // Watch @29!
-                query.setParameter("fromDate", DateUtils.addDays(new Date(), -29), TemporalType.DATE);
+            String getQuery(HttpServletRequest request, List r3List) {
+                String sapDateFrom = request.getParameter("FROM_DATE");
+                String sapDateTo = request.getParameter("TO_DATE");
+                String whereWerks = getWerksR3Clause(userInfo);
+
+                if (r3List == null) // R3 where
+                    return "AFIH~IWERK " + whereWerks +
+                            " AND AFKO~GSTRP <= '" + sapDateTo.replace("-", "") +
+                            "' AND AFKO~GLTRP >= '" + sapDateFrom.replace("-", "") + "'";
+
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                for (Object obj : r3List) {
+                    Schedule schedule = (Schedule) obj;
+
+                    String sDate = dateFormat.format(schedule.Datum);
+                    if (sapDateFrom.compareTo(sDate) > 0)
+                        sapDateFrom = sDate;
+
+                    if (sapDateTo.compareTo(sDate) < 0)
+                        sapDateTo = sDate;
+                }
+
+                return "SELECT s FROM Schedule s WHERE s.Werks " + whereWerks +
+                        " AND s.Datum <= '" + sapDateTo +
+                        "' AND s.Datum >= '" + sapDateFrom + "'";
             }
 
             @Override
@@ -285,20 +244,21 @@ public class RfcR3Import extends ServletBase {
 
     @SuppressWarnings("unused")
     public R3Clause getR3ClauseREQ_HEADER(UserInfo userInfo, EntityManager em) {
-        return new R3Clause(
-                "SELECT r FROM ReqHeader r WHERE r.Gstrp >= :fromDate AND r.Iwerk",
-                ReqHeader.class,
-                new String[]{"Objnr", "Waybill_Id"}) {
-
-            {
-                this.r3Field = "AFIH~IWERK";
-                this.where = getWerksR3Clause(userInfo);
-            }
-
+        return new R3Clause(ReqHeader.class) {
             @Override
-            void prepareQuery(TypedQuery query) {
-                // Watch @29!
-                query.setParameter("fromDate", DateUtils.addDays(new Date(), -29), TemporalType.DATE);
+            String getQuery(HttpServletRequest request, List r3List) {
+                String sapDateFrom = request.getParameter("FROM_DATE");
+                String sapDateTo = request.getParameter("TO_DATE");
+                String whereWerks = getWerksR3Clause(userInfo);
+
+                if (r3List == null) // R3 where
+                    return "AFIH~IWERK " + whereWerks +
+                            " AND AFKO~GSTRP <= '" + sapDateTo.replace("-", "") +
+                            "' AND AFKO~GLTRP >= '" + sapDateFrom.replace("-", "") + "'";
+
+                return "SELECT r FROM ReqHeader r WHERE r.Iwerk " + whereWerks +
+                        " AND r.Gstrp <= '" + sapDateTo +
+                        "' AND r.Gltrp >= '" + sapDateFrom + "'";
             }
 
             @Override
@@ -322,20 +282,25 @@ public class RfcR3Import extends ServletBase {
                 for (String objnr : uniqueObjnrs)
                     objnrs.add(new WBSetStatus.Objnr(objnr));
 
-                session.execute(new WBSetStatus("E0019", "", objnrs));
+                session.execute(new WBSetStatus("", "", objnrs));
             }
         };
     }
 
     @SuppressWarnings("unused")
     public R3Clause getR3ClauseGAS_TYPE(UserInfo userInfo, EntityManager em) {
-        return new R3Clause(
-                "SELECT g FROM GasType g",
-                GasType.class,
-                new String[]{"Matnr"}) {
+        return new R3Clause(GasType.class) {
 
             {
                 this.deleteOld = true;
+            }
+
+            @Override
+            String getQuery(HttpServletRequest request, List r3List) {
+                if (r3List == null) // R3 where
+                    return "";
+
+                return "SELECT g FROM GasType g";
             }
 
             @Override
@@ -349,10 +314,15 @@ public class RfcR3Import extends ServletBase {
 
     @SuppressWarnings("unused")
     public R3Clause getR3ClauseLGORT(UserInfo userInfo, EntityManager em) {
-        return new R3Clause(
-                "SELECT l FROM Lgort l",
-                Lgort.class,
-                new String[]{"Werks", "Lgort"}) {
+        return new R3Clause(Lgort.class) {
+
+            @Override
+            String getQuery(HttpServletRequest request, List r3List) {
+                if (r3List == null) // R3 where
+                    return "";
+
+                return "SELECT l FROM Lgort l";
+            }
 
             @Override
             String getKey(Object object) {
@@ -365,13 +335,17 @@ public class RfcR3Import extends ServletBase {
 
     @SuppressWarnings("unused")
     public R3Clause getR3ClauseEQUNR_GRP(UserInfo userInfo, EntityManager em) {
-        return new R3Clause(
-                "SELECT p FROM EqunrGrp p",
-                EqunrGrp.class,
-                new String[]{"Ktsch"}) {
-
+        return new R3Clause(EqunrGrp.class) {
             {
                 this.deleteOld = true;
+            }
+
+            @Override
+            String getQuery(HttpServletRequest request, List r3List) {
+                if (r3List == null) // R3 where
+                    return "";
+
+                return "SELECT p FROM EqunrGrp p";
             }
 
             @Override
@@ -385,13 +359,17 @@ public class RfcR3Import extends ServletBase {
 
     @SuppressWarnings("unused")
     public R3Clause getR3ClauseSTATUS_TEXT(UserInfo userInfo, EntityManager em) {
-        return new R3Clause(
-                "SELECT t FROM StatusText t",
-                StatusText.class,
-                new String[]{"Stype", "Id"}) {
-
+        return new R3Clause(StatusText.class) {
             {
                 this.deleteOld = false; // Do not delete!
+            }
+
+            @Override
+            String getQuery(HttpServletRequest request, List r3List) {
+                if (r3List == null) // R3 where
+                    return "";
+
+                return "SELECT t FROM StatusText t";
             }
 
             @Override
@@ -433,29 +411,29 @@ public class RfcR3Import extends ServletBase {
     }
 
     static abstract class R3Clause {
-        String dbSelect;
         Class mainClass;
         List<Field> copyFields;
 
-        String r3Field;
-        String where;
         boolean deleteOld = false;
 
-        R3Clause(String dbSelect, Class mainClass, String[] exclude) {
-            this.dbSelect = dbSelect;
+        R3Clause(Class mainClass) {
             this.mainClass = mainClass;
 
             // updating fields
             Field[] fields = mainClass.getFields();
-            this.copyFields = new ArrayList<>(fields.length - exclude.length);
+            this.copyFields = new ArrayList<>(fields.length);
 
-            for (Field fld : fields)
-                if (ArrayUtils.indexOf(exclude, fld.getName()) < 0)
+            for (Field fld : fields) {
+                boolean isParameter = fld.getAnnotation(Parameter.class) != null;
+                boolean isId = fld.getAnnotation(Id.class) != null;
+
+                if (isParameter && !isId)
                     copyFields.add(fld);
+            }
         }
 
-        void prepareQuery(TypedQuery query) {
-
+        String getQuery(HttpServletRequest request, List r3List) {
+            return "";
         }
 
         abstract String getKey(Object object);
@@ -464,7 +442,8 @@ public class RfcR3Import extends ServletBase {
             // Copy value
             for (Field fld : copyFields) {
                 Object src = fld.get(r3Item);
-                if (src != null)
+//                Object dest = fld.get(dbItem);
+                if (src != null) // && !src.equals(dest))
                     fld.set(dbItem, src);
             }
         }

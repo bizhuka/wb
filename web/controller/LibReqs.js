@@ -122,6 +122,8 @@ sap.ui.define([
             onWerksComboSelectionChange: function (oEvent) {
                 this.werksStatusCombo = oEvent.getSource();
                 this.doFilter();
+                if(this.uiData.fireWerksComboChanged)
+                    this.uiData.fireWerksComboChanged(this.werksStatusCombo);
             },
 
             handleFromDateChange: function (oEvent) {

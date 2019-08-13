@@ -193,10 +193,15 @@ public class WialonServlet extends ServletBase {
 
         try (Session session = ODataServiceFactory.getRfcSession().openSession()) {
             // Write to DB
-            DbUpdateInfo info = RfcR3Import.persist(session, em, newList, new RfcR3Import.R3Clause(
-                    "SELECT v FROM WlnVehicle v",
-                    WlnVehicle.class,
-                    new String[]{"Gd"}) {
+            DbUpdateInfo info = RfcR3Import.persist(request, session, em, newList, new RfcR3Import.R3Clause(WlnVehicle.class) {
+
+                @Override
+                String getQuery(HttpServletRequest request, List r3List) {
+                    if (r3List == null) // R3 where
+                        return "";
+
+                    return "SELECT v FROM WlnVehicle v";
+                }
 
                 @Override
                 String getKey(Object object) {
