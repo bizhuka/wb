@@ -35,8 +35,7 @@
                                 change="handleSelection"
                                 tooltip="{i18n>tooCars}"
                                 customTextOn="{i18n>too}"
-                                customTextOff="{i18n>too}"
-                                width="10rem"/>
+                                customTextOff="{i18n>too}"/>
                         <SearchField id="id_wb_search_field" placeholder="{i18n>findWB}" search="handleSelection"
                                      showRefreshButton="false" width="17.5rem"/>
                         <ComboBox id="id_werks_filter"

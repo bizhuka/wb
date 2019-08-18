@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="linux">
+    <output-path>$PROJECT_DIR$/out/artifacts/linux</output-path>
+    <root id="archive" name="linux.war">
+      <element id="artifact" artifact-name="linux exploded" />
+    </root>
+  </artifact>
+</component>
