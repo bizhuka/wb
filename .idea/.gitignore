@@ -1,0 +1,37 @@
+# Default ignored files
+/workspace.xml
+# Datasource local storage ignored files
+/dataSources.local.xml
+/dataSources/
+
+*.db
+*.orig
+.*/APIExternalProducer.js
+.*/extended_runnable_file.html
+.*/fioriHtmlRunner.html
+.*/mock_preview_sapui5.html
+.cds_gen.log
+.che/
+.DS_Store
+.gen/
+/mta_archives/
+/webapp/visual_ext_index.html
+_out
+APIExternalProducer.js
+AppVariant_index.html
+AppVariantPreviewPayload.zip
+changes_preview.js
+connection.properties
+default-*.json
+extended_runnable_file.html
+fioriHtmlRunner.html
+gen/
+mergedManifestDescriptor.json
+mock_preview_sapui5.html
+mta_archives/
+node_modules/
+package-lock.json
+sap-ui-cachebuster-info.json
+target/
+UIAdaptation_index.html
+visual_ext_index.html
