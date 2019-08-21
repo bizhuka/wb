@@ -8,7 +8,7 @@ import org.hibersap.annotations.Parameter;
 
 @Entity
 @BapiStructure
-@Table(name = "\"wb.dbt::pack.werk\"")
+@Table(name = "\"wb.db::pack.werk\"")
 public class Werk {
     @Basic
     @Column(name="\"bukrs\"",length = 4)

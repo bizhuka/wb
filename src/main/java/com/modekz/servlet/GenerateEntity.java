@@ -45,7 +45,7 @@ public class GenerateEntity extends ServletBase {
 
                 if (!table.equals(prevTable)) {
                     sb.append(lastColumnMark).append("\n");
-                    sb.append("entity ").append(table.replace("wb.dbt::pack.", "")).append(" {");
+                    sb.append("entity ").append(table.replace("wb.db::pack.", "")).append(" {");
                 } else
                     sb.append(";");
                 prevTable = table;

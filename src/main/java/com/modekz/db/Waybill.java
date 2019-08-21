@@ -15,7 +15,7 @@ import java.util.Date;
 //@Cacheable(false) global option
 
 @Entity
-@Table(name = "\"wb.dbt::pack.waybill\"")
+@Table(name = "\"wb.db::pack.waybill\"")
 public class Waybill {
     // For speed
     private static Field[] ownFields = Waybill.class.getDeclaredFields();
@@ -169,7 +169,7 @@ public class Waybill {
                 // Cancel WB
                 case Status.REJECTED:
                     Connection connection = ODataServiceFactory.getConnection(em);
-                    PreparedStatement prepDelete = connection.prepareStatement("DELETE FROM \"wb.dbt::pack.schedule\" WHERE \"waybill_id\" = ?");
+                    PreparedStatement prepDelete = connection.prepareStatement("DELETE FROM \"wb.db::pack.schedule\" WHERE \"waybill_id\" = ?");
                     prepDelete.setLong(1, this.id);
                     prepDelete.executeUpdate();
                     break;
@@ -177,7 +177,7 @@ public class Waybill {
                 // Close WB
                 case Status.CLOSED:
                     connection = ODataServiceFactory.getConnection(em);
-                    prepDelete = connection.prepareStatement("DELETE FROM \"wb.dbt::pack.reqhistory\" WHERE \"waybill_id\" = ?");
+                    prepDelete = connection.prepareStatement("DELETE FROM \"wb.db::pack.reqhistory\" WHERE \"waybill_id\" = ?");
                     prepDelete.setLong(1, this.id);
                     prepDelete.executeUpdate();
                     break;

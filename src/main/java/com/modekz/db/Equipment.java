@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "\"wb.dbt::pack.equipment\"")
+@Table(name = "\"wb.db::pack.equipment\"")
 public class Equipment {
     @Column(name="\"baujj\"",length = 4)
     @Parameter("EQUI_BAUJJ")

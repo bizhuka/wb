@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "\"wb.dbt::pack.statustext\"")
+@Table(name = "\"wb.db::pack.statustext\"")
 @PrimaryKey(columns = {@Column(name = "\"stype\"", length = 2), @Column(name = "\"id\"")})
 public class StatusText {
     @Id

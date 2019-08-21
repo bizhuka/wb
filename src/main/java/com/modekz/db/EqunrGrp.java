@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
-@Table(name = "\"wb.dbt::pack.equnrgrp\"")
+@Table(name = "\"wb.db::pack.equnrgrp\"")
 public class EqunrGrp {
     // As replace class number by group
     private static Map<String, String> grpMap;

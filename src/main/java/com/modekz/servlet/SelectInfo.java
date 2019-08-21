@@ -38,9 +38,9 @@ public class SelectInfo extends ServletBase {
 
             PreparedStatement statement = connection.prepareStatement(
                     "SELECT w.\"id\", w.\"spent1\", w.\"spent2\", w.\"spent4\", p.*\n" +
-                            "FROM \"wb.dbt::pack.waybill\" as w RIGHT JOIN \"wb.dbt::pack.gasspent\" as p ON p.\"waybill_id\" = w.\"id\"\n" +
+                            "FROM \"wb.db::pack.waybill\" as w RIGHT JOIN \"wb.db::pack.gasspent\" as p ON p.\"waybill_id\" = w.\"id\"\n" +
                             "WHERE w.\"equnr\" = ? AND p.\"pttype\" IN (1, 2, 4) AND w.\"closedate\" = (SELECT max(i.\"closedate\")\n" +
-                            "FROM \"wb.dbt::pack.waybill\" as i\n" +
+                            "FROM \"wb.db::pack.waybill\" as i\n" +
                             "WHERE i.\"status\" = ? AND i.\"equnr\" = w.\"equnr\")\n" +
                             "ORDER BY p.\"pttype\", p.\"pos\";");
             statement.setString(1, request.getParameter("equnr"));

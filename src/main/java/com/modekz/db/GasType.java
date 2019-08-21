@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 @Entity
 @BapiStructure
-@Table(name = "\"wb.dbt::pack.gastype\"")
+@Table(name = "\"wb.db::pack.gastype\"")
 public class GasType {
     @Id
     @Column(name="\"matnr\"",length = 18)

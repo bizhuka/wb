@@ -10,7 +10,7 @@ import java.util.Date;
 @BapiStructure
 @Entity
 @PrimaryKey(columns = {@Column(name = "\"bukrs\"", length = 4), @Column(name = "\"pernr\"", length = 8)})
-@Table(name = "\"wb.dbt::pack.driver\"")
+@Table(name = "\"wb.db::pack.driver\"")
 public class Driver {
     @Id
     @Column(name = "\"bukrs\"")

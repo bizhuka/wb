@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @BapiStructure
-@Table(name = "\"wb.dbt::pack.wlnvehicle\"")
+@Table(name = "\"wb.db::pack.wlnvehicle\"")
 public class WlnVehicle {
     // Unique guid
     @Id

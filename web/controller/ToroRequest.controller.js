@@ -280,8 +280,8 @@ sap.ui.define([
             var now = new Date();
             _this.updateDbFrom({
                 link: "/r3/REQ_HEADER?_persist=true" +
-                "&TO_DATE=" + _this.toSqlDate(_this.addDays(now, -29)) +
-                "&FROM_DATE=" + _this.toSqlDate(now),
+                    "&TO_DATE=" + _this.toSqlDate(_this.addDays(now, +29)) +
+                    "&FROM_DATE=" + _this.toSqlDate(_this.addDays(now, -29)),
 
                 title: _this.getBundle().getText("reqs"),
 
@@ -420,8 +420,8 @@ sap.ui.define([
                 else
                     _this.updateDbFrom({
                         link: "/r3/SCHEDULE?_persist=true" +
-                        "&TO_DATE=" + _this.toSqlDate(_this.dpTo.getDateValue()) +
-                        "&FROM_DATE=" + _this.toSqlDate(_this.dpFrom.getDateValue()),
+                            "&TO_DATE=" + _this.toSqlDate(_this.dpTo.getDateValue()) +
+                            "&FROM_DATE=" + _this.toSqlDate(_this.dpFrom.getDateValue()),
 
                         title: _this.getBundle().getText("journal"),
 

@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "\"wb.dbt::pack.schedule\"")
+@Table(name = "\"wb.db::pack.schedule\"")
 public class Schedule {
     @Id
     @Column(name="\"werks\"",length = 4)

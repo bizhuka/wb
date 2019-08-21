@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 @Entity
 @PrimaryKey(columns = {@Column(name = "\"waybill_id\""), @Column(name = "\"pttype\""), @Column(name = "\"pos\"")})
-@Table(name = "\"wb.dbt::pack.gasspent\"")
+@Table(name = "\"wb.db::pack.gasspent\"")
 public class GasSpent {
     @Id
     @Column(name = "\"waybill_id\"")

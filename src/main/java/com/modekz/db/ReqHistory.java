@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @PrimaryKey(columns = {@Column(name = "\"waybill_id\""), @Column(name = "\"objnr\"", length = 22)})
-@Table(name = "\"wb.dbt::pack.reqhistory\"")
+@Table(name = "\"wb.db::pack.reqhistory\"")
 public class ReqHistory {
     @Id
     @Column(name = "\"waybill_id\"")

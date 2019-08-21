@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "\"wb.dbt::pack.reqheader\"")
+@Table(name = "\"wb.db::pack.reqheader\"")
 public class ReqHeader {
     @Column(name = "\"aufnr\"", length = 12)
     @Parameter("AFIH_AUFNR")
