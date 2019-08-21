@@ -42,9 +42,9 @@ public class Equipment {
     @Parameter("EQUI_EQUNR")
     public String Equnr;
 
-    @Column(name="\"expelled\"",length = 1)
-    @Parameter("_MARK")
-    public String Expelled;
+//    @Column(name="\"expelled\"",length = 1)
+//    @Parameter("_MARK")
+//    public String Expelled;
 
     @Column(name="\"fleet_num\"",length = 18)
     @Parameter("FLEET_FLEET_NUM")
@@ -407,11 +407,11 @@ public class Equipment {
         PetrolMode = petrolMode;
     }
 
-    public String getExpelled() {
-        return Expelled;
-    }
-
-    public void setExpelled(String expelled) {
-        Expelled = expelled;
-    }
+//    public String getExpelled() {
+//        return Expelled;
+//    }
+//
+//    public void setExpelled(String expelled) {
+//        Expelled = expelled;
+//    }
 }
