@@ -70,6 +70,9 @@ public class VGasSpent {
     @Column(name="\"createdate\"",columnDefinition = "TIMESTAMP")
     public Date createDate;
 
+    @Column(name="\"garagedepdate\"",columnDefinition = "TIMESTAMP")
+    public Date garageDepDate;
+
     @Column(name="\"ododiff\"")
     public double odoDiff;
 
@@ -295,5 +298,13 @@ public class VGasSpent {
 
     public void setPttype_ru(String pttype_ru) {
         Pttype_ru = pttype_ru;
+    }
+
+    public Date getGarageDepDate() {
+        return garageDepDate;
+    }
+
+    public void setGarageDepDate(Date garageDepDate) {
+        this.garageDepDate = garageDepDate;
     }
 }
