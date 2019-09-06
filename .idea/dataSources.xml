@@ -7,5 +7,19 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/postgres</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="sap-hana-test" uuid="8f92ef86-044d-4bda-906c-b54ef6d251e0">
+      <driver-ref>java.sql.Driver</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>com.sap.db.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:sap://zeus.hana.prod.eu-central-1.whitney.dbaas.ondemand.com:20259?encrypt=true&amp;validateCertificate=true&amp;currentschema=WB_HDI_DBT</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="spa-hana-prod" uuid="828046fe-90cb-4861-abdb-5cd3b65ba7c7">
+      <driver-ref>java.sql.Driver</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>com.sap.db.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:sap://zeus.hana.prod.eu-central-1.whitney.dbaas.ondemand.com:20259?encrypt=true&amp;validateCertificate=true&amp;currentschema=OKDB_1</jdbc-url>
+    </data-source>
   </component>
 </project>
