@@ -67,11 +67,14 @@ public class VGasSpent {
     @Column(name="\"id\"")
     public long id;
 
+    @Column(name="\"fromdate\"",columnDefinition = "DATE")
+    public Date fromDate;
+
+    @Column(name="\"todate\"",columnDefinition = "DATE")
+    public Date toDate;
+
     @Column(name="\"createdate\"",columnDefinition = "TIMESTAMP")
     public Date createDate;
-
-    @Column(name="\"garagedepdate\"",columnDefinition = "TIMESTAMP")
-    public Date garageDepDate;
 
     @Column(name="\"ododiff\"")
     public double odoDiff;
@@ -220,14 +223,6 @@ public class VGasSpent {
         this.id = id;
     }
 
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
     public double getOdoDiff() {
         return odoDiff;
     }
@@ -300,11 +295,27 @@ public class VGasSpent {
         Pttype_ru = pttype_ru;
     }
 
-    public Date getGarageDepDate() {
-        return garageDepDate;
+    public Date getFromDate() {
+        return fromDate;
     }
 
-    public void setGarageDepDate(Date garageDepDate) {
-        this.garageDepDate = garageDepDate;
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public Date getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(Date toDate) {
+        this.toDate = toDate;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 }

@@ -51,7 +51,7 @@ SELECT
     g.*,
     t."maktx",
     e."equnr", e."eqktx", e."point", e."imei", e."mptyp", e."wialonid", e."license_num", e."tooname", e."petrolmode", e."anln1", e."ktschtxt",
-    w."id", w."werks", w."createdate", w."ododiff", w."motohour", w."description", w."status",
+    w."id", w."werks", w."createdate", w."fromdate", w."todate", w."ododiff", w."motohour", w."description", w."status",
     CASE
         WHEN g."pttype" = 1 THEN 'Негізгі бак'
         WHEN g."pttype" = 2 THEN 'Жоғары жабдықтау'
