@@ -58,8 +58,7 @@
                     <!--</Column>-->
                 </columns>
 
-                <ColumnListItem>
-                    <!--highlight="{= ${wb>Expelled}==='X'? 'Warning' : 'None'}"-->
+                <ColumnListItem highlight="{= ${wb>Expelled}==='X'? 'Warning' : 'None'}">
                     <cells>
                         <Label text="{wb>License_num}"
                                tooltip="{i18n>eo} { path: 'wb>Equnr', formatter: '.alphaOut' }&#xA;{i18n>class} {wb>N_class}"/>
