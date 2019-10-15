@@ -92,4 +92,32 @@ public class JsCode extends ServletBase {
 
         return sCode;
     }
+
+    @SuppressWarnings("unused")
+    public String statusCF(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        EntityManager em = ODataServiceFactory.getEmf().createEntityManager();
+
+        String template = "sap.ui.define([], function () { \"use strict\"; \n" +
+                "     return {  \n" +
+                "        getCfTexts: function () {  \n" +
+                "           return _RESULT_  \n" +
+                "         } \n" +
+                "     }; \n" +
+                " });";
+
+        String sCode;
+        try {
+            // Get from DB
+            String allTexts = gson.toJson(StatusText.getStatusList(em));
+
+            // Put values
+            sCode = template.replace("_RESULT_", allTexts);
+        } catch (Exception ex) {
+            throw new ServletException(ex);
+        } finally {
+            em.close();
+        }
+
+        return sCode;
+    }
 }

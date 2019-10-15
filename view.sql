@@ -47,22 +47,79 @@ FROM "wb.db::pack.driver" as dr;
 --       EXTRACT(DAY FROM dr."validdate") = EXTRACT(DAY FROM CURRENT_DATE);
 
 CREATE VIEW "v_gasspent" AS
-SELECT
-    g.*,
-    t."maktx",
-    e."equnr", e."eqktx", e."point", e."imei", e."mptyp", e."wialonid", e."license_num", e."tooname", e."petrolmode", e."anln1", e."ktschtxt",
-    w."id", w."werks", w."createdate", w."fromdate", w."todate", w."ododiff", w."motohour", w."description", w."status",
-    CASE
-        WHEN g."pttype" = 1 THEN 'Негізгі бак'
-        WHEN g."pttype" = 2 THEN 'Жоғары жабдықтау'
-        WHEN g."pttype" = 4 THEN 'Күрке'
-        END as "pttype_kz",
+SELECT g.*,
+       t."maktx",
+       e."equnr",
+       e."eqktx",
+       e."point",
+       e."imei",
+       e."mptyp",
+       e."wialonid",
+       e."license_num",
+       e."tooname",
+       e."petrolmode",
+       e."anln1",
+       e."ktschtxt",
+       w."id",
+       w."werks",
 
-    CASE
-        WHEN g."pttype" = 1 THEN 'Основной бак'
-        WHEN g."pttype" = 2 THEN 'Верхнее оборудование'
-        WHEN g."pttype" = 4 THEN 'Будка'
-        END as "pttype_ru"
+       w."createdate",
+       w."fromdate",
+       w."todate",
+       w."garagedepdate",
+       w."garagearrdate",
+
+       w."ododiff",
+       w."motohour",
+       w."description",
+       w."status",
+       w."spent1",
+       w."spent2",
+       w."spent4",
+       CASE
+           WHEN g."pttype" = 1 THEN 'Негізгі бак'
+           WHEN g."pttype" = 2 THEN 'Жоғары жабдықтау'
+           WHEN g."pttype" = 4 THEN 'Күрке'
+           END as "pttype_kz",
+
+       CASE
+           WHEN g."pttype" = 1 THEN 'Основной бак'
+           WHEN g."pttype" = 2 THEN 'Верхнее оборудование'
+           WHEN g."pttype" = 4 THEN 'Будка'
+           END as "pttype_ru",
+
+       CASE
+           WHEN g."pttype" = 1 THEN (CASE
+                                         WHEN g."gasbefore" + g."gasgiven" >= w."spent1" THEN w."spent1"
+                                         ELSE g."gasbefore" + g."gasgiven" END)
+           WHEN g."pttype" = 2 THEN (CASE
+                                         WHEN g."gasbefore" + g."gasgiven" >= w."spent2" THEN w."spent2"
+                                         ELSE g."gasbefore" + g."gasgiven" END)
+           WHEN g."pttype" = 4 THEN (CASE
+                                         WHEN g."gasbefore" + g."gasgiven" >= w."spent4" THEN w."spent4"
+                                         ELSE g."gasbefore" + g."gasgiven" END)
+           END as "gasspent",
+
+       CASE
+           WHEN g."pttype" = 1 THEN (g."gasbefore" + g."gasgiven" - w."spent1")
+           WHEN g."pttype" = 2 THEN (g."gasbefore" + g."gasgiven" - w."spent2")
+           WHEN g."pttype" = 4 THEN (g."gasbefore" + g."gasgiven" - w."spent4")
+           END as "gasafter_next",
+
+       CASE
+           WHEN g."pttype" = 1 THEN (CASE
+                                         WHEN g."gasbefore" + g."gasgiven" >= w."spent1"
+                                             THEN g."gasbefore" + g."gasgiven" - w."spent1"
+                                         ELSE 0 END)
+           WHEN g."pttype" = 2 THEN (CASE
+                                         WHEN g."gasbefore" + g."gasgiven" >= w."spent2"
+                                             THEN g."gasbefore" + g."gasgiven" - w."spent2"
+                                         ELSE 0 END)
+           WHEN g."pttype" = 4 THEN (CASE
+                                         WHEN g."gasbefore" + g."gasgiven" >= w."spent4"
+                                             THEN g."gasbefore" + g."gasgiven" - w."spent4"
+                                         ELSE 0 END)
+           END as "gasafter"
 FROM "wb.db::pack.gasspent" as g
          LEFT OUTER JOIN "wb.db::pack.waybill" as w ON w."id" = g."waybill_id"
          LEFT OUTER JOIN "wb.db::pack.equipment" as e ON w."equnr" = e."equnr"

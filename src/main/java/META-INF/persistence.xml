@@ -32,4 +32,38 @@
 
 
     <!--<property name="eclipselink.ddl-generation" value="drop-and-create-tables" />-->
+
+<!--    <persistence-unit name="sqlite-unit">-->
+<!--        &lt;!&ndash;   TODO     transaction-type="JTA"&ndash;&gt;-->
+<!--        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>-->
+<!--        <class>com.modekz.jpa.wb.db.Driver</class>-->
+<!--        <class>com.modekz.jpa.wb.db.Equipment</class>-->
+<!--        <class>com.modekz.jpa.wb.db.EqunrGrp</class>-->
+<!--        <class>com.modekz.jpa.wb.db.GasSpent</class>-->
+<!--        <class>com.modekz.jpa.wb.db.GasType</class>-->
+<!--        <class>com.modekz.jpa.wb.db.Lgort</class>-->
+<!--        <class>com.modekz.jpa.wb.db.ReqHeader</class>-->
+<!--        <class>com.modekz.jpa.wb.db.ReqHistory</class>-->
+<!--        <class>com.modekz.jpa.wb.db.Schedule</class>-->
+<!--        <class>com.modekz.jpa.wb.db.StatusText</class>-->
+<!--        <class>com.modekz.jpa.wb.db.VCountREQ</class>-->
+<!--        <class>com.modekz.jpa.wb.db.VCountWB</class>-->
+<!--        <class>com.modekz.jpa.wb.db.VDriver</class>-->
+<!--        <class>com.modekz.jpa.wb.db.VGasSpent</class>-->
+<!--        <class>com.modekz.jpa.wb.db.VReqHeader</class>-->
+<!--        <class>com.modekz.jpa.wb.db.VWaybill</class>-->
+<!--        <class>com.modekz.jpa.wb.db.Waybill</class>-->
+<!--        <class>com.modekz.jpa.wb.db.Werk</class>-->
+<!--        <class>com.modekz.jpa.wb.db.WlnVehicle</class>-->
+<!--        <exclude-unlisted-classes>true</exclude-unlisted-classes>-->
+<!--        <shared-cache-mode>NONE</shared-cache-mode>-->
+
+<!--        <properties>-->
+<!--            <property name="javax.persistence.jdbc.driver" value="org.sqlite.JDBC"/>-->
+<!--            <property name="javax.persistence.jdbc.url" value="jdbc:sqlite:D:\Users\MoldaB\IdeaProjects\wb3\db\wb.db"/>-->
+<!--            <property name="eclipselink.logging.level" value="ALL"/>-->
+<!--            <property name="eclipselink.ddl-generation" value="create-tables"/>-->
+<!--        </properties>-->
+
+<!--    </persistence-unit>-->
 </persistence>

@@ -76,6 +76,7 @@
           <element id="library" level="project" name="Maven: org.glassfish.jaxb:jaxb-runtime:2.3.0" />
           <element id="library" level="project" name="Maven: org.glassfish.jaxb:txw2:2.3.0" />
           <element id="library" level="project" name="Maven: org.jvnet.staxex:stax-ex:1.7.8" />
+          <element id="library" level="project" name="Maven: org.xerial:sqlite-jdbc:3.28.0" />
         </element>
       </element>
       <element id="javaee-facet-resources" facet="wb/web/Web" />

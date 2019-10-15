@@ -61,6 +61,7 @@
           <element id="library" level="project" name="Maven: org.apache.cxf:cxf-rt-frontend-jaxrs:3.2.5" />
           <element id="library" level="project" name="Maven: javax.ws.rs:javax.ws.rs-api:2.1" />
           <element id="library" level="project" name="Maven: com.fasterxml.woodstox:woodstox-core:5.0.3" />
+          <element id="library" level="project" name="Maven: org.xerial:sqlite-jdbc:3.28.0" />
         </element>
       </element>
       <element id="javaee-facet-resources" facet="wb/web/Web" />

@@ -1,19 +1,19 @@
 package com.modekz.db;
 
+import com.modekz.ODataServiceFactory;
 import com.modekz.db.flag.Status;
 import org.eclipse.persistence.annotations.PrimaryKey;
 import org.hibersap.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.servlet.ServletException;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
 @PrimaryKey(columns = {@Column(name = "\"waybill_id\""), @Column(name = "\"pttype\""), @Column(name = "\"pos\"")})
 @Table(name = "\"v_gasspent\"")
+@IdClass(GasSpentKey.class)
 public class VGasSpent {
     @Id
     @Column(name = "\"waybill_id\"")
@@ -46,63 +46,83 @@ public class VGasSpent {
     @Column(name = "\"gaslgort\"", length = 4)
     public String GasLgort;
 
-    @Column(name="\"license_num\"",length = 15)
+    @Column(name = "\"license_num\"", length = 15)
     public String License_num;
 
-    @Column(name="\"equnr\"",length = 18)
+    @Column(name = "\"equnr\"", length = 18)
     public String equnr;
 
-    @Column(name="\"anln1\"",length = 12)
+    @Column(name = "\"anln1\"", length = 12)
     public String Anln1;
 
-    @Column(name="\"imei\"",columnDefinition = "VARCHAR(40)")
+    @Column(name = "\"imei\"", columnDefinition = "VARCHAR(40)")
     public String Imei;
 
     @Column(name = "\"ktschtxt\"", columnDefinition = "VARCHAR(40)")
     public String KtschTxt;
 
-    @Column(name="\"werks\"",length = 4, nullable = false, updatable = false)
+    @Column(name = "\"werks\"", length = 4, nullable = false, updatable = false)
     public String werks;
 
-    @Column(name="\"id\"")
+    @Column(name = "\"id\"")
     public long id;
 
-    @Column(name="\"fromdate\"",columnDefinition = "DATE")
+    @Column(name = "\"fromdate\"", columnDefinition = "DATE")
     public Date fromDate;
 
-    @Column(name="\"todate\"",columnDefinition = "DATE")
+    @Column(name = "\"todate\"", columnDefinition = "DATE")
     public Date toDate;
 
-    @Column(name="\"createdate\"",columnDefinition = "TIMESTAMP")
+    @Column(name = "\"createdate\"", columnDefinition = "TIMESTAMP")
     public Date createDate;
 
-    @Column(name="\"ododiff\"")
+    @Column(name = "\"ododiff\"")
     public double odoDiff;
 
-    @Column(name="\"motohour\"")
+    @Column(name = "\"motohour\"")
     public double motoHour;
 
-    @Column(name="\"description\"",columnDefinition = "VARCHAR(150)")
+    @Column(name = "\"description\"", columnDefinition = "VARCHAR(150)")
     public String description;
 
-    @Column(name="\"eqktx\"",columnDefinition = "VARCHAR(40)")
+    @Column(name = "\"eqktx\"", columnDefinition = "VARCHAR(40)")
     public String Eqktx;
 
-    @Column(name="\"tooname\"",columnDefinition = "VARCHAR(50)")
+    @Column(name = "\"tooname\"", columnDefinition = "VARCHAR(50)")
     public String TooName = "-";
 
-    @Column(name="\"status\"")
+    @Column(name = "\"status\"")
     public int status = Status.CREATED;
 
-    @Column(name="\"maktx\"",columnDefinition = "VARCHAR(40)")
+    @Column(name = "\"maktx\"", columnDefinition = "VARCHAR(40)")
     public String Maktx;
 
-    @Column(name="\"pttype_kz\"",columnDefinition = "VARCHAR(40)")
+    @Column(name = "\"pttype_kz\"", columnDefinition = "VARCHAR(40)")
     public String Pttype_kz;
 
-    @Column(name="\"pttype_ru\"",columnDefinition = "VARCHAR(40)")
+    @Column(name = "\"pttype_ru\"", columnDefinition = "VARCHAR(40)")
     public String Pttype_ru;
 
+    ////////////////////////////////////
+    @Column(name = "\"gasspent\"", columnDefinition = "FLOAT")
+    public BigDecimal GasSpent;
+
+    @Column(name = "\"gasafter_next\"", columnDefinition = "FLOAT")
+    public BigDecimal GasAfterNext;
+
+    @Column(name = "\"gasafter\"", columnDefinition = "FLOAT")
+    public BigDecimal GasAfter;
+
+    @Column(name = "\"spent1\"")
+    public double spent1;
+
+    @Column(name = "\"spent2\"")
+    public double spent2;
+
+    @Column(name = "\"spent4\"")
+    public double spent4;
+
+    ////////////////////////////////////
     public long getWaybill_Id() {
         return Waybill_Id;
     }
@@ -317,5 +337,107 @@ public class VGasSpent {
 
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
+    }
+
+    public double getSpent1() {
+        return spent1;
+    }
+
+    public void setSpent1(double spent1) {
+        this.spent1 = spent1;
+    }
+
+    public double getSpent2() {
+        return spent2;
+    }
+
+    public void setSpent2(double spent2) {
+        this.spent2 = spent2;
+    }
+
+    public double getSpent4() {
+        return spent4;
+    }
+
+    public void setSpent4(double spent4) {
+        this.spent4 = spent4;
+    }
+
+    public VGasSpent getPrevItem() {
+        // No need
+        if (this.Pos == 0)
+            return null;
+
+        EntityManager em = null;
+        VGasSpent result = null;
+        try {
+            em = ODataServiceFactory.getEmf().createEntityManager();
+            em.getTransaction().begin();
+            result = em.find(VGasSpent.class, new GasSpentKey(Waybill_Id, PtType, Pos - 1));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (em != null)
+                em.close();
+        }
+        return result;
+    }
+
+    public BigDecimal getGasSpent() {
+        if (this.Pos == 0)
+            return GasSpent;
+        VGasSpent prevItem = getPrevItem();
+        if (prevItem == null)
+            return GasSpent;
+
+        BigDecimal total = GasBefore.add(GasGiven);
+
+        BigDecimal prevGasAfterNext = prevItem.getGasAfterNext();
+        if (prevGasAfterNext.compareTo(BigDecimal.valueOf(0)) > 0)
+            return BigDecimal.valueOf(0);
+
+        prevGasAfterNext = prevGasAfterNext.abs();
+        if (total.compareTo(prevGasAfterNext) > 0)
+            return prevGasAfterNext;
+
+        return total.subtract(prevGasAfterNext);
+    }
+
+    public BigDecimal getGasAfter() {
+        if (this.Pos == 0)
+            return GasAfter;
+
+        BigDecimal gasAfterNext = getGasAfterNext();
+        if (gasAfterNext.compareTo(BigDecimal.valueOf(0)) < 0)
+            return BigDecimal.valueOf(0);
+
+        return gasAfterNext;
+    }
+
+    public BigDecimal getGasAfterNext() {
+        if (this.Pos == 0)
+            return GasAfterNext;
+        VGasSpent prevItem = getPrevItem();
+        if (prevItem == null)
+            return GasAfterNext;
+
+        BigDecimal total = GasBefore.add(GasGiven);
+        BigDecimal prevGasAfterNext = prevItem.getGasAfterNext();
+        if (prevGasAfterNext.compareTo(BigDecimal.valueOf(0)) > 0)
+            return total;
+
+        return prevGasAfterNext.add(total);
+    }
+
+    public void setGasAfter(BigDecimal gasAfter) {
+        GasAfter = gasAfter;
+    }
+
+    public void setGasSpent(BigDecimal gasSpent) {
+        GasSpent = gasSpent;
+    }
+
+    public void setGasAfterNext(BigDecimal gasAfterNext) {
+        GasAfterNext = gasAfterNext;
     }
 }

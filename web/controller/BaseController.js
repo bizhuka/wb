@@ -448,7 +448,7 @@ sap.ui.define([
                             dataUrl: oRowBinding.getDownloadUrl ? oRowBinding.getDownloadUrl() : null,
                             serviceUrl: oModelInterface.sServiceUrl,
                             headers: oModelInterface.getHeaders ? oModelInterface.getHeaders() : null,
-                            count: oRowBinding.getLength ? oRowBinding.getLength() : null,
+                            // count: oRowBinding.getLength ? oRowBinding.getLength() : null,
                             useBatch: oModelInterface.bUseBatch,
                             sizeLimit: oModelInterface.iSizeLimit
                         }
