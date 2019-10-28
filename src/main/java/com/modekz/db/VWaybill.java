@@ -13,121 +13,121 @@ public class VWaybill {
 
     @GeneratedValue
     @Id
-    @Column(name="\"id\"")
+    @Column(name = "\"id\"")
     public long id;
 
-    @Column(name="\"description\"",columnDefinition = "VARCHAR(150)")
+    @Column(name = "\"description\"", columnDefinition = "VARCHAR(150)")
     public String description;
 
-    @Column(name="\"equnr\"",length = 18)
+    @Column(name = "\"equnr\"", length = 18)
     public String equnr;
 
-    @Column(name="\"driver\"",length = 8)
+    @Column(name = "\"driver\"", length = 8)
     public String driver;
 
-    @Column(name="\"bukrs\"",length = 4, nullable = false, updatable = false)
+    @Column(name = "\"bukrs\"", length = 4, nullable = false, updatable = false)
     public String bukrs;
 
-    @Column(name="\"fromdate\"",columnDefinition = "DATE")
+    @Column(name = "\"fromdate\"", columnDefinition = "DATE")
     public Date fromDate;
 
-    @Column(name="\"todate\"",columnDefinition = "DATE")
+    @Column(name = "\"todate\"", columnDefinition = "DATE")
     public Date toDate;
 
-    @Column(name="\"createdate\"",columnDefinition = "TIMESTAMP")
+    @Column(name = "\"createdate\"", columnDefinition = "TIMESTAMP")
     public Date createDate;
 
-    @Column(name="\"confirmdate\"",columnDefinition = "TIMESTAMP")
+    @Column(name = "\"confirmdate\"", columnDefinition = "TIMESTAMP")
     public Date confirmDate;
 
-    @Column(name="\"garagedepdate\"",columnDefinition = "TIMESTAMP")
+    @Column(name = "\"garagedepdate\"", columnDefinition = "TIMESTAMP")
     public Date garageDepDate;
 
-    @Column(name="\"garagearrdate\"",columnDefinition = "TIMESTAMP")
+    @Column(name = "\"garagearrdate\"", columnDefinition = "TIMESTAMP")
     public Date garageArrDate;
 
-    @Column(name="\"closedate\"",columnDefinition = "TIMESTAMP")
+    @Column(name = "\"closedate\"", columnDefinition = "TIMESTAMP")
     public Date closeDate;
 
-    @Column(name="\"werks\"",length = 4, nullable = false, updatable = false)
+    @Column(name = "\"werks\"", length = 4, nullable = false, updatable = false)
     public String werks;
 
-    @Column(name="\"status\"")
+    @Column(name = "\"status\"")
     public int status = Status.CREATED;
 
-    @Column(name="\"ododiff\"")
+    @Column(name = "\"ododiff\"")
     public double odoDiff;
 
-    @Column(name="\"motohour\"")
+    @Column(name = "\"motohour\"")
     public double motoHour;
 
-    @Column(name="\"spent1\"")
+    @Column(name = "\"spent1\"")
     public double spent1;
 
-    @Column(name="\"spent2\"")
+    @Column(name = "\"spent2\"")
     public double spent2;
 
-    @Column(name="\"spent4\"")
+    @Column(name = "\"spent4\"")
     public double spent4;
 
-    @Column(name="\"petrolmode\"",columnDefinition = "VARCHAR(3)")
+    @Column(name = "\"petrolmode\"", columnDefinition = "VARCHAR(3)")
     public String PetrolMode;
 
-    @Column(name="\"delayreason\"")
+    @Column(name = "\"delayreason\"")
     public int delayReason = Status.DR_NO_DELAY;
 
     // Who last changed
-    @Column(name="\"changeuser\"",columnDefinition = "VARCHAR(40)")
+    @Column(name = "\"changeuser\"", columnDefinition = "VARCHAR(40)")
     public String changeUser;
-    @Column(name="\"changedate\"",columnDefinition = "TIMESTAMP")
+    @Column(name = "\"changedate\"", columnDefinition = "TIMESTAMP")
     public Date changeDate;
 
-    @Column(name="\"docum\"",length = 20)
+    @Column(name = "\"docum\"", length = 20)
     public String docum;
 
-    @Column(name="\"aufnr\"",length = 12)
+    @Column(name = "\"aufnr\"", length = 12)
     public String aufnr;
 
-    @Column(name="\"withnoreqs\"")
+    @Column(name = "\"withnoreqs\"")
     public boolean withNoReqs = false;
 
-    @Column(name="\"req_cnt\"")
+    @Column(name = "\"req_cnt\"")
     public long Req_Cnt;
-    @Column(name="\"sch_cnt\"")
+    @Column(name = "\"sch_cnt\"")
     public long Sch_Cnt;
-    @Column(name="\"hist_cnt\"")
+    @Column(name = "\"hist_cnt\"")
     public long Hist_Cnt;
-    @Column(name="\"gas_cnt\"")
+    @Column(name = "\"gas_cnt\"")
     public long Gas_Cnt;
 
-    @Column(name="\"eqktx\"",columnDefinition = "VARCHAR(40)")
+    @Column(name = "\"eqktx\"", columnDefinition = "VARCHAR(40)")
     public String Eqktx;
 
-    @Column(name="\"fio\"",columnDefinition = "VARCHAR(30)")
+    @Column(name = "\"fio\"", columnDefinition = "VARCHAR(30)")
     public String Fio;
 
-    @Column(name="\"point\"",length = 12)
+    @Column(name = "\"point\"", length = 12)
     public String Point;
 
-    @Column(name="\"wialonid\"",length = 5)
+    @Column(name = "\"wialonid\"", length = 5)
     public String WialonId;
 
-    @Column(name="\"license_num\"",length = 15)
+    @Column(name = "\"license_num\"", length = 15)
     public String License_num;
 
-    @Column(name="\"mptyp\"",length = 1)
+    @Column(name = "\"mptyp\"", length = 1)
     public String Mptyp;
 
-    @Column(name="\"tooname\"",columnDefinition = "VARCHAR(50)")
+    @Column(name = "\"tooname\"", columnDefinition = "VARCHAR(50)")
     public String TooName = "-";
 
-    @Column(name="\"anln1\"",length = 12)
+    @Column(name = "\"anln1\"", length = 12)
     public String Anln1;
 
     @Column(name = "\"ktschtxt\"", columnDefinition = "VARCHAR(40)")
     public String KtschTxt;
 
-    @Column(name="\"imei\"",columnDefinition = "VARCHAR(40)")
+    @Column(name = "\"imei\"", columnDefinition = "VARCHAR(40)")
     public String Imei;
 
     public long getId() {
@@ -301,7 +301,7 @@ public class VWaybill {
     }
 
     public double getMotoHour() {
-        return motoHour;
+        return Math.round(motoHour * 100.0) / 100.0;
     }
 
     public void setMotoHour(double motoHour) {
@@ -309,7 +309,7 @@ public class VWaybill {
     }
 
     public double getOdoDiff() {
-        return odoDiff;
+        return Math.round(odoDiff * 100.0) / 100.0;
     }
 
     public void setOdoDiff(double odoDiff) {
@@ -317,7 +317,7 @@ public class VWaybill {
     }
 
     public double getSpent1() {
-        return spent1;
+        return Math.round(spent1 * 100.0) / 100.0;
     }
 
     public void setSpent1(double spent1) {
@@ -325,7 +325,7 @@ public class VWaybill {
     }
 
     public double getSpent2() {
-        return spent2;
+        return Math.round(spent2 * 100.0) / 100.0;
     }
 
     public void setSpent2(double spent2) {
@@ -333,7 +333,7 @@ public class VWaybill {
     }
 
     public double getSpent4() {
-        return spent4;
+        return Math.round(spent4 * 100.0) / 100.0;
     }
 
     public void setSpent4(double spent4) {

@@ -156,7 +156,7 @@ public class VGasSpent {
     }
 
     public BigDecimal getGasBefore() {
-        return GasBefore;
+        return GasBefore.setScale(2, BigDecimal.ROUND_HALF_EVEN);
     }
 
     public void setGasBefore(BigDecimal GasBefore) {
@@ -164,7 +164,7 @@ public class VGasSpent {
     }
 
     public BigDecimal getGasGive() {
-        return GasGive;
+        return GasGive.setScale(2, BigDecimal.ROUND_HALF_EVEN);
     }
 
     public void setGasGive(BigDecimal GasGive) {
@@ -172,7 +172,7 @@ public class VGasSpent {
     }
 
     public BigDecimal getGasGiven() {
-        return GasGiven;
+        return GasGiven.setScale(2, BigDecimal.ROUND_HALF_EVEN);
     }
 
     public void setGasGiven(BigDecimal GasGiven) {
@@ -244,7 +244,7 @@ public class VGasSpent {
     }
 
     public double getOdoDiff() {
-        return odoDiff;
+        return Math.round(odoDiff * 100.0) / 100.0;
     }
 
     public void setOdoDiff(double odoDiff) {
@@ -252,7 +252,7 @@ public class VGasSpent {
     }
 
     public double getMotoHour() {
-        return motoHour;
+        return Math.round(motoHour * 100.0) / 100.0;
     }
 
     public void setMotoHour(double motoHour) {
@@ -340,7 +340,7 @@ public class VGasSpent {
     }
 
     public double getSpent1() {
-        return spent1;
+        return Math.round(spent1 * 100.0) / 100.0;
     }
 
     public void setSpent1(double spent1) {
@@ -348,7 +348,7 @@ public class VGasSpent {
     }
 
     public double getSpent2() {
-        return spent2;
+        return Math.round(spent2 * 100.0) / 100.0;
     }
 
     public void setSpent2(double spent2) {
@@ -356,7 +356,7 @@ public class VGasSpent {
     }
 
     public double getSpent4() {
-        return spent4;
+        return Math.round(spent4 * 100.0) / 100.0;
     }
 
     public void setSpent4(double spent4) {
@@ -385,10 +385,10 @@ public class VGasSpent {
 
     public BigDecimal getGasSpent() {
         if (this.Pos == 0)
-            return GasSpent;
+            return GasSpent.setScale(2, BigDecimal.ROUND_HALF_EVEN);
         VGasSpent prevItem = getPrevItem();
         if (prevItem == null)
-            return GasSpent;
+            return GasSpent.setScale(2, BigDecimal.ROUND_HALF_EVEN);
 
         BigDecimal total = GasBefore.add(GasGiven);
 
@@ -398,35 +398,35 @@ public class VGasSpent {
 
         prevGasAfterNext = prevGasAfterNext.abs();
         if (total.compareTo(prevGasAfterNext) > 0)
-            return prevGasAfterNext;
+            return prevGasAfterNext.setScale(2, BigDecimal.ROUND_HALF_EVEN);
 
-        return total.subtract(prevGasAfterNext);
+        return total.subtract(prevGasAfterNext).setScale(2, BigDecimal.ROUND_HALF_EVEN);
     }
 
     public BigDecimal getGasAfter() {
         if (this.Pos == 0)
-            return GasAfter;
+            return GasAfter.setScale(2, BigDecimal.ROUND_HALF_EVEN);
 
         BigDecimal gasAfterNext = getGasAfterNext();
         if (gasAfterNext.compareTo(BigDecimal.valueOf(0)) < 0)
             return BigDecimal.valueOf(0);
 
-        return gasAfterNext;
+        return gasAfterNext.setScale(2, BigDecimal.ROUND_HALF_EVEN);
     }
 
     public BigDecimal getGasAfterNext() {
         if (this.Pos == 0)
-            return GasAfterNext;
+            return GasAfterNext.setScale(2, BigDecimal.ROUND_HALF_EVEN);
         VGasSpent prevItem = getPrevItem();
         if (prevItem == null)
-            return GasAfterNext;
+            return GasAfterNext.setScale(2, BigDecimal.ROUND_HALF_EVEN);
 
         BigDecimal total = GasBefore.add(GasGiven);
         BigDecimal prevGasAfterNext = prevItem.getGasAfterNext();
         if (prevGasAfterNext.compareTo(BigDecimal.valueOf(0)) > 0)
-            return total;
+            return total.setScale(2, BigDecimal.ROUND_HALF_EVEN);
 
-        return prevGasAfterNext.add(total);
+        return prevGasAfterNext.add(total).setScale(2, BigDecimal.ROUND_HALF_EVEN);
     }
 
     public void setGasAfter(BigDecimal gasAfter) {
